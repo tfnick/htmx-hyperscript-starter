@@ -15,7 +15,7 @@
 </style>
 <div class="grid">
   <div>
-    <h3>Find User - HTMX w/ API Example</h3>
+    <h3>Find User 1 - HTMX w/ API Example</h3>
     <input type="id_htmx" name="id_htmx" placeholder="Enter any id" aria-label="id" required />
     <button type="submit" hx-get="/api/users/{id_htmx}" hx-include='[name="id_htmx"]' hx-target="#currentUser"
       hx-swap="innerHTML" hx-indicator="#spinner" hx-ext="path-params">Find</button>
@@ -26,7 +26,7 @@
     </article>
   </div>
   <div>
-    <h3>Find User - Hyperscript w/ API Example</h3>
+    <h3>Find User 2 - Hyperscript w/ API Example</h3>
     <input type="id_hs" name="id_hs" placeholder="Enter any id" aria-label="id" required />
     <button type="submit" _="on click 
             show #spinner_hs with *opacity
