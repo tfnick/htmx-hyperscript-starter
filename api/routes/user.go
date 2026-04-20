@@ -57,7 +57,16 @@ func GetAllUsers(c echo.Context) error {
 
 // GetUser 根据 ID 获取单个用户
 func GetUser(c echo.Context) error {
+	// 支持路径参数 /api/users/:id 和查询参数 /api/users?id=xxx
 	id := c.Param("id")
+	if id == "" {
+		id = c.QueryParam("id")
+	}
+	if id == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "缺少用户 ID",
+		})
+	}
 	user, err := models.GetUserByID(id)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{

@@ -16,8 +16,8 @@
 <div class="grid">
   <div>
     <h3>Find User 1 - HTMX w/ API Example</h3>
-    <input type="id_htmx" name="id_htmx" placeholder="Enter any id" aria-label="id" required />
-    <button type="submit" hx-get="/api/users/{id_htmx}" hx-include='[name="id_htmx"]' hx-target="#currentUser"
+    <input type="text" name="id" placeholder="Enter user id (e.g. u001)" _="on keyup if event.key == 'Enter' trigger click on #btn-find" />
+    <button id="btn-find" type="button" hx-get="/api/users/{id}" hx-include='[name="id"]' hx-target="#currentUser"
       hx-swap="innerHTML" hx-indicator="#spinner" hx-ext="path-params">Find</button>
     <article class="user-card">
       <h3>User:</h3>
