@@ -13,7 +13,7 @@ import (
 	user "github.com/zachatrocity/htmx-hyperscript-starter/api/routes"
 	"github.com/zachatrocity/htmx-hyperscript-starter/api/db"
 )
-
+// 程序启动以及路由注册
 func main() {
 	isDevelopment := flag.Bool("dev", true, "Development mode")
 	port := flag.String("port", "3000", "Port to serve the app")
