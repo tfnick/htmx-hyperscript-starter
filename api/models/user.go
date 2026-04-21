@@ -11,11 +11,14 @@ import (
 
 // User 用户模型
 type User struct {
-	ID        string `json:"id" db:"id"`
-	Name      string `json:"name" db:"name"`
-	Email     string `json:"email" db:"email"`
-	CreatedAt string `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt string `json:"updated_at,omitempty" db:"updated_at"`
+	ID            string `json:"id" db:"id"`
+	Name          string `json:"name" db:"name"`
+	Email         string `json:"email" db:"email"`
+	PasswordHash  string `json:"-" db:"password_hash"`
+	EmailVerified int    `json:"email_verified,omitempty" db:"email_verified"`
+	IsActive      int    `json:"is_active,omitempty" db:"is_active"`
+	CreatedAt     string `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt     string `json:"updated_at,omitempty" db:"updated_at"`
 }
 
 // UserQuery 用户查询参数（用于动态条件查询）
@@ -33,8 +36,8 @@ func CreateUser(user *User) error {
 	user.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 	user.UpdatedAt = user.CreatedAt
 
-	// 使用命名参数插入
-	sql := `INSERT INTO users (id, name, email, created_at, updated_at) VALUES (:id, :name, :email, :created_at, :updated_at)`
+	// 使用命名参数插入，包含密码哈希
+	sql := `INSERT INTO users (id, name, email, password_hash, created_at, updated_at) VALUES (:id, :name, :email, :password_hash, :created_at, :updated_at)`
 	_, err := db.GetEngine().Exec(context.Background(), sql, user)
 	if err != nil {
 		return fmt.Errorf("创建用户失败: %w", err)
@@ -70,7 +73,7 @@ func GetUserByEmail(email string) (*User, error) {
 
 // GetAllUsers 获取所有用户
 func GetAllUsers() ([]User, error) {
-	sql := `SELECT * FROM users ORDER BY created_at DESC`
+	sql := `SELECT id, name, email, email_verified, is_active, created_at, updated_at FROM users ORDER BY created_at DESC`
 	var users []User
 	err := db.GetEngine().Select(context.Background(), &users, sql, UserQuery{})
 	if err != nil {

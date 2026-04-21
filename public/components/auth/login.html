@@ -1,0 +1,37 @@
+<div class="auth-container">
+  <h3>用户登录</h3>
+  <form hx-post="/api/auth/login" hx-target="#login-result" hx-swap="innerHTML">
+    <div class="grid">
+      <label>
+        邮箱
+        <input type="email" name="email" placeholder="your@email.com" required />
+      </label>
+      <label>
+        密码
+        <input type="password" name="password" placeholder="至少6位" required />
+      </label>
+    </div>
+    <button type="submit">登录</button>
+  </form>
+  <div id="login-result"></div>
+  <div class="auth-links">
+    <a href="/register.html">注册账号</a>
+    <a href="/forgot-password.html">忘记密码？</a>
+  </div>
+</div>
+
+<style>
+  .auth-container {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .auth-links {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+  }
+</style>

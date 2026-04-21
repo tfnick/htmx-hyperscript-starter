@@ -12,7 +12,9 @@ import (
 
 	user "github.com/zachatrocity/htmx-hyperscript-starter/api/routes"
 	"github.com/zachatrocity/htmx-hyperscript-starter/api/db"
+	authMiddleware "github.com/zachatrocity/htmx-hyperscript-starter/api/middleware"
 )
+
 // 程序启动以及路由注册
 func main() {
 	isDevelopment := flag.Bool("dev", true, "Development mode")
@@ -63,18 +65,37 @@ func main() {
 			return c.File("public/components/" + component + ".html")
 		})
 
-		// 用户 API
-		api.GET("/users", user.GetAllUsers)
-		api.GET("/users/:id", user.GetUser)
-		api.POST("/users", user.CreateUser)
-		api.PUT("/users/:id", user.UpdateUser)
-		api.DELETE("/users/:id", user.DeleteUser)
+		// 认证 API（无需登录）
+		api.POST("/auth/register", user.Register)
+		api.POST("/auth/login", user.Login)
+		api.POST("/auth/forgot-password", user.ForgotPassword)
+		api.POST("/auth/reset-password", user.ResetPassword)
 
-		// 订单 API
-		api.POST("/orders", user.CreateOrder)
-		api.GET("/orders/user/:user_id", user.GetUserOrders)
-		api.GET("/orders/:id", user.GetOrderDetail)
-		api.PATCH("/orders/:id/status", user.UpdateOrderStatus)
+		// 认证状态（可选登录，用于前端显示）
+		api.GET("/auth/status", user.GetAuthStatus, authMiddleware.OptionalAuth())
+		api.GET("/auth/status-component", user.GetAuthStatusComponent, authMiddleware.OptionalAuth())
+
+		// 需要认证的 API
+		protected := api.Group("")
+		protected.Use(authMiddleware.RequireAuth())
+		{
+			// 认证相关（需要登录）
+			protected.POST("/auth/logout", user.Logout)
+			protected.GET("/auth/me", user.GetCurrentUser)
+
+			// 用户 API
+			protected.GET("/users", user.GetAllUsers)
+			protected.GET("/users/:id", user.GetUser)
+			protected.POST("/users", user.CreateUser)
+			protected.PUT("/users/:id", user.UpdateUser)
+			protected.DELETE("/users/:id", user.DeleteUser)
+
+			// 订单 API
+			protected.POST("/orders", user.CreateOrder)
+			protected.GET("/orders/user/:user_id", user.GetUserOrders)
+			protected.GET("/orders/:id", user.GetOrderDetail)
+			protected.PATCH("/orders/:id/status", user.UpdateOrderStatus)
+		}
 	}
 
 	// hot reload from aarol/reload

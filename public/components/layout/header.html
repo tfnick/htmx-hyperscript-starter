@@ -1,46 +1,35 @@
-<!-- use hyperscript within tag -->
-<!-- <script type="text/hyperscript">
-  on load for img in <img/> add .image to img
-</script> -->
-<!-- or.... -->
-
 <style>
-  .image {
+  .header-container {
     display: flex;
-    flex-flow: column;
+    justify-content: space-between;
     align-items: center;
-
-    img {
-      max-height: 130px;
-    }
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 2rem;
+  }
+  .header-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: inherit;
+  }
+  .header-auth-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .user-name {
+    font-weight: 500;
+  }
+  .btn-logout {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
   }
 </style>
 
-<hgroup>
-  <h1>HTMX + Pico.css</h1>
-  <p>A fullstack golang starter using: htmx + hyperscript + hot reload + pico.css for go and html purists.</p>
-</hgroup>
-
-<!-- use hyperscript with htmx -->
-<div class="grid" _="on load for article in <article/> add .image to article">
-  <article>
-    <a href="https://htmx.org/">htmx</a>
-    <img src="/assets/htmx.png" alt="htmx logo" />
-  </article>
-  <article>
-    <a href="https://hyperscript.org/">hyperscript</a>
-    <img src="/assets/hyperscript.png" alt="hyperscript logo">
-  </article>
-  <article>
-    <a href="https://picocss.com/docs/">Pico.css</a>
-    <img src="/assets/pico.svg" alt="pico css logo">
-  </article>
-  <article>
-    <a href="https://github.com/mitranim/gow">gow</a> for live reloading go
-    <img src="/assets/go.png" alt="go logo">
-  </article>
-  <article>
-    <a href="https://github.com/aarol/reload">aarol/reload</a> for hot reloading
-    <img src="/assets/go.png" alt="go logo">
-  </article>
-</div>
+<header class="header-container">
+  <a href="/" class="header-logo">HTMX App</a>
+  <div class="header-auth" hx-get="/api/auth/status-component" hx-trigger="load">
+    <span class="htmx-indicator">加载中...</span>
+  </div>
+</header>
