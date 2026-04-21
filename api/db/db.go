@@ -17,6 +17,9 @@ var migrationsFS embed.FS
 
 var DB *sqlx.DB
 
+// Engine 全局 sqlx.Engine 实例，支持动态SQL
+var Engine *sqlx.Engine
+
 // InitDB 初始化 SQLite 数据库连接
 func InitDB(dataSourceName string) error {
 	var err error
@@ -24,6 +27,9 @@ func InitDB(dataSourceName string) error {
 	if err != nil {
 		return fmt.Errorf("无法打开数据库: %w", err)
 	}
+
+	// 创建 Engine 实例
+	Engine = sqlx.NewEngine(DB)
 
 	// SQLite 推荐设置
 	DB.SetMaxOpenConns(1)
@@ -242,6 +248,11 @@ func WithTransaction(fn Transaction) error {
 // GetDB 返回数据库实例
 func GetDB() *sqlx.DB {
 	return DB
+}
+
+// GetEngine 返回 Engine 实例（支持动态SQL）
+func GetEngine() *sqlx.Engine {
+	return Engine
 }
 
 // SqlxDB interface for dependency injection
