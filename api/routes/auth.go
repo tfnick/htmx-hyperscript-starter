@@ -107,8 +107,8 @@ func Register(c echo.Context) error {
 	// 设置 Cookie（7天有效期）
 	middleware.SetSessionCookie(c, session.ID, 7*24*3600)
 
-	// HTMX 重定向到 dashboard
-	c.Response().Header().Set("HX-Redirect", "/dashboard.html")
+	// HTMX 重定向到首页
+	c.Response().Header().Set("HX-Redirect", "/")
 	return c.HTML(http.StatusOK, "")
 }
 
@@ -174,8 +174,8 @@ func Login(c echo.Context) error {
 	// 设置 Cookie
 	middleware.SetSessionCookie(c, session.ID, 7*24*3600)
 
-	// HTMX 重定向到 dashboard
-	c.Response().Header().Set("HX-Redirect", "/dashboard.html")
+	// HTMX 重定向到首页
+	c.Response().Header().Set("HX-Redirect", "/")
 	return c.HTML(http.StatusOK, "")
 }
 
