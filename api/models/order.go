@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
+	"github.com/tfnick/sqlx"
 	"github.com/zachatrocity/htmx-hyperscript-starter/api/db"
 )
 

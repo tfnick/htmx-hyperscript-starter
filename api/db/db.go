@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/tfnick/sqlx"
 	_ "modernc.org/sqlite"
 )
 
