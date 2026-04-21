@@ -6,7 +6,7 @@ require (
 	github.com/aarol/reload v1.1.1
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.11.4
-	github.com/tfnick/sqlx v1.3.5
+	github.com/tfnick/sqlx v1.4.0
 	modernc.org/sqlite v1.49.1
 )
 

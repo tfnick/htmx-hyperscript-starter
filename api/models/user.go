@@ -72,7 +72,7 @@ func GetUserByEmail(email string) (*User, error) {
 func GetAllUsers() ([]User, error) {
 	sql := `SELECT * FROM users ORDER BY created_at DESC`
 	var users []User
-	err := db.GetDB().Select(&users, sql)
+	err := db.GetEngine().Select(context.Background(), &users, sql, UserQuery{})
 	if err != nil {
 		return nil, fmt.Errorf("获取用户列表失败: %w", err)
 	}

@@ -43,8 +43,8 @@ github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec h1:W09IVJc94
 github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec/go.mod h1:qqbHyh8v60DhA7CoWK5oRCqLrMHRGoxYCSS9EjAz6Eo=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-github.com/tfnick/sqlx v1.3.5 h1:iLrcd+WZpfHXdTDfXOmdiSq+3c5eP5MzLX11BiVOdqI=
-github.com/tfnick/sqlx v1.3.5/go.mod h1:GWTgwg3J1HhXJKP5JuGtfdSraq2lM830R4pGoe3Qnb4=
+github.com/tfnick/sqlx v1.4.0 h1:7XOA3d2ytGxjiyWfuEzDVM1qlRK8HLbf2jSJJgCZFU4=
+github.com/tfnick/sqlx v1.4.0/go.mod h1:GWTgwg3J1HhXJKP5JuGtfdSraq2lM830R4pGoe3Qnb4=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasttemplate v1.2.2 h1:lxLXG0uE3Qnshl9QyaK6XJxMXlQZELvChBOCmQD0Loo=
