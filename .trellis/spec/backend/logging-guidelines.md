@@ -6,46 +6,48 @@
 
 ## Overview
 
-<!--
-Document your project's logging conventions here.
+The project does not use a structured logging library. It currently uses:
 
-Questions to answer:
-- What logging library do you use?
-- What are the log levels and when to use each?
-- What should be logged?
-- What should NOT be logged (PII, secrets)?
--->
+* `fmt.Println` / `fmt.Printf` for startup and development-only messages in `index.go`.
+* Echo's logger for server startup, fatal server errors, and errors that occur while writing error responses.
 
-(To be filled by the team)
-
----
+Echo request logging middleware is intentionally commented out in `index.go`.
+Do not enable broad request logging unless a task asks for it.
 
 ## Log Levels
 
-<!-- When to use each level: debug, info, warn, error -->
+There is no project-level log-level abstraction yet. Use these current patterns:
 
-(To be filled by the team)
-
----
+* Startup/info: `fmt.Printf("Listening on port %s\n", *port)`
+* Development-only component fetches: guard with `if *isDevelopment`
+* Response-write failures inside the HTTP error handler: `c.Logger().Error(handleErr)`
+* Fatal server startup/runtime error: `router.Logger.Fatal(router.Start(...))`
 
 ## Structured Logging
 
-<!-- Log format, required fields -->
+Structured logging is not configured. If a future task adds it, document:
 
-(To be filled by the team)
-
----
+* Logger package and initialization location.
+* Required fields for requests and errors.
+* Whether logs are JSON, text, or Echo defaults.
+* How dev/prod log levels are configured.
 
 ## What to Log
 
-<!-- Important events to log -->
-
-(To be filled by the team)
-
----
+* Server startup port.
+* Hot reload enabled state in development.
+* Component template requests only in development mode.
+* Errors encountered while writing HTTP error responses.
 
 ## What NOT to Log
 
-<!-- Sensitive data, PII, secrets -->
+* Do not log form bodies or reply/thread text by default.
+* Do not log secrets, future auth tokens, cookies, or personal data.
+* Do not leave noisy debug output outside `if *isDevelopment` guards.
 
-(To be filled by the team)
+## Common Mistakes
+
+* Avoid adding `fmt.Println` in reusable packages such as `api/forum` or `api/templates`.
+  Return errors and let the route or server boundary decide whether to log.
+* Avoid enabling Echo's request logger while also adding ad hoc request prints;
+  duplicated logs make htmx interactions noisy.
