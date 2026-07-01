@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Check runtime contracts remain unchanged."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Check test/build verification expectations."}

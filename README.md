@@ -18,6 +18,12 @@ For development with browser reload:
 ./dev.sh
 ```
 
+On Windows:
+
+```bat
+dev.bat
+```
+
 ## Build
 
 ```bash
