@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend entry point for project-specific implementation guidelines."}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Relevant when adding forum routes, types, and template-serving helpers."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Relevant for missing template and invalid external path behavior."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "General quality bar for backend implementation and tests."}

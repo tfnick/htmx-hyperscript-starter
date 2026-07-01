@@ -1,32 +1,71 @@
-# htmx-hyperscript-starter
-A full stack starter go project using [HTMX](https://htmx.org/reference/) + [Hyperscript](https://hyperscript.org/reference/) + [Pico.css](https://v2.picocss.com/docs/modal) with browser hot reloading and live reloading
+# HTMX Forum
+
+A lightweight forum project built with Go, Echo, htmx, hyperscript, and Pico.css.
+
+The default HTML templates and static assets are embedded into the Go executable, so a built binary can serve the forum UI without loose template files next to it. You can still point the app at an external template directory to override individual HTML templates without rebuilding.
 
 ## Quick Start
-Assuming you have `go` and [gow](https://github.com/mitranim/gow) installed you can simply do the following: 
-- Click 'Use this template' button above or [click here](https://github.com/new?template_name=htmx-hyperscript-starter&template_owner=zachatrocity)
-- Clone your repo
-- Run `./dev.sh`
 
-## Preview
-![Boilerplate](preview.png)
+```bash
+go run .
+```
+
+Then open `http://localhost:3000`.
+
+For development with browser reload:
+
+```bash
+./dev.sh
+```
+
+## Build
+
+```bash
+go build -o ./tmp/forum .
+./tmp/forum
+```
+
+The executable includes the default files under `public/`.
+
+## Template Overrides
+
+Use `--template-path` to provide external HTML templates. Files in this directory take priority over the embedded templates. Any template not found externally falls back to the embedded version.
+
+```bash
+./tmp/forum --template-path ./templates
+```
+
+Template paths are relative to `public/`. For example, to override the thread list, create:
+
+```text
+templates/components/forum/thread-list.html
+```
+
+Common templates:
+
+- `index.html`
+- `components/forum/thread-list.html`
+- `components/forum/thread-detail.html`
+- `components/forum/error.html`
 
 ## Options
-- `--port`: specficy the port to run on
 
-## Motivation
-There are quite a hodge podge of starter templates for the HTMX stack however most of them were very opinionated on frontend frameworks and many even leveraged the npm eco system which felt yucky to me.
+- `--port`: Port to serve the app from. Defaults to `3000`.
+- `--dev`: Enables browser hot reload. Defaults to `true`.
+- `--template-path`: External HTML template directory. Defaults to embedded templates only.
+
+## Project Shape
+
+- `index.go`: Echo server setup, embedded asset setup, and route mounting.
+- `api/forum`: In-memory forum data and htmx routes.
+- `api/templates`: Template resolver with external-path override support.
+- `public`: Embedded default UI templates and assets.
 
 ## Dependencies
+
 - Go
-- Gow (for live reload of .go code, browser code will still hot reload without gow)
-- [aarol/reload](https://github.com/aarol/reload) for hot reload of the web browser
-
-## Optional Dependencies
-- Pico.css - put whatever css framework you would like in the index.html `head`
-
-## Roadmap
-- ✅ Add api boilerplate for backend API
-- ⬜ Add simple authentication flow
-
-### Repo
-Source of truth for myself is on my [sr.ht repo](https://git.sr.ht/~zachr/htmx-hyperscript-starter) but I keep this up to date for the templating in Github
+- Echo
+- htmx
+- hyperscript
+- Pico.css
+- aarol/reload for browser reload during development

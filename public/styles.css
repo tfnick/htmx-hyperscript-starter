@@ -1,1 +1,154 @@
-/* global styles here */
+:root {
+  --forum-border: #d8dee8;
+  --forum-surface: #ffffff;
+  --forum-muted: #5f6b7a;
+  --forum-accent: #0f766e;
+  --forum-accent-soft: #d9f3ef;
+  --forum-warm: #a16207;
+  --forum-danger: #b42318;
+}
+
+body {
+  min-width: 320px;
+  background: #f6f8fb;
+}
+
+.forum-header {
+  border-bottom: 1px solid var(--forum-border);
+  background: var(--forum-surface);
+}
+
+.forum-header nav {
+  min-height: 64px;
+}
+
+.forum-shell {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.forum-board {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.3fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.thread-list-panel,
+.thread-detail-panel {
+  min-width: 0;
+}
+
+.panel-heading {
+  margin-bottom: 1rem;
+}
+
+.panel-heading h1 {
+  margin-bottom: 0.25rem;
+}
+
+.panel-heading p,
+.thread-detail header p,
+.thread-preview span,
+.reply header span,
+.empty-state p {
+  color: var(--forum-muted);
+}
+
+.new-thread-form,
+.reply-form,
+.thread-detail,
+.thread-preview,
+.reply,
+.empty-state,
+.error-state {
+  border: 1px solid var(--forum-border);
+  border-radius: 8px;
+  background: var(--forum-surface);
+}
+
+.new-thread-form,
+.reply-form {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.thread-preview {
+  padding: 0;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.thread-link {
+  display: grid;
+  width: 100%;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.thread-link:hover,
+.thread-link:focus {
+  background: #eef7f5;
+}
+
+.thread-category {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: var(--forum-accent-soft);
+  color: var(--forum-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.thread-detail,
+.reply,
+.empty-state,
+.error-state {
+  padding: 1rem;
+}
+
+.thread-body {
+  white-space: pre-wrap;
+}
+
+.reply-list h3 {
+  margin-top: 1.25rem;
+}
+
+.reply header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.reply p {
+  margin-bottom: 0;
+  white-space: pre-wrap;
+}
+
+.error-state {
+  border-color: #f2b8b5;
+  color: var(--forum-danger);
+}
+
+@media (max-width: 900px) {
+  .forum-board,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

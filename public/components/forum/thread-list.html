@@ -1,0 +1,14 @@
+{{range .Threads}}
+<article class="thread-preview">
+  <button class="thread-link" hx-get="/api/forum/threads/{{.ID}}" hx-target="#thread-detail" hx-swap="innerHTML">
+    <span class="thread-category">{{.Category}}</span>
+    <strong>{{.Title}}</strong>
+    <span>{{len .Replies}} replies by {{.Author}}</span>
+  </button>
+</article>
+{{else}}
+<article class="empty-state">
+  <h2>No threads yet</h2>
+  <p>Create the first discussion to get the forum moving.</p>
+</article>
+{{end}}

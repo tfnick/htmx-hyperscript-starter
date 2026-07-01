@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend entry point for project-specific check guidelines."}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Check route/type/helper placement against project conventions."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Check error behavior for template lookup and external path handling."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Quality checklist for final verification."}

@@ -1,44 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>HTMX Example</title>
+  <title>HTMX Forum</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css" />
-  <!-- Uncomment if you want pico colors -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.colors.min.css" /> -->
   <script src="https://unpkg.com/htmx.org"></script>
   <script src="https://unpkg.com/htmx.org/dist/ext/path-params.js"></script>
-  <script src="extensions.js"></script>
+  <script src="/extensions.js"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.12/dist/socket.js"></script>
-  <script type="text/hyperscript">
-    def hotsocket
-      socket HotSocket "ws://localhost:3000/reload_ws"
-        on message
-          log "here"  
-          call window.location.reload()
-      end
-    
-    on load 
-      if js window.location.href.contains("localhost")
-        call hotsocket()
-      end
-      
-    catch e
-      log "Error creating hot reload socket"
-    end
+  <script>
+    (() => {
+      const local = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+      if (!local) return;
+
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const socket = new WebSocket(`${protocol}//${window.location.host}/reload_ws`);
+      socket.addEventListener("message", () => window.location.reload());
+    })();
   </script>
 </head>
 
 <body>
-  <header class="container" hx-get="/api/components/layout/header" hx-trigger="load"></header>
-  <main class="container">
-    <section id="modal">
-      <h2>htmx + hyperscript modals.</h2>
-      <button hx-get="/api/components/modal" hx-target="body" hx-swap="beforeend">Open a Modal</button>
+  <header class="forum-header">
+    <nav class="container-fluid">
+      <ul>
+        <li><strong>HTMX Forum</strong></li>
+      </ul>
+      <ul>
+        <li><a href="https://htmx.org/">htmx</a></li>
+        <li><a href="https://hyperscript.org/">hyperscript</a></li>
+        <li><a href="https://v2.picocss.com/">Pico.css</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container forum-shell">
+    <section class="forum-board">
+      <div class="thread-list-panel">
+        <div class="panel-heading">
+          <h1>Forum</h1>
+          <p>Discuss templates, htmx flows, and Go server changes.</p>
+        </div>
+
+        <form class="new-thread-form" hx-post="/api/forum/threads" hx-target="#thread-detail" hx-swap="innerHTML">
+          <label>
+            Title
+            <input type="text" name="title" placeholder="Start a focused discussion" required />
+          </label>
+          <div class="form-row">
+            <label>
+              Author
+              <input type="text" name="author" placeholder="Guest" />
+            </label>
+            <label>
+              Category
+              <input type="text" name="category" placeholder="General" />
+            </label>
+          </div>
+          <label>
+            Message
+            <textarea name="body" rows="4" placeholder="What should the forum talk about?" required></textarea>
+          </label>
+          <button type="submit">Post Thread</button>
+        </form>
+
+        <section id="thread-list" hx-get="/api/forum/threads"
+          hx-trigger="load, forum:thread-created from:body" hx-swap="innerHTML">
+          <p aria-busy="true">Loading threads...</p>
+        </section>
+      </div>
+
+      <section id="thread-detail" class="thread-detail-panel">
+        <article class="empty-state">
+          <h2>Select a thread</h2>
+          <p>Open a discussion from the list or create a new one to see replies here.</p>
+        </article>
+      </section>
     </section>
-    <section id="dashboard" hx-get="/api/components/layout/dashboard" hx-trigger="load"></section>
   </main>
 </body>
 
