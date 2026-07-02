@@ -2,16 +2,14 @@
 <html lang="en">
 
 <head>
-  <title>HTMX Forum</title>
+  <title>NodeSeek-Style Forum</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css" />
   <script src="https://unpkg.com/htmx.org"></script>
-  <script src="https://unpkg.com/htmx.org/dist/ext/path-params.js"></script>
-  <script src="/extensions.js"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-  <script src="https://unpkg.com/hyperscript.org@0.9.12/dist/socket.js"></script>
+  <script src="/extensions.js" defer></script>
   <script>
     (() => {
       const local = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
@@ -28,60 +26,106 @@
   <header class="forum-header">
     <nav class="container-fluid">
       <ul>
-        <li><strong>HTMX Forum</strong></li>
+        <li><strong>Daily Forum</strong></li>
       </ul>
-      <ul>
-        <li><a href="https://htmx.org/">htmx</a></li>
-        <li><a href="https://hyperscript.org/">hyperscript</a></li>
-        <li><a href="https://v2.picocss.com/">Pico.css</a></li>
+      <ul class="forum-nav">
+        <li><button class="link-button" data-action="refresh">Refresh</button></li>
+        <li><span id="auth-summary">Guest</span></li>
       </ul>
     </nav>
   </header>
 
-  <main class="container forum-shell">
-    <section class="forum-board">
-      <div class="thread-list-panel">
-        <div class="panel-heading">
-          <h1>Forum</h1>
-          <p>Discuss templates, htmx flows, and Go server changes.</p>
+  <main class="container-fluid forum-shell">
+    <aside class="forum-sidebar">
+      <section class="sidebar-section">
+        <h2>Categories</h2>
+        <div id="category-list" class="category-list" aria-live="polite"></div>
+      </section>
+
+      <section class="sidebar-section auth-panel">
+        <h2>Account</h2>
+        <div id="logged-out-panel">
+          <form id="login-form" class="compact-form">
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" autocomplete="current-password" required />
+            </label>
+            <button type="submit">Log in</button>
+          </form>
+          <details>
+            <summary>Create account</summary>
+            <form id="register-form" class="compact-form">
+              <label>
+                Name
+                <input name="name" autocomplete="name" required />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+              <label>
+                Password
+                <input name="password" type="password" autocomplete="new-password" minlength="6" required />
+              </label>
+              <button type="submit">Register</button>
+            </form>
+          </details>
+        </div>
+        <div id="logged-in-panel" hidden>
+          <p id="current-user-name" class="current-user"></p>
+          <button id="logout-button" type="button" class="secondary">Log out</button>
+        </div>
+      </section>
+    </aside>
+
+    <section class="forum-main">
+      <section class="board-toolbar">
+        <div>
+          <p class="eyebrow">Category</p>
+          <h1 id="board-title">Daily</h1>
+        </div>
+        <form id="search-form" class="search-form">
+          <input id="search-input" name="q" type="search" placeholder="Search threads" />
+          <select id="sort-select" name="sort" aria-label="Sort threads">
+            <option value="latest_reply">Latest reply</option>
+            <option value="latest_post">Latest post</option>
+          </select>
+          <button type="submit">Search</button>
+        </form>
+      </section>
+
+      <section class="forum-grid">
+        <div class="thread-column">
+          <section id="composer-panel" class="composer-panel" hidden>
+            <form id="thread-form">
+              <input name="title" maxlength="160" placeholder="Start a discussion" required />
+              <textarea name="body" rows="4" placeholder="Share something useful, specific, or curious." required></textarea>
+              <button type="submit">Post thread</button>
+            </form>
+          </section>
+          <div id="thread-list" class="thread-list" aria-live="polite"></div>
+          <div class="pagination-row">
+            <button id="prev-page" type="button" class="secondary">Previous</button>
+            <span id="page-summary">Page 1</span>
+            <button id="next-page" type="button" class="secondary">Next</button>
+          </div>
         </div>
 
-        <form class="new-thread-form" hx-post="/api/forum/threads" hx-target="#thread-detail" hx-swap="innerHTML">
-          <label>
-            Title
-            <input type="text" name="title" placeholder="Start a focused discussion" required />
-          </label>
-          <div class="form-row">
-            <label>
-              Author
-              <input type="text" name="author" placeholder="Guest" />
-            </label>
-            <label>
-              Category
-              <input type="text" name="category" placeholder="General" />
-            </label>
+        <article id="thread-detail" class="thread-detail-panel" aria-live="polite">
+          <div class="empty-state">
+            <h2>Select a thread</h2>
+            <p>Open a discussion from the Daily list to read replies.</p>
           </div>
-          <label>
-            Message
-            <textarea name="body" rows="4" placeholder="What should the forum talk about?" required></textarea>
-          </label>
-          <button type="submit">Post Thread</button>
-        </form>
-
-        <section id="thread-list" hx-get="/api/forum/threads"
-          hx-trigger="load, forum:thread-created from:body" hx-swap="innerHTML">
-          <p aria-busy="true">Loading threads...</p>
-        </section>
-      </div>
-
-      <section id="thread-detail" class="thread-detail-panel">
-        <article class="empty-state">
-          <h2>Select a thread</h2>
-          <p>Open a discussion from the list or create a new one to see replies here.</p>
         </article>
       </section>
     </section>
   </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </body>
 
 </html>

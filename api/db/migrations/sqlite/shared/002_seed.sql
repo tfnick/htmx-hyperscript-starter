@@ -1,0 +1,2 @@
+-- shared/002_seed.sql: Shared seed data.
+-- No seed rows are required while shared has no project-owned tables.

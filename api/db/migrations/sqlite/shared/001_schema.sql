@@ -1,0 +1,2 @@
+-- shared/001_schema.sql: Shared database baseline schema.
+-- The current shared database has no project-owned tables.

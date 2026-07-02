@@ -1,0 +1,30 @@
+{
+  "id": "nodeseek-style-forum-basics",
+  "name": "nodeseek-style-forum-basics",
+  "title": "brainstorm: build nodeseek-style forum basics",
+  "description": "Plan phased implementation of NodeSeek Daily inspired forum basics while reusing existing auth, OAuth, notification and points APIs.",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "backend+frontend",
+  "package": "api/public",
+  "priority": "P2",
+  "creator": "mac",
+  "assignee": "mac",
+  "createdAt": "2026-07-02",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/tasks/07-02-nodeseek-style-forum-basics/prd.md",
+    ".trellis/tasks/07-02-nodeseek-style-forum-basics/research/nodeseek-daily-observations.md",
+    ".trellis/tasks/07-02-nodeseek-style-forum-basics/research/repo-api-capabilities.md"
+  ],
+  "notes": "Created as a planning task only. Implementation should proceed in the PRD step order and avoid rebuilding auth/register/OAuth.",
+  "meta": {}
+}

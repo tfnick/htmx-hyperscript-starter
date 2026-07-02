@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "检查论坛实现是否符合当前后台总体约定。"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "检查论坛代码是否没有跨层导入和 DTO 泄漏。"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "检查论坛迁移、事务、模型访问和通知提交时机。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "检查论坛 API 的错误码、HTTP 状态和响应 envelope。"}
+{"file": ".trellis/spec/backend/logging-guidelines.md", "reason": "检查论坛新增日志是否结构化且不泄漏敏感信息。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "检查测试范围、架构守护和 forbidden patterns。"}
+{"file": ".trellis/tasks/07-02-nodeseek-style-forum-basics/research/nodeseek-daily-observations.md", "reason": "核对实现是否只依赖已确认的 NodeSeek 风格特征。"}
+{"file": ".trellis/tasks/07-02-nodeseek-style-forum-basics/research/repo-api-capabilities.md", "reason": "核对实现是否复用现有 auth/OAuth/notification/points 能力。"}

@@ -6,17 +6,21 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"io/fs"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/aarol/reload"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-
-	"github.com/zachatrocity/htmx-hyperscript-starter/api/forum"
-	user "github.com/zachatrocity/htmx-hyperscript-starter/api/routes"
-	"github.com/zachatrocity/htmx-hyperscript-starter/api/templates"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
+	"github.com/tfnick/go-svelte-starter/api/db"
+	appmiddleware "github.com/tfnick/go-svelte-starter/api/framework/http/middleware"
+	"github.com/tfnick/go-svelte-starter/api/framework/logging"
+	"github.com/tfnick/go-svelte-starter/api/routes"
 )
 
 //go:embed public
@@ -28,72 +32,43 @@ func main() {
 	templatePath := flag.String("template-path", "", "External HTML template path. Files here override embedded templates.")
 	flag.Parse()
 
+	if err := logging.Init(*isDevelopment); err != nil {
+		panic(err)
+	}
+	defer logging.Close()
+
+	manager, err := initDatabases()
+	if err != nil {
+		panic(err)
+	}
+	defer manager.Close()
+
 	router := echo.New()
 	publicFS := echo.MustSubFS(embeddedPublic, "public")
-	templateResolver := templates.NewResolver(publicFS, *templatePath)
 
-	// Add Middlewares Here
-	// e.Use(middleware.Logger())
-	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	router.Use(echomiddleware.CORSWithConfig(echomiddleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", "http://localhost:4000"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
 	}))
 
-	router.HTTPErrorHandler = func(err error, c echo.Context) {
-		if errors.Is(err, templates.ErrInvalidTemplatePath) {
-			if handleErr := c.String(http.StatusBadRequest, "Invalid template path"); handleErr != nil {
-				c.Logger().Error(handleErr)
-			}
-			return
-		}
-		if errors.Is(err, templates.ErrTemplateNotFound) {
-			if handleErr := c.String(http.StatusNotFound, "Template not found"); handleErr != nil {
-				c.Logger().Error(handleErr)
-			}
-			return
-		}
-		router.DefaultHTTPErrorHandler(err, c)
-	}
-
-	router.GET("/", renderTemplate(templateResolver, "index.html", nil))
-
-	// Serve bundled static assets from the executable. HTML is rendered through
-	// the resolver so external template overrides have a single path.
+	router.GET("/", renderTemplate(publicFS, *templatePath, "index.html", nil))
 	router.GET("/styles.css", streamEmbeddedFile(publicFS, "styles.css", "text/css; charset=utf-8"))
 	router.GET("/extensions.js", streamEmbeddedFile(publicFS, "extensions.js", "application/javascript; charset=utf-8"))
 	router.StaticFS("/assets", echo.MustSubFS(publicFS, "assets"))
 
 	api := router.Group("/api")
-	{
-		// htmx components
-		api.GET("/components/*", func(c echo.Context) error {
-			if *isDevelopment {
-				fmt.Println("Component Requested: " + c.Request().URL.Path)
-			}
-			component := strings.ReplaceAll(c.Request().URL.Path, "/api/components/", "")
-			// yet the cache for dev
-			c.Response().Header().Set("Cache-Control", "no-store")
-			return renderTemplate(templateResolver, "components/"+component+".html", nil)(c)
-		})
-		forum.Register(api.Group("/forum"), forum.NewStore(), templateResolver)
-		// all other API requests
-		api.GET("/users/:id", user.GetUser)
-	}
+	api.Use(appmiddleware.RequestLogger(string("api")))
+	registerAPIRoutes(api)
+	registerComponentRoutes(api, publicFS, *templatePath, *isDevelopment)
 
-	// hot reload from aarol/reload
 	if *isDevelopment {
-		// Watch for HTML changes in the public folder to trigger browser reload
 		watchPaths := []string{"public/"}
-		if *templatePath != "" {
+		if strings.TrimSpace(*templatePath) != "" {
 			watchPaths = append(watchPaths, *templatePath)
 		}
-		reload := reload.New(watchPaths...)
-
-		// reload.OnReload = func() {
-		// build templates if that's your thing
-		// }
-		router.GET("/reload_ws", echo.WrapHandler(reload.Handle(http.DefaultServeMux)))
-
+		reloader := reload.New(watchPaths...)
+		router.GET("/reload_ws", echo.WrapHandler(reloader.Handle(http.DefaultServeMux)))
 		fmt.Println("Hot Reload Enabled...")
 	}
 
@@ -101,15 +76,117 @@ func main() {
 	router.Logger.Fatal(router.Start(":" + *port))
 }
 
-func renderTemplate(resolver *templates.Resolver, name string, data any) echo.HandlerFunc {
+func initDatabases() (*db.DBManager, error) {
+	if err := db.EnsureDataDir(); err != nil {
+		return nil, err
+	}
+
+	runtimeDBs, err := db.LoadRuntimeDatabases(db.RuntimeConfigInput{})
+	if err != nil {
+		return nil, err
+	}
+
+	manager := db.NewDBManager()
+	db.DefaultManager = manager
+	if err := manager.OpenSpec(runtimeDBs.App); err != nil {
+		return nil, err
+	}
+	if err := manager.AutoMigrate("app"); err != nil {
+		return nil, err
+	}
+	if err := manager.OpenSpec(runtimeDBs.Shared); err != nil {
+		return nil, err
+	}
+	if err := manager.AutoMigrate("shared"); err != nil {
+		return nil, err
+	}
+	return manager, nil
+}
+
+func registerAPIRoutes(api *echo.Group) {
+	api.POST("/auth/register", routes.Register)
+	api.POST("/auth/login", routes.Login)
+	api.POST("/auth/refresh", routes.RefreshToken)
+	api.POST("/auth/logout", routes.Logout)
+	api.POST("/auth/forgot-password", routes.ForgotPassword)
+	api.POST("/auth/reset-password", routes.ResetPassword)
+	api.GET("/auth/status", routes.GetAuthStatus, appmiddleware.OptionalAuth())
+	api.GET("/auth/me", routes.GetCurrentUser, appmiddleware.RequireAuth())
+	api.GET("/auth/oauth/:provider/start", routes.StartOAuthLogin)
+	api.GET("/auth/oauth/:provider/callback", routes.CompleteOAuthLogin)
+	api.POST("/auth/oauth/exchange", routes.ExchangeOAuthLoginResult)
+
+	routes.RegisterForumRoutes(api)
+
+	api.GET("/notifications", routes.ListNotifications, appmiddleware.RequireAuth())
+	api.DELETE("/notifications", routes.ClearMyNotifications, appmiddleware.RequireAuth())
+	api.GET("/user/points", routes.GetMyPoints, appmiddleware.RequireAuth())
+	api.GET("/user/realtime/ws", routes.UserRealtimeWebSocket, appmiddleware.RequireAuthWithConfig(appmiddleware.AuthConfig{AllowQueryToken: true}))
+}
+
+func registerComponentRoutes(api *echo.Group, publicFS fs.FS, externalRoot string, isDevelopment bool) {
+	api.GET("/components/*", func(c echo.Context) error {
+		if isDevelopment {
+			fmt.Println("Component Requested: " + c.Request().URL.Path)
+		}
+		component := strings.TrimPrefix(c.Request().URL.Path, "/api/components/")
+		c.Response().Header().Set("Cache-Control", "no-store")
+		return renderTemplate(publicFS, externalRoot, "components/"+component+".html", nil)(c)
+	})
+}
+
+func renderTemplate(files fs.FS, externalRoot string, name string, data any) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var out bytes.Buffer
-		if err := resolver.Execute(&out, name, data); err != nil {
+		body, err := loadTemplate(files, externalRoot, name)
+		if err != nil {
+			return err
+		}
+		tpl, err := template.New(path.Base(name)).Parse(string(body))
+		if err != nil {
 			return err
 		}
 
+		var out bytes.Buffer
+		if err := tpl.Execute(&out, data); err != nil {
+			return err
+		}
 		return c.HTML(http.StatusOK, out.String())
 	}
+}
+
+func loadTemplate(files fs.FS, externalRoot string, name string) ([]byte, error) {
+	clean, err := cleanTemplateName(name)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "invalid template path")
+	}
+	if strings.TrimSpace(externalRoot) != "" {
+		externalPath := filepath.Join(externalRoot, filepath.FromSlash(clean))
+		if body, err := os.ReadFile(externalPath); err == nil {
+			return body, nil
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return nil, err
+		}
+	}
+	body, err := fs.ReadFile(files, clean)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil, echo.NewHTTPError(http.StatusNotFound, "template not found")
+		}
+		return nil, err
+	}
+	return body, nil
+}
+
+func cleanTemplateName(name string) (string, error) {
+	name = strings.TrimSpace(strings.ReplaceAll(name, "\\", "/"))
+	if name == "" || strings.HasPrefix(name, "/") || !strings.HasSuffix(name, ".html") {
+		return "", fmt.Errorf("invalid template path")
+	}
+	clean := path.Clean(name)
+	if clean == "." || strings.HasPrefix(clean, "../") || clean == ".." || clean != name {
+		return "", fmt.Errorf("invalid template path")
+	}
+	return clean, nil
 }
 
 func streamEmbeddedFile(files fs.FS, name, contentType string) echo.HandlerFunc {

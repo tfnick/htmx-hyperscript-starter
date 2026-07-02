@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "后端实现必须遵守当前 backend 总体架构、质量检查和语言约定。"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "论坛模块需要新增 routes/usecase/models/db 代码，必须遵守分层边界。"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "论坛需要新增持久化表、迁移、事务和 after-commit 通知行为。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "论坛 API 需要复用 usecase error code 和内部 response envelope。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "论坛实现需要覆盖架构守护、DTO 边界和测试要求。"}
+{"file": ".trellis/tasks/07-02-nodeseek-style-forum-basics/research/nodeseek-daily-observations.md", "reason": "记录 NodeSeek Daily 参考页面的可确认产品特征和访问限制。"}
+{"file": ".trellis/tasks/07-02-nodeseek-style-forum-basics/research/repo-api-capabilities.md", "reason": "记录现有 auth、OAuth、notification、points、page view 等可复用能力。"}

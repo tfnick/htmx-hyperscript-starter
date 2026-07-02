@@ -1,0 +1,116 @@
+package routes_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/labstack/echo/v4"
+	fwcontext "github.com/tfnick/go-svelte-starter/api/framework/http/context"
+	"github.com/tfnick/go-svelte-starter/api/models"
+	"github.com/tfnick/go-svelte-starter/api/routes"
+)
+
+func TestCreateForumThreadReturnsInternalEnvelope(t *testing.T) {
+	setupRouteTestDBs(t)
+
+	router := echo.New()
+	body := bytes.NewBufferString(`{"category_slug":"daily","title":"Route thread","body":"Route-created forum content."}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads", body)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	fwcontext.SetCurrentUser(c, &models.User{
+		ID:       forumRouteSeedUserID,
+		Name:     "Route User",
+		IsActive: 1,
+	})
+
+	if err := routes.CreateForumThread(c); err != nil {
+		t.Fatalf("create forum thread: %v", err)
+	}
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("expected status %d, got %d body=%s", http.StatusCreated, rec.Code, rec.Body.String())
+	}
+
+	var envelope struct {
+		Success bool                             `json:"success"`
+		Data    routes.ForumThreadDetailResponse `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &envelope); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !envelope.Success || envelope.Data.ID == "" || envelope.Data.Category.Slug != "daily" {
+		t.Fatalf("unexpected forum response: %s", rec.Body.String())
+	}
+}
+
+func TestCreateForumThreadRequiresCurrentUser(t *testing.T) {
+	setupRouteTestDBs(t)
+
+	router := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads", bytes.NewBufferString(`{"category_slug":"daily","title":"No user","body":"No user."}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+
+	if err := routes.CreateForumThread(c); err != nil {
+		t.Fatalf("create forum thread: %v", err)
+	}
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected status %d, got %d", http.StatusUnauthorized, rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), `"message":"not logged in"`) {
+		t.Fatalf("expected unauthorized envelope, got %s", rec.Body.String())
+	}
+}
+
+func TestListForumThreadsSupportsCategorySearchAndSort(t *testing.T) {
+	setupRouteTestDBs(t)
+	seedRouteForumThread(t)
+
+	router := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/forum/categories/daily/threads?q=launch&sort=latest_post", nil)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	c.SetParamNames("slug")
+	c.SetParamValues("daily")
+
+	if err := routes.ListForumThreads(c); err != nil {
+		t.Fatalf("list forum threads: %v", err)
+	}
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d body=%s", http.StatusOK, rec.Code, rec.Body.String())
+	}
+
+	var envelope struct {
+		Success bool                        `json:"success"`
+		Data    routes.ForumThreadsResponse `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &envelope); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !envelope.Success || len(envelope.Data.Items) != 1 || envelope.Data.Items[0].Title != "Route launch thread" {
+		t.Fatalf("unexpected thread list response: %s", rec.Body.String())
+	}
+}
+
+func seedRouteForumThread(t *testing.T) {
+	t.Helper()
+
+	router := echo.New()
+	body := bytes.NewBufferString(`{"category_slug":"daily","title":"Route launch thread","body":"A launch thread searchable from routes."}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads", body)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	fwcontext.SetCurrentUser(c, &models.User{ID: forumRouteSeedUserID, Name: "Route User", IsActive: 1})
+	if err := routes.CreateForumThread(c); err != nil {
+		t.Fatalf("seed forum thread: %v", err)
+	}
+}
+
+const forumRouteSeedUserID = "019ea0c1-0001-7000-8000-000000000002"

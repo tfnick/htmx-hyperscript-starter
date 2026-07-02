@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "后端规范入口，需要反映当前 api 目录的真实架构和开发前检查项。"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "记录 routes/usecase/models/db/framework/providers 的目录边界和职责。"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "记录当前 db manager、迁移、事务和 after-commit hook 约定。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "记录 usecase 错误码、内部 API/open-api envelope 和 HTTP 映射。"}
+{"file": ".trellis/spec/backend/logging-guidelines.md", "reason": "记录 zerolog 初始化、请求日志字段和敏感信息限制。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "记录架构守护测试、DTO 边界和质量门槛。"}
