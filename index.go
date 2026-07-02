@@ -52,8 +52,7 @@ func main() {
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
 	}))
 
-	router.GET("/", renderTemplate(publicFS, *templatePath, "index.html", nil))
-	router.GET("/categories/:slug", renderTemplate(publicFS, *templatePath, "index.html", nil))
+	registerFrontendRoutes(router, publicFS, *templatePath)
 	router.GET("/styles.css", streamEmbeddedFile(publicFS, "styles.css", "text/css; charset=utf-8"))
 	router.GET("/extensions.js", streamEmbeddedFile(publicFS, "extensions.js", "application/javascript; charset=utf-8"))
 	router.StaticFS("/assets", echo.MustSubFS(publicFS, "assets"))
@@ -75,6 +74,13 @@ func main() {
 
 	fmt.Printf("Listening on port %s\n", *port)
 	router.Logger.Fatal(router.Start(":" + *port))
+}
+
+func registerFrontendRoutes(router *echo.Echo, publicFS fs.FS, templatePath string) {
+	indexHandler := renderTemplate(publicFS, templatePath, "index.html", nil)
+	router.GET("/", indexHandler)
+	router.GET("/categories/:slug", indexHandler)
+	router.GET("/post-*", indexHandler)
 }
 
 func initDatabases() (*db.DBManager, error) {

@@ -1,10 +1,14 @@
 package main
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 	"testing/fstest"
+
+	"github.com/labstack/echo/v4"
 )
 
 func TestLoadTemplateFallsBackToEmbeddedTemplate(t *testing.T) {
@@ -49,5 +53,25 @@ func TestLoadTemplateRejectsUnsafeTemplateNames(t *testing.T) {
 				t.Fatalf("expected %q to be rejected", name)
 			}
 		})
+	}
+}
+
+func TestPostRouteRendersIndexTemplate(t *testing.T) {
+	files := fstest.MapFS{
+		"index.html": {Data: []byte("embedded")},
+	}
+	router := echo.New()
+	registerFrontendRoutes(router, files, "")
+
+	req := httptest.NewRequest(http.MethodGet, "/post-thread-id-1", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected post route to render index, got status %d", rec.Code)
+	}
+	if rec.Body.String() != "embedded" {
+		t.Fatalf("expected embedded index body, got %q", rec.Body.String())
 	}
 }

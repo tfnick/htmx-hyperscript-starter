@@ -24,6 +24,7 @@ const forumState = {
   refreshToken: localStorage.getItem("forum_refresh_token") || "",
   currentUser: null,
   selectedThreadID: "",
+  selectedPostPage: postRouteFromPath()?.page || 1,
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -115,13 +116,22 @@ function bindForumEvents() {
   });
 
   window.addEventListener("popstate", () => {
+    const postRoute = postRouteFromPath();
     forumState.category = categoryFromPath();
     forumState.page = 1;
-    forumState.selectedThreadID = "";
+    forumState.selectedThreadID = postRoute?.threadID || "";
+    forumState.selectedPostPage = postRoute?.page || 1;
     renderCategories();
     updateBoardHeading();
     resetThreadDetail();
     loadThreads();
+    if (postRoute) {
+      loadThread(postRoute.threadID, {
+        postPage: postRoute.page,
+        updatePath: false,
+        refreshList: false,
+      });
+    }
   });
 }
 
@@ -145,6 +155,13 @@ async function loadCategories() {
     renderCategories();
     updateBoardHeading();
     loadThreads();
+    const postRoute = postRouteFromPath();
+    if (postRoute) {
+      loadThread(postRoute.threadID, {
+        postPage: postRoute.page,
+        updatePath: false,
+      });
+    }
   } catch (error) {
     forumState.categories = mergeBoardDefinitions([]);
     renderCategories();
@@ -225,7 +242,7 @@ function renderThreads(data) {
   } else {
     $("#thread-list").innerHTML = items.map(renderThreadRow).join("");
     document.querySelectorAll("[data-thread-id]").forEach((button) => {
-      button.addEventListener("click", () => loadThread(button.dataset.threadId));
+      button.addEventListener("click", () => loadThread(button.dataset.threadId, { postPage: 1 }));
     });
   }
 
@@ -273,11 +290,19 @@ function renderEmptyThreads(title, message) {
   $("#next-page").disabled = true;
 }
 
-async function loadThread(threadID) {
+async function loadThread(threadID, options = {}) {
+  const postPage = normalizePostPage(options.postPage);
+  if (options.updatePath !== false) {
+    window.history.pushState({}, "", postPath(threadID, postPage));
+  }
+
   try {
     const thread = await apiFetch(`/api/forum/threads/${encodeURIComponent(threadID)}`, { auth: false });
+    forumState.selectedPostPage = postPage;
     renderThreadDetail(thread);
-    loadThreads();
+    if (options.refreshList !== false) {
+      loadThreads();
+    }
   } catch (error) {
     showToast(error.message, true);
   }
@@ -405,6 +430,24 @@ function currentCategory() {
 function categoryFromPath() {
   const match = window.location.pathname.match(/^\/categories\/([^/]+)\/?$/);
   return match ? decodeURIComponent(match[1]) : "";
+}
+
+function postRouteFromPath() {
+  const match = window.location.pathname.match(/^\/post-(.+)-(\d+)\/?$/);
+  if (!match) return null;
+  return {
+    threadID: decodeURIComponent(match[1]),
+    page: normalizePostPage(match[2]),
+  };
+}
+
+function postPath(threadID, page = 1) {
+  return `/post-${encodeURIComponent(threadID)}-${normalizePostPage(page)}`;
+}
+
+function normalizePostPage(page) {
+  const number = Number.parseInt(page, 10);
+  return Number.isFinite(number) && number > 0 ? number : 1;
 }
 
 function resetThreadDetail() {
