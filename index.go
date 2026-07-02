@@ -53,6 +53,7 @@ func main() {
 	}))
 
 	router.GET("/", renderTemplate(publicFS, *templatePath, "index.html", nil))
+	router.GET("/categories/:slug", renderTemplate(publicFS, *templatePath, "index.html", nil))
 	router.GET("/styles.css", streamEmbeddedFile(publicFS, "styles.css", "text/css; charset=utf-8"))
 	router.GET("/extensions.js", streamEmbeddedFile(publicFS, "extensions.js", "application/javascript; charset=utf-8"))
 	router.StaticFS("/assets", echo.MustSubFS(publicFS, "assets"))

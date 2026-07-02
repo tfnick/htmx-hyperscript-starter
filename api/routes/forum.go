@@ -104,6 +104,7 @@ type ForumPostRequest struct {
 func RegisterForumRoutes(api *echo.Group) {
 	forum := api.Group("/forum")
 	forum.GET("/categories", GetForumCategories)
+	forum.GET("/threads", ListForumThreads)
 	forum.GET("/categories/:slug/threads", ListForumThreads)
 	forum.GET("/threads/:id", GetForumThread)
 

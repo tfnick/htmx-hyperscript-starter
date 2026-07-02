@@ -1,9 +1,25 @@
+const boardDefinitions = [
+  { slug: "daily", label: "日常", icon: "U" },
+  { slug: "tech", label: "技术", icon: "Σ" },
+  { slug: "info", label: "情报", icon: "Q" },
+  { slug: "review", label: "测评", icon: "☃" },
+  { slug: "trade", label: "交易", icon: "$" },
+  { slug: "carpool", label: "拼车", icon: "▣" },
+  { slug: "promotion", label: "推广", icon: "≋" },
+  { slug: "life", label: "生活", icon: "♡" },
+  { slug: "dev", label: "Dev", icon: ">" },
+  { slug: "image", label: "贴图", icon: "◎" },
+  { slug: "exposure", label: "曝光", icon: "¤" },
+  { slug: "sandbox", label: "沙盒", icon: "△" },
+];
+
 const forumState = {
-  category: "daily",
+  category: categoryFromPath(),
+  categories: [],
   sort: "latest_reply",
   search: "",
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
   token: localStorage.getItem("forum_access_token") || "",
   refreshToken: localStorage.getItem("forum_refresh_token") || "",
   currentUser: null,
@@ -14,18 +30,34 @@ const $ = (selector) => document.querySelector(selector);
 
 document.addEventListener("DOMContentLoaded", () => {
   bindForumEvents();
+  renderStaticBoardLinks();
   refreshAuthState();
   loadCategories();
-  loadThreads();
 });
 
 function bindForumEvents() {
   $("#search-form").addEventListener("submit", (event) => {
     event.preventDefault();
     forumState.search = $("#search-input").value.trim();
-    forumState.sort = $("#sort-select").value;
     forumState.page = 1;
     loadThreads();
+  });
+
+  $("#sort-select").addEventListener("change", (event) => {
+    forumState.sort = event.currentTarget.value;
+    forumState.page = 1;
+    syncSortTabs();
+    loadThreads();
+  });
+
+  document.querySelectorAll("[data-sort-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      forumState.sort = button.dataset.sortTab;
+      $("#sort-select").value = forumState.sort;
+      forumState.page = 1;
+      syncSortTabs();
+      loadThreads();
+    });
   });
 
   $("#prev-page").addEventListener("click", () => {
@@ -43,10 +75,10 @@ function bindForumEvents() {
     event.preventDefault();
     const form = event.currentTarget;
     const payload = Object.fromEntries(new FormData(form).entries());
-    payload.category_slug = forumState.category;
+    payload.category_slug = forumState.category || "daily";
     const thread = await apiFetch("/api/forum/threads", { method: "POST", body: payload });
     form.reset();
-    showToast("Thread posted");
+    showToast("主题已发布");
     forumState.page = 1;
     await loadThreads();
     renderThreadDetail(thread);
@@ -58,7 +90,7 @@ function bindForumEvents() {
     const auth = await apiFetch("/api/auth/login", { method: "POST", body: payload, auth: false });
     storeAuth(auth);
     event.currentTarget.reset();
-    showToast("Logged in");
+    showToast("已登录");
     refreshAuthState();
   });
 
@@ -68,7 +100,7 @@ function bindForumEvents() {
     const auth = await apiFetch("/api/auth/register", { method: "POST", body: payload, auth: false });
     storeAuth(auth);
     event.currentTarget.reset();
-    showToast("Account created");
+    showToast("账号已创建");
     refreshAuthState();
   });
 
@@ -79,39 +111,91 @@ function bindForumEvents() {
     localStorage.removeItem("forum_access_token");
     localStorage.removeItem("forum_refresh_token");
     renderAuthState();
-    showToast("Logged out");
+    showToast("已退出登录");
   });
 
-  document.querySelector('[data-action="refresh"]').addEventListener("click", () => {
+  window.addEventListener("popstate", () => {
+    forumState.category = categoryFromPath();
+    forumState.page = 1;
+    forumState.selectedThreadID = "";
+    renderCategories();
+    updateBoardHeading();
+    resetThreadDetail();
     loadThreads();
-    if (forumState.selectedThreadID) {
-      loadThread(forumState.selectedThreadID);
-    }
+  });
+}
+
+function renderStaticBoardLinks() {
+  $("#top-board-links").innerHTML = boardDefinitions.slice(0, 8).map((board) => `
+    <button type="button" data-top-board="${escapeAttr(board.slug)}">${escapeHTML(board.label)}</button>
+  `).join("");
+  document.querySelectorAll("[data-top-board]").forEach((button) => {
+    button.addEventListener("click", () => selectCategory(button.dataset.topBoard));
   });
 }
 
 async function loadCategories() {
   try {
     const data = await apiFetch("/api/forum/categories", { auth: false });
-    const list = $("#category-list");
-    list.innerHTML = data.items.map((category) => `
-      <button class="category-button" type="button" data-category="${escapeAttr(category.slug)}" aria-current="${category.slug === forumState.category}">
-        <span>${escapeHTML(category.name)}</span>
-        <small>${escapeHTML(category.slug)}</small>
-      </button>
-    `).join("");
-    list.querySelectorAll("[data-category]").forEach((button) => {
-      button.addEventListener("click", () => {
-        forumState.category = button.dataset.category;
-        forumState.page = 1;
-        $("#board-title").textContent = button.textContent.trim().split(/\s+/)[0] || "Forum";
-        loadCategories();
-        loadThreads();
-      });
-    });
+    forumState.categories = mergeBoardDefinitions(data.items || []);
+    if (forumState.category && !forumState.categories.some((category) => category.slug === forumState.category)) {
+      forumState.category = "";
+      window.history.replaceState({}, "", "/");
+    }
+    renderCategories();
+    updateBoardHeading();
+    loadThreads();
   } catch (error) {
+    forumState.categories = mergeBoardDefinitions([]);
+    renderCategories();
+    updateBoardHeading();
+    renderEmptyThreads("板块加载失败", error.message);
     showToast(error.message, true);
   }
+}
+
+function mergeBoardDefinitions(apiCategories) {
+  const bySlug = new Map(apiCategories.map((category) => [category.slug, category]));
+  return boardDefinitions.map((board) => {
+    const apiCategory = bySlug.get(board.slug);
+    return {
+      ...board,
+      ...apiCategory,
+      label: apiCategory?.name || board.label,
+      enabled: apiCategory ? apiCategory.enabled !== false : false,
+    };
+  });
+}
+
+function renderCategories() {
+  $("#category-list").innerHTML = forumState.categories.map((category) => `
+    <button class="category-button" type="button" data-category="${escapeAttr(category.slug)}" aria-current="${category.slug === forumState.category}">
+      <span class="category-icon">${escapeHTML(category.icon)}</span>
+      <span>${escapeHTML(category.label)}</span>
+    </button>
+  `).join("");
+
+  document.querySelectorAll("[data-category]").forEach((button) => {
+    button.addEventListener("click", () => selectCategory(button.dataset.category));
+  });
+
+  document.querySelectorAll("[data-top-board]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.topBoard === forumState.category);
+  });
+}
+
+function selectCategory(slug, options = {}) {
+  if (forumState.category === slug) return;
+  forumState.category = slug;
+  forumState.page = 1;
+  forumState.selectedThreadID = "";
+  if (options.updatePath !== false) {
+    window.history.pushState({}, "", `/categories/${encodeURIComponent(slug)}`);
+  }
+  renderCategories();
+  updateBoardHeading();
+  resetThreadDetail();
+  loadThreads();
 }
 
 async function loadThreads() {
@@ -123,39 +207,70 @@ async function loadThreads() {
   if (forumState.search) params.set("q", forumState.search);
 
   try {
-    const data = await apiFetch(`/api/forum/categories/${encodeURIComponent(forumState.category)}/threads?${params}`, { auth: false });
+    const endpoint = forumState.category
+      ? `/api/forum/categories/${encodeURIComponent(forumState.category)}/threads?${params}`
+      : `/api/forum/threads?${params}`;
+    const data = await apiFetch(endpoint, { auth: false });
     renderThreads(data);
   } catch (error) {
+    renderEmptyThreads("暂时没有内容", "这个板块还没有可展示的主题，或者数据正在迁移中。");
     showToast(error.message, true);
   }
 }
 
 function renderThreads(data) {
-  const list = $("#thread-list");
-  if (!data.items.length) {
-    list.innerHTML = `<div class="empty-state"><h2>No threads yet</h2><p>Start the first Daily discussion.</p></div>`;
+  const items = data.items || [];
+  if (!items.length) {
+    renderEmptyThreads("还没有主题", "成为这个板块第一个发起讨论的人。");
   } else {
-    list.innerHTML = data.items.map((thread) => `
-      <button class="thread-row" type="button" data-thread-id="${escapeAttr(thread.id)}" aria-current="${thread.id === forumState.selectedThreadID}">
-        <h2>${escapeHTML(thread.title)}</h2>
-        <div class="thread-meta">
-          <span>${escapeHTML(thread.author.name || "Unknown")}</span>
-          <span>${formatTime(thread.created_at)}</span>
-          <span>${thread.reply_count} replies</span>
-          <span>${thread.view_count} views</span>
-        </div>
-        <p class="thread-excerpt">${escapeHTML(thread.body_excerpt)}</p>
-      </button>
-    `).join("");
-    list.querySelectorAll("[data-thread-id]").forEach((button) => {
+    $("#thread-list").innerHTML = items.map(renderThreadRow).join("");
+    document.querySelectorAll("[data-thread-id]").forEach((button) => {
       button.addEventListener("click", () => loadThread(button.dataset.threadId));
     });
   }
 
   const page = data.pagination || {};
-  $("#page-summary").textContent = `Page ${page.page || forumState.page}`;
+  $("#page-summary").textContent = buildPageSummary(page);
   $("#prev-page").disabled = !page.has_previous;
   $("#next-page").disabled = !page.has_next;
+}
+
+function renderThreadRow(thread) {
+  const category = thread.category || currentCategory();
+  const lastPoster = thread.last_post_author?.name || thread.author?.name || "Unknown";
+  const active = thread.id === forumState.selectedThreadID;
+  return `
+    <button class="thread-row" type="button" data-thread-id="${escapeAttr(thread.id)}" aria-current="${active}">
+      <span class="avatar" style="--avatar-hue: ${avatarHue(thread.author?.name || thread.title)}">${avatarInitial(thread.author?.name || thread.title)}</span>
+      <span class="thread-content">
+        <span class="thread-title-line">
+          ${thread.is_pinned ? `<span class="status-badge">置顶</span>` : ""}
+          ${thread.is_locked ? `<span class="status-badge danger">只读</span>` : ""}
+          <strong>${escapeHTML(thread.title)}</strong>
+        </span>
+        <span class="thread-meta">
+          <span>♙ ${escapeHTML(thread.author?.name || "Unknown")}</span>
+          <span>◉ ${formatNumber(thread.view_count)}</span>
+          <span>▱ ${formatNumber(thread.reply_count)}</span>
+          <span>↯ ${escapeHTML(lastPoster)}</span>
+          <span>${formatRelativeTime(thread.last_post_at || thread.created_at)}</span>
+        </span>
+      </span>
+      <span class="thread-category">${escapeHTML(category.name || category.label || category.slug)}</span>
+    </button>
+  `;
+}
+
+function renderEmptyThreads(title, message) {
+  $("#thread-list").innerHTML = `
+    <article class="empty-state">
+      <h2>${escapeHTML(title)}</h2>
+      <p>${escapeHTML(message)}</p>
+    </article>
+  `;
+  $("#page-summary").textContent = String(forumState.page);
+  $("#prev-page").disabled = forumState.page <= 1;
+  $("#next-page").disabled = true;
 }
 
 async function loadThread(threadID) {
@@ -173,17 +288,17 @@ function renderThreadDetail(thread) {
   const canReply = Boolean(forumState.currentUser);
   $("#thread-detail").innerHTML = `
     <section class="thread-detail-card">
-      <p class="eyebrow">${escapeHTML(thread.category.name || thread.category.slug)}</p>
+      <p class="eyebrow">${escapeHTML(thread.category?.name || thread.category?.slug || "Forum")}</p>
       <h2>${escapeHTML(thread.title)}</h2>
       <div class="detail-meta">
-        ${escapeHTML(thread.author.name || "Unknown")} · ${formatTime(thread.created_at)} · ${thread.reply_count} replies · ${thread.view_count} views
+        ${escapeHTML(thread.author?.name || "Unknown")} · ${formatRelativeTime(thread.created_at)} · ${thread.reply_count} 回复 · ${thread.view_count} 浏览
       </div>
       <p class="thread-body">${escapeHTML(thread.body)}</p>
       <section class="reply-list">
-        <h3>Replies</h3>
-        ${thread.posts.length ? thread.posts.map(renderReply).join("") : `<div class="notice-row">No replies yet.</div>`}
+        <h3>回复</h3>
+        ${thread.posts?.length ? thread.posts.map(renderReply).join("") : `<div class="notice-row">暂无回复。</div>`}
       </section>
-      ${canReply ? renderReplyForm(thread.id) : `<div class="notice-row">Log in to reply.</div>`}
+      ${canReply ? renderReplyForm(thread.id) : `<div class="notice-row">登录后参与回复。</div>`}
     </section>
   `;
   const form = $("#reply-form");
@@ -193,7 +308,7 @@ function renderThreadDetail(thread) {
       const payload = Object.fromEntries(new FormData(form).entries());
       const updated = await apiFetch(`/api/forum/threads/${encodeURIComponent(thread.id)}/posts`, { method: "POST", body: payload });
       form.reset();
-      showToast("Reply posted");
+      showToast("回复已发布");
       renderThreadDetail(updated);
       loadThreads();
     });
@@ -204,8 +319,8 @@ function renderReply(reply) {
   return `
     <article class="reply-row">
       <header>
-        <strong>${escapeHTML(reply.author.name || "Unknown")}</strong>
-        <span class="reply-meta">${formatTime(reply.created_at)}</span>
+        <strong>${escapeHTML(reply.author?.name || "Unknown")}</strong>
+        <span class="reply-meta">${formatRelativeTime(reply.created_at)}</span>
       </header>
       <p class="reply-body">${escapeHTML(reply.body)}</p>
     </article>
@@ -215,8 +330,8 @@ function renderReply(reply) {
 function renderReplyForm(threadID) {
   return `
     <form id="reply-form" class="reply-form" data-thread-id="${escapeAttr(threadID)}">
-      <textarea name="body" rows="3" placeholder="Add a useful reply" required></textarea>
-      <button type="submit">Reply</button>
+      <textarea name="body" rows="3" placeholder="添加一条有帮助的回复" required></textarea>
+      <button type="submit">回复</button>
     </form>
   `;
 }
@@ -241,8 +356,7 @@ function renderAuthState() {
   $("#logged-out-panel").hidden = loggedIn;
   $("#logged-in-panel").hidden = !loggedIn;
   $("#composer-panel").hidden = !loggedIn;
-  $("#auth-summary").textContent = loggedIn ? forumState.currentUser.name : "Guest";
-  $("#current-user-name").textContent = loggedIn ? `${forumState.currentUser.name} is signed in` : "";
+  $("#current-user-name").textContent = loggedIn ? `${forumState.currentUser.name} 已登录` : "";
 }
 
 async function apiFetch(url, options = {}) {
@@ -273,6 +387,35 @@ function storeAuth(auth) {
   localStorage.setItem("forum_refresh_token", forumState.refreshToken);
 }
 
+function syncSortTabs() {
+  document.querySelectorAll("[data-sort-tab]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.sortTab === forumState.sort);
+  });
+}
+
+function updateBoardHeading() {
+  const category = currentCategory();
+  $("#board-title").textContent = forumState.category ? (category?.label || category?.name || "论坛") : "全部";
+}
+
+function currentCategory() {
+  return forumState.categories.find((category) => category.slug === forumState.category) || boardDefinitions[0];
+}
+
+function categoryFromPath() {
+  const match = window.location.pathname.match(/^\/categories\/([^/]+)\/?$/);
+  return match ? decodeURIComponent(match[1]) : "";
+}
+
+function resetThreadDetail() {
+  $("#thread-detail").innerHTML = `
+    <div class="empty-state compact">
+      <h2>选择一个主题</h2>
+      <p>打开帖子后，可以在这里查看正文与回复。</p>
+    </div>
+  `;
+}
+
 function showToast(message, error = false) {
   const toast = $("#toast");
   toast.textContent = message;
@@ -284,17 +427,41 @@ function showToast(message, error = false) {
   }, 3200);
 }
 
-function formatTime(value) {
+function buildPageSummary(page) {
+  const current = page.page || forumState.page;
+  if (!page.total_pages || page.total_pages <= 1) return String(current);
+  return `${current} / ${page.total_pages}`;
+}
+
+function avatarInitial(value) {
+  const text = String(value || "?").trim();
+  return escapeHTML(text.slice(0, 1).toUpperCase());
+}
+
+function avatarHue(value) {
+  return Array.from(String(value || "")).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 360;
+}
+
+function formatNumber(value) {
+  const number = Number(value || 0);
+  if (number >= 10000) return `${Math.floor(number / 1000) / 10}w`;
+  if (number >= 1000) return `${Math.floor(number / 100) / 10}k`;
+  return String(number);
+}
+
+function formatRelativeTime(value) {
   if (!value) return "";
   const normalized = value.includes("T") ? value : value.replace(" ", "T") + "Z";
   const date = new Date(normalized);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  const diff = Date.now() - date.getTime();
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  if (diff < minute) return "刚刚";
+  if (diff < hour) return `${Math.floor(diff / minute)}min ago`;
+  if (diff < day) return `${Math.floor(diff / hour)}h ago`;
+  return `${Math.floor(diff / day)}days ago`;
 }
 
 function escapeHTML(value) {

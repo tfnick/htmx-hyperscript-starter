@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
   <title>NodeSeek-Style Forum</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="/styles.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css" />
   <script src="https://unpkg.com/htmx.org"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
   <script src="/extensions.js" defer></script>
@@ -23,106 +22,124 @@
 </head>
 
 <body>
-  <header class="forum-header">
-    <nav class="container-fluid">
-      <ul>
-        <li><strong>Daily Forum</strong></li>
-      </ul>
-      <ul class="forum-nav">
-        <li><button class="link-button" data-action="refresh">Refresh</button></li>
-        <li><span id="auth-summary">Guest</span></li>
-      </ul>
+  <header class="site-header">
+    <nav class="topbar" aria-label="主导航">
+      <a class="brand" href="/" aria-label="NodeSeek 首页">
+        <span class="brand-mark">◉</span>
+        <span class="brand-name">NodeSeek</span>
+        <span class="brand-beta">beta</span>
+      </a>
+
+      <div id="top-board-links" class="top-board-links" aria-label="热门板块"></div>
+
+      <form id="search-form" class="top-search">
+        <input id="search-input" name="q" type="search" placeholder="Search" autocomplete="off" />
+        <button type="submit" aria-label="搜索">⌕</button>
+      </form>
     </nav>
   </header>
 
-  <main class="container-fluid forum-shell">
-    <aside class="forum-sidebar">
-      <section class="sidebar-section">
-        <h2>Categories</h2>
-        <div id="category-list" class="category-list" aria-live="polite"></div>
-      </section>
-
-      <section class="sidebar-section auth-panel">
-        <h2>Account</h2>
-        <div id="logged-out-panel">
-          <form id="login-form" class="compact-form">
-            <label>
-              Email
-              <input name="email" type="email" autocomplete="email" required />
-            </label>
-            <label>
-              Password
-              <input name="password" type="password" autocomplete="current-password" required />
-            </label>
-            <button type="submit">Log in</button>
-          </form>
-          <details>
-            <summary>Create account</summary>
-            <form id="register-form" class="compact-form">
-              <label>
-                Name
-                <input name="name" autocomplete="name" required />
-              </label>
-              <label>
-                Email
-                <input name="email" type="email" autocomplete="email" required />
-              </label>
-              <label>
-                Password
-                <input name="password" type="password" autocomplete="new-password" minlength="6" required />
-              </label>
-              <button type="submit">Register</button>
-            </form>
-          </details>
-        </div>
-        <div id="logged-in-panel" hidden>
-          <p id="current-user-name" class="current-user"></p>
-          <button id="logout-button" type="button" class="secondary">Log out</button>
-        </div>
-      </section>
+  <main class="page-shell">
+    <aside class="category-rail" aria-label="论坛板块">
+      <div id="category-list" class="category-list" aria-live="polite"></div>
     </aside>
 
-    <section class="forum-main">
-      <section class="board-toolbar">
-        <div>
-          <p class="eyebrow">Category</p>
-          <h1 id="board-title">Daily</h1>
+    <section class="feed-panel" aria-labelledby="board-title">
+      <header class="feed-toolbar">
+        <div class="feed-tabs" aria-label="帖子筛选">
+          <button class="tab-button is-active" type="button" data-sort-tab="latest_reply">新评论</button>
+          <button class="tab-button" type="button" data-sort-tab="latest_post">新帖子</button>
         </div>
-        <form id="search-form" class="search-form">
-          <input id="search-input" name="q" type="search" placeholder="Search threads" />
-          <select id="sort-select" name="sort" aria-label="Sort threads">
-            <option value="latest_reply">Latest reply</option>
-            <option value="latest_post">Latest post</option>
-          </select>
-          <button type="submit">Search</button>
+
+        <div class="feed-pager" aria-label="分页">
+          <button id="prev-page" type="button" class="pager-button">‹</button>
+          <span id="page-summary" class="page-summary">1</span>
+          <button id="next-page" type="button" class="pager-button">›</button>
+        </div>
+      </header>
+
+      <section class="board-heading">
+        <div>
+          <p class="eyebrow">Board</p>
+          <h1 id="board-title">日常</h1>
+        </div>
+        <select id="sort-select" class="sort-select" name="sort" aria-label="排序">
+          <option value="latest_reply">最新评论</option>
+          <option value="latest_post">最新发布</option>
+        </select>
+      </section>
+
+      <section id="composer-panel" class="composer-panel" hidden>
+        <form id="thread-form" class="thread-form">
+          <input name="title" maxlength="160" placeholder="发布一个新主题" required />
+          <textarea name="body" rows="4" placeholder="写下具体、有用、值得讨论的内容。" required></textarea>
+          <button type="submit">发布主题</button>
         </form>
       </section>
 
-      <section class="forum-grid">
-        <div class="thread-column">
-          <section id="composer-panel" class="composer-panel" hidden>
-            <form id="thread-form">
-              <input name="title" maxlength="160" placeholder="Start a discussion" required />
-              <textarea name="body" rows="4" placeholder="Share something useful, specific, or curious." required></textarea>
-              <button type="submit">Post thread</button>
-            </form>
-          </section>
-          <div id="thread-list" class="thread-list" aria-live="polite"></div>
-          <div class="pagination-row">
-            <button id="prev-page" type="button" class="secondary">Previous</button>
-            <span id="page-summary">Page 1</span>
-            <button id="next-page" type="button" class="secondary">Next</button>
+      <div id="thread-list" class="thread-list" aria-live="polite"></div>
+
+      <article id="thread-detail" class="thread-detail-panel" aria-live="polite">
+        <div class="empty-state compact">
+          <h2>选择一个主题</h2>
+          <p>打开帖子后，可以在这里查看正文与回复。</p>
+        </div>
+      </article>
+    </section>
+
+    <aside class="right-sidebar" aria-label="社区功能">
+      <section class="side-card auth-card">
+        <div id="logged-out-panel">
+          <h2>你好啊，陌生人！</h2>
+          <p>我的朋友，看起来你是新来的，如果想参与到讨论中，点击下面的按钮！</p>
+          <div class="auth-actions">
+            <details class="auth-details">
+              <summary>登录</summary>
+              <form id="login-form" class="compact-form">
+                <input name="email" type="email" placeholder="Email" autocomplete="email" required />
+                <input name="password" type="password" placeholder="Password" autocomplete="current-password" required />
+                <button type="submit">登录</button>
+              </form>
+            </details>
+            <details class="auth-details">
+              <summary>注册</summary>
+              <form id="register-form" class="compact-form">
+                <input name="name" placeholder="Name" autocomplete="name" required />
+                <input name="email" type="email" placeholder="Email" autocomplete="email" required />
+                <input name="password" type="password" placeholder="Password" autocomplete="new-password" minlength="6" required />
+                <button type="submit">注册</button>
+              </form>
+            </details>
           </div>
         </div>
 
-        <article id="thread-detail" class="thread-detail-panel" aria-live="polite">
-          <div class="empty-state">
-            <h2>Select a thread</h2>
-            <p>Open a discussion from the Daily list to read replies.</p>
-          </div>
-        </article>
+        <div id="logged-in-panel" hidden>
+          <h2>欢迎回来</h2>
+          <p id="current-user-name" class="current-user"></p>
+          <button id="logout-button" type="button" class="secondary-action">退出登录</button>
+        </div>
       </section>
-    </section>
+
+      <section class="side-card quick-card">
+        <h2>♟ 快捷功能区</h2>
+        <a href="#thread-list">推荐阅读</a>
+        <a href="#thread-detail">管理记录</a>
+        <a href="#composer-panel">幸运抽奖</a>
+        <a href="#thread-list">邀请好友</a>
+        <a href="#thread-list">合作商家</a>
+        <a href="#thread-list">友站链接</a>
+      </section>
+
+      <section class="sponsor-stack" aria-label="赞助展示">
+        <div class="sponsor-card cloud"><strong>DreamCloud</strong><span>亚太高防云</span></div>
+        <div class="sponsor-card vps"><strong>双ISP原生住宅VPS</strong><span>服务全解锁</span></div>
+        <div class="sponsor-card cdn"><strong>日本香港高防无敌节点</strong><span>无视 DDOS 打死退款</span></div>
+        <div class="sponsor-card dark"><strong>EVOXT</strong><span>同样价格，我们快 2.5 倍！</span></div>
+        <div class="sponsor-card line"><strong>Seek.li</strong><span>社区服务导航</span></div>
+        <div class="sponsor-card quality"><strong>NodeQuality</strong><span>网络质量工具</span></div>
+        <div class="sponsor-card script"><strong>NodeScriptKit</strong><span>脚本与工具箱</span></div>
+      </section>
+    </aside>
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>

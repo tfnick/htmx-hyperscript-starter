@@ -70,7 +70,7 @@ func TestCreateForumThreadRequiresCurrentUser(t *testing.T) {
 
 func TestListForumThreadsSupportsCategorySearchAndSort(t *testing.T) {
 	setupRouteTestDBs(t)
-	seedRouteForumThread(t)
+	seedRouteForumThread(t, "daily", "Route launch thread", "A launch thread searchable from routes.")
 
 	router := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/forum/categories/daily/threads?q=launch&sort=latest_post", nil)
@@ -98,11 +98,48 @@ func TestListForumThreadsSupportsCategorySearchAndSort(t *testing.T) {
 	}
 }
 
-func seedRouteForumThread(t *testing.T) {
+func TestListForumThreadsWithoutCategoryReturnsAggregateFeed(t *testing.T) {
+	setupRouteTestDBs(t)
+	seedRouteForumThread(t, "daily", "Daily route thread", "A daily thread for the aggregate feed.")
+	seedRouteForumThread(t, "tech", "Tech route thread", "A tech thread for the aggregate feed.")
+
+	router := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/forum/threads?sort=latest_post", nil)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+
+	if err := routes.ListForumThreads(c); err != nil {
+		t.Fatalf("list aggregate forum threads: %v", err)
+	}
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d body=%s", http.StatusOK, rec.Code, rec.Body.String())
+	}
+
+	var envelope struct {
+		Success bool                        `json:"success"`
+		Data    routes.ForumThreadsResponse `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &envelope); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !envelope.Success || len(envelope.Data.Items) != 2 {
+		t.Fatalf("expected aggregate thread list, got %s", rec.Body.String())
+	}
+
+	slugs := map[string]bool{}
+	for _, item := range envelope.Data.Items {
+		slugs[item.Category.Slug] = true
+	}
+	if !slugs["daily"] || !slugs["tech"] {
+		t.Fatalf("expected daily and tech threads in aggregate feed, got %#v", slugs)
+	}
+}
+
+func seedRouteForumThread(t *testing.T, categorySlug string, title string, bodyText string) {
 	t.Helper()
 
 	router := echo.New()
-	body := bytes.NewBufferString(`{"category_slug":"daily","title":"Route launch thread","body":"A launch thread searchable from routes."}`)
+	body := bytes.NewBufferString(`{"category_slug":"` + categorySlug + `","title":"` + title + `","body":"` + bodyText + `"}`)
 	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads", body)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
