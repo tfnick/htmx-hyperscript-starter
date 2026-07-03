@@ -46,6 +46,43 @@ func TestCreateForumThreadReturnsInternalEnvelope(t *testing.T) {
 	if !envelope.Success || envelope.Data.ID == "" || envelope.Data.Category.Slug != "daily" {
 		t.Fatalf("unexpected forum response: %s", rec.Body.String())
 	}
+	if envelope.Data.Visibility != "public" {
+		t.Fatalf("expected default public visibility, got %#v", envelope.Data)
+	}
+}
+
+func TestCreateForumThreadAcceptsPrivateVisibility(t *testing.T) {
+	setupRouteTestDBs(t)
+
+	router := echo.New()
+	body := bytes.NewBufferString(`{"category_slug":"daily","title":"Private route thread","body":"Private route-created forum content.","visibility":"private"}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads", body)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	fwcontext.SetCurrentUser(c, &models.User{
+		ID:       forumRouteSeedUserID,
+		Name:     "Route User",
+		IsActive: 1,
+	})
+
+	if err := routes.CreateForumThread(c); err != nil {
+		t.Fatalf("create private forum thread: %v", err)
+	}
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("expected status %d, got %d body=%s", http.StatusCreated, rec.Code, rec.Body.String())
+	}
+
+	var envelope struct {
+		Success bool                             `json:"success"`
+		Data    routes.ForumThreadDetailResponse `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &envelope); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !envelope.Success || envelope.Data.Visibility != "private" {
+		t.Fatalf("unexpected private forum response: %s", rec.Body.String())
+	}
 }
 
 func TestCreateForumThreadRequiresCurrentUser(t *testing.T) {
@@ -135,11 +172,54 @@ func TestListForumThreadsWithoutCategoryReturnsAggregateFeed(t *testing.T) {
 	}
 }
 
+func TestPrivateForumThreadRouteVisibility(t *testing.T) {
+	setupRouteTestDBs(t)
+	privateThreadID := seedRouteForumThreadWithVisibility(t, "daily", "Private route note", "Route private body.", "private")
+
+	router := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/forum/threads/"+privateThreadID, nil)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	c.SetParamNames("id")
+	c.SetParamValues(privateThreadID)
+
+	if err := routes.GetForumThread(c); err != nil {
+		t.Fatalf("get private forum thread anonymously: %v", err)
+	}
+	if rec.Code != http.StatusNotFound {
+		t.Fatalf("expected anonymous private thread lookup status %d, got %d body=%s", http.StatusNotFound, rec.Code, rec.Body.String())
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/api/forum/threads/"+privateThreadID, nil)
+	rec = httptest.NewRecorder()
+	c = router.NewContext(req, rec)
+	c.SetParamNames("id")
+	c.SetParamValues(privateThreadID)
+	fwcontext.SetCurrentUser(c, &models.User{ID: forumRouteSeedUserID, Name: "Route User", IsActive: 1})
+
+	if err := routes.GetForumThread(c); err != nil {
+		t.Fatalf("get private forum thread as author: %v", err)
+	}
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected author private thread lookup status %d, got %d body=%s", http.StatusOK, rec.Code, rec.Body.String())
+	}
+}
+
 func seedRouteForumThread(t *testing.T, categorySlug string, title string, bodyText string) {
+	t.Helper()
+	_ = seedRouteForumThreadWithVisibility(t, categorySlug, title, bodyText, "")
+}
+
+func seedRouteForumThreadWithVisibility(t *testing.T, categorySlug string, title string, bodyText string, visibility string) string {
 	t.Helper()
 
 	router := echo.New()
-	body := bytes.NewBufferString(`{"category_slug":"` + categorySlug + `","title":"` + title + `","body":"` + bodyText + `"}`)
+	payload := `{"category_slug":"` + categorySlug + `","title":"` + title + `","body":"` + bodyText + `"`
+	if visibility != "" {
+		payload += `,"visibility":"` + visibility + `"`
+	}
+	payload += `}`
+	body := bytes.NewBufferString(payload)
 	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads", body)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
@@ -148,6 +228,16 @@ func seedRouteForumThread(t *testing.T, categorySlug string, title string, bodyT
 	if err := routes.CreateForumThread(c); err != nil {
 		t.Fatalf("seed forum thread: %v", err)
 	}
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("seed forum thread status %d body=%s", rec.Code, rec.Body.String())
+	}
+	var envelope struct {
+		Data routes.ForumThreadDetailResponse `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &envelope); err != nil {
+		t.Fatalf("decode seeded forum thread: %v", err)
+	}
+	return envelope.Data.ID
 }
 
 const forumRouteSeedUserID = "019ea0c1-0001-7000-8000-000000000002"

@@ -17,6 +17,9 @@ const (
 	ForumSortLatestPost  = "latest_post"
 
 	ForumNotificationSourceType = "forum_thread"
+
+	ForumThreadVisibilityPublic  = models.ForumThreadVisibilityPublic
+	ForumThreadVisibilityPrivate = models.ForumThreadVisibilityPrivate
 )
 
 type ForumCategoryCo struct {
@@ -42,6 +45,7 @@ type ForumThreadSummaryCo struct {
 	Title          string
 	BodyExcerpt    string
 	Status         string
+	Visibility     string
 	IsPinned       bool
 	IsLocked       bool
 	ViewCount      int
@@ -70,6 +74,7 @@ type ForumThreadDetailCo struct {
 	Title          string
 	Body           string
 	Status         string
+	Visibility     string
 	IsPinned       bool
 	IsLocked       bool
 	ViewCount      int
@@ -118,6 +123,7 @@ type CreateForumThreadCmd struct {
 	CategorySlug string
 	Title        string
 	Body         string
+	Visibility   string
 }
 
 type ReplyForumThreadCmd struct {
@@ -200,18 +206,21 @@ func GetForumThreadDetail(ctx fwusecase.Context, qry ForumThreadDetailQry) (Foru
 		return ForumThreadDetailCo{}, err
 	}
 
-	if qry.CountView {
-		if err := models.IncrementForumThreadViewCount(ctx.Std(), threadID); err != nil {
-			return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeInternal, "failed to update thread views", err)
-		}
-	}
-
 	thread, err := models.GetForumThreadDetail(ctx.Std(), threadID)
 	if err != nil {
 		if errors.Is(err, modelerror.ErrNotFound) {
 			return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeNotFound, "thread not found", err)
 		}
 		return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeInternal, "failed to load thread", err)
+	}
+	if !canViewForumThread(ctx, thread.AuthorID, thread.Visibility) {
+		return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeNotFound, "thread not found", nil)
+	}
+	if qry.CountView {
+		if err := models.IncrementForumThreadViewCount(ctx.Std(), threadID); err != nil {
+			return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeInternal, "failed to update thread views", err)
+		}
+		thread.ViewCount++
 	}
 
 	posts, err := models.ListForumPosts(ctx.Std(), models.ForumPostQuery{
@@ -239,6 +248,10 @@ func CreateForumThread(ctx fwusecase.Context, cmd CreateForumThreadCmd) (ForumTh
 	if err != nil {
 		return ForumThreadDetailCo{}, err
 	}
+	visibility, err := normalizeForumThreadVisibility(cmd.Visibility)
+	if err != nil {
+		return ForumThreadDetailCo{}, err
+	}
 
 	var threadID string
 	err = fwusecase.WithAppTx(ctx, func(txCtx fwusecase.Context) error {
@@ -254,6 +267,7 @@ func CreateForumThread(ctx fwusecase.Context, cmd CreateForumThreadCmd) (ForumTh
 			AuthorID:   strings.TrimSpace(txCtx.Actor.UserID),
 			Title:      title,
 			Body:       body,
+			Visibility: visibility,
 		}
 		if err := models.InsertForumThread(txCtx.Std(), thread); err != nil {
 			return fwusecase.E(fwusecase.CodeInternal, "failed to create thread", err)
@@ -290,6 +304,9 @@ func ReplyForumThread(ctx fwusecase.Context, cmd ReplyForumThreadCmd) (ForumThre
 			return fwusecase.E(fwusecase.CodeInternal, "failed to load thread", err)
 		}
 		if thread.Status != models.ForumContentStatusPublished {
+			return fwusecase.E(fwusecase.CodeNotFound, "thread not found", nil)
+		}
+		if !canViewForumThread(txCtx, thread.AuthorID, thread.Visibility) {
 			return fwusecase.E(fwusecase.CodeNotFound, "thread not found", nil)
 		}
 		if thread.IsLocked == 1 {
@@ -472,6 +489,17 @@ func normalizeForumThreadInput(title string, body string) (string, string, error
 	return title, normalizedBody, nil
 }
 
+func normalizeForumThreadVisibility(value string) (string, error) {
+	switch strings.TrimSpace(value) {
+	case "", ForumThreadVisibilityPublic:
+		return ForumThreadVisibilityPublic, nil
+	case ForumThreadVisibilityPrivate:
+		return ForumThreadVisibilityPrivate, nil
+	default:
+		return "", fwusecase.E(fwusecase.CodeValidation, "thread visibility is invalid", nil)
+	}
+}
+
 func normalizeForumBody(value string, label string) (string, error) {
 	value = strings.TrimSpace(value)
 	if value == "" {
@@ -498,6 +526,19 @@ func requireForumContentManager(ctx fwusecase.Context, authorID string) error {
 		return nil
 	}
 	return fwusecase.E(fwusecase.CodeForbidden, "cannot manage another user's content", nil)
+}
+
+func canViewForumThread(ctx fwusecase.Context, authorID string, visibility string) bool {
+	if visibility != ForumThreadVisibilityPrivate {
+		return true
+	}
+	if !ctx.Actor.Authenticated {
+		return false
+	}
+	if ctx.Actor.IsAdmin {
+		return true
+	}
+	return strings.TrimSpace(ctx.Actor.UserID) == strings.TrimSpace(authorID)
 }
 
 func shouldNotifyForumThreadAuthor(ctx fwusecase.Context, authorID string) bool {
@@ -548,6 +589,7 @@ func forumThreadSummaryCoFromModel(thread models.ForumThreadListItem) ForumThrea
 		Title:          thread.Title,
 		BodyExcerpt:    forumExcerpt(thread.Body),
 		Status:         thread.Status,
+		Visibility:     thread.Visibility,
 		IsPinned:       thread.IsPinned == 1,
 		IsLocked:       thread.IsLocked == 1,
 		ViewCount:      thread.ViewCount,
@@ -580,6 +622,7 @@ func forumThreadDetailCoFromModel(thread models.ForumThreadDetail, posts []model
 		Title:          thread.Title,
 		Body:           thread.Body,
 		Status:         thread.Status,
+		Visibility:     thread.Visibility,
 		IsPinned:       thread.IsPinned == 1,
 		IsLocked:       thread.IsLocked == 1,
 		ViewCount:      thread.ViewCount,

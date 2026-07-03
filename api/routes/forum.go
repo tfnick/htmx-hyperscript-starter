@@ -34,6 +34,7 @@ type ForumThreadSummaryResponse struct {
 	Title          string                `json:"title"`
 	BodyExcerpt    string                `json:"body_excerpt"`
 	Status         string                `json:"status"`
+	Visibility     string                `json:"visibility"`
 	IsPinned       bool                  `json:"is_pinned"`
 	IsLocked       bool                  `json:"is_locked"`
 	ViewCount      int                   `json:"view_count"`
@@ -62,6 +63,7 @@ type ForumThreadDetailResponse struct {
 	Title          string                `json:"title"`
 	Body           string                `json:"body"`
 	Status         string                `json:"status"`
+	Visibility     string                `json:"visibility"`
 	IsPinned       bool                  `json:"is_pinned"`
 	IsLocked       bool                  `json:"is_locked"`
 	ViewCount      int                   `json:"view_count"`
@@ -90,6 +92,7 @@ type CreateForumThreadRequest struct {
 	CategorySlug string `json:"category_slug"`
 	Title        string `json:"title"`
 	Body         string `json:"body"`
+	Visibility   string `json:"visibility"`
 }
 
 type UpdateForumThreadRequest struct {
@@ -103,6 +106,7 @@ type ForumPostRequest struct {
 
 func RegisterForumRoutes(api *echo.Group) {
 	forum := api.Group("/forum")
+	forum.Use(middleware.OptionalAuth())
 	forum.GET("/categories", GetForumCategories)
 	forum.GET("/threads", ListForumThreads)
 	forum.GET("/categories/:slug/threads", ListForumThreads)
@@ -166,6 +170,7 @@ func CreateForumThread(c echo.Context) error {
 		CategorySlug: req.CategorySlug,
 		Title:        req.Title,
 		Body:         req.Body,
+		Visibility:   req.Visibility,
 	})
 	if err != nil {
 		return httpresponse.InternalUsecaseError(c, err)
@@ -253,6 +258,7 @@ func bindCreateForumThreadRequest(c echo.Context) (CreateForumThreadRequest, err
 	req.CategorySlug = c.FormValue("category_slug")
 	req.Title = c.FormValue("title")
 	req.Body = c.FormValue("body")
+	req.Visibility = c.FormValue("visibility")
 	return req, nil
 }
 
@@ -316,6 +322,7 @@ func ToForumThreadSummaryResponse(thread usecase.ForumThreadSummaryCo) ForumThre
 		Title:          thread.Title,
 		BodyExcerpt:    thread.BodyExcerpt,
 		Status:         thread.Status,
+		Visibility:     thread.Visibility,
 		IsPinned:       thread.IsPinned,
 		IsLocked:       thread.IsLocked,
 		ViewCount:      thread.ViewCount,
@@ -370,6 +377,7 @@ func ToForumThreadDetailResponse(thread usecase.ForumThreadDetailCo) ForumThread
 		Title:          thread.Title,
 		Body:           thread.Body,
 		Status:         thread.Status,
+		Visibility:     thread.Visibility,
 		IsPinned:       thread.IsPinned,
 		IsLocked:       thread.IsLocked,
 		ViewCount:      thread.ViewCount,

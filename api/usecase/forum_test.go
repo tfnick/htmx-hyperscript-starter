@@ -42,6 +42,9 @@ func TestCreateForumThreadAndReplyNotifyThreadAuthor(t *testing.T) {
 	if thread.ID == "" || thread.Category.Slug != "daily" || thread.Author.ID != forumSeedUserID {
 		t.Fatalf("unexpected created thread: %#v", thread)
 	}
+	if thread.Visibility != usecase.ForumThreadVisibilityPublic {
+		t.Fatalf("expected default public visibility, got %q", thread.Visibility)
+	}
 
 	replyCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedOtherID, "Wang Wu", false)
 	replied, err := usecase.ReplyForumThread(replyCtx, usecase.ReplyForumThreadCmd{
@@ -71,6 +74,67 @@ func TestCreateForumThreadAndReplyNotifyThreadAuthor(t *testing.T) {
 	}
 	if notificationCount != 1 {
 		t.Fatalf("expected one forum reply notification, got %d", notificationCount)
+	}
+}
+
+func TestPrivateForumThreadVisibility(t *testing.T) {
+	setupUsecaseOrderTxDB(t)
+
+	authorCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedUserID, "Owner", false)
+	privateThread, err := usecase.CreateForumThread(authorCtx, usecase.CreateForumThreadCmd{
+		CategorySlug: "daily",
+		Title:        "Private planning note",
+		Body:         "Only the author and admins should be able to read this thread.",
+		Visibility:   usecase.ForumThreadVisibilityPrivate,
+	})
+	if err != nil {
+		t.Fatalf("create private forum thread: %v", err)
+	}
+	if privateThread.Visibility != usecase.ForumThreadVisibilityPrivate {
+		t.Fatalf("expected private visibility, got %#v", privateThread)
+	}
+
+	anonymousCtx := fwusecase.NewContext(t.Context(), fwusecase.SurfaceInternalAPI)
+	listed, err := usecase.ListForumThreads(anonymousCtx, usecase.ForumThreadsQry{CategorySlug: "daily"})
+	if err != nil {
+		t.Fatalf("list forum threads: %v", err)
+	}
+	for _, item := range listed.Items {
+		if item.ID == privateThread.ID {
+			t.Fatalf("private thread should not appear in public list: %#v", listed.Items)
+		}
+	}
+
+	if _, err := usecase.GetForumThreadDetail(anonymousCtx, usecase.ForumThreadDetailQry{ID: privateThread.ID}); fwusecase.CodeOf(err) != fwusecase.CodeNotFound {
+		t.Fatalf("expected anonymous private thread lookup to be not found, got %v", err)
+	}
+
+	otherCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedOtherID, "Other", false)
+	if _, err := usecase.GetForumThreadDetail(otherCtx, usecase.ForumThreadDetailQry{ID: privateThread.ID}); fwusecase.CodeOf(err) != fwusecase.CodeNotFound {
+		t.Fatalf("expected other user private thread lookup to be not found, got %v", err)
+	}
+	if _, err := usecase.ReplyForumThread(otherCtx, usecase.ReplyForumThreadCmd{
+		ThreadID: privateThread.ID,
+		Body:     "This reply should not be allowed.",
+	}); fwusecase.CodeOf(err) != fwusecase.CodeNotFound {
+		t.Fatalf("expected other user private thread reply to be not found, got %v", err)
+	}
+
+	authorDetail, err := usecase.GetForumThreadDetail(authorCtx, usecase.ForumThreadDetailQry{ID: privateThread.ID})
+	if err != nil {
+		t.Fatalf("author get private forum thread: %v", err)
+	}
+	if authorDetail.ID != privateThread.ID {
+		t.Fatalf("expected author to read private thread, got %#v", authorDetail)
+	}
+
+	adminCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedAdminID, "Admin", true)
+	adminDetail, err := usecase.GetForumThreadDetail(adminCtx, usecase.ForumThreadDetailQry{ID: privateThread.ID})
+	if err != nil {
+		t.Fatalf("admin get private forum thread: %v", err)
+	}
+	if adminDetail.ID != privateThread.ID {
+		t.Fatalf("expected admin to read private thread, got %#v", adminDetail)
 	}
 }
 

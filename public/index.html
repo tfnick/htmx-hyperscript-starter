@@ -71,14 +71,6 @@
         </select>
       </section>
 
-      <section id="composer-panel" class="composer-panel" hidden>
-        <form id="thread-form" class="thread-form">
-          <input name="title" maxlength="160" placeholder="发布一个新主题" required />
-          <textarea name="body" rows="4" placeholder="写下具体、有用、值得讨论的内容。" required></textarea>
-          <button type="submit">发布主题</button>
-        </form>
-      </section>
-
       <div id="thread-list" class="thread-list" aria-live="polite"></div>
 
     </section>
@@ -97,14 +89,17 @@
         <div id="logged-in-panel" hidden>
           <h2>欢迎回来</h2>
           <p id="current-user-name" class="current-user"></p>
-          <button id="logout-button" type="button" class="secondary-action">退出登录</button>
+          <div class="auth-actions">
+            <a id="create-post-link" class="primary-action" href="/new-post">发帖</a>
+            <button id="logout-button" type="button" class="secondary-action">退出登录</button>
+          </div>
         </div>
       </section>
 
       <section class="side-card quick-card">
         <h2>♟ 快捷功能区</h2>
         <a href="#thread-list">推荐阅读</a>
-        <a href="#composer-panel">幸运抽奖</a>
+        <a href="/new-post">发帖</a>
         <a href="#thread-list">邀请好友</a>
         <a href="#thread-list">合作商家</a>
         <a href="#thread-list">友站链接</a>

@@ -346,6 +346,7 @@ button {
 }
 
 .thread-form,
+.new-thread-form,
 .compact-form,
 .reply-form {
   display: grid;
@@ -354,6 +355,9 @@ button {
 
 .thread-form input,
 .thread-form textarea,
+.new-thread-form input,
+.new-thread-form select,
+.new-thread-form textarea,
 .compact-form input,
 .reply-form textarea {
   width: 100%;
@@ -365,6 +369,7 @@ button {
 }
 
 .thread-form button,
+.new-thread-form button,
 .compact-form button,
 .reply-form button,
 .login-form button,
@@ -384,6 +389,7 @@ button {
 }
 
 .thread-form button:hover,
+.new-thread-form button:hover,
 .compact-form button:hover,
 .reply-form button:hover,
 .login-form button:hover,
@@ -463,6 +469,94 @@ button {
 
 .login-register[open] summary {
   margin-bottom: 12px;
+}
+
+.new-post-shell {
+  width: min(860px, calc(100vw - 36px));
+  margin: 28px auto 52px;
+}
+
+.new-post-panel {
+  padding: 24px 28px 30px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow);
+}
+
+.new-post-panel h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.new-post-panel > p {
+  margin: 10px 0 16px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.new-post-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.new-thread-form {
+  gap: 14px;
+}
+
+.new-thread-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.new-thread-form input,
+.new-thread-form select {
+  min-height: 38px;
+}
+
+.new-thread-form textarea {
+  min-height: 210px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.visibility-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.visibility-options legend {
+  padding: 0 5px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.visibility-options label {
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
 .thread-list {

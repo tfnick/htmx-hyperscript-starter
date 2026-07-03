@@ -24,6 +24,7 @@
 - 阅读 [Directory Structure](./directory-structure.md)，确认目标代码应该落在哪一层。
 - 阅读 [Database Guidelines](./database-guidelines.md)，如果涉及 SQL、迁移、事务或 after-commit hook。
 - 阅读 [Error Handling](./error-handling.md)，如果新增 route、usecase error、鉴权或 open-api 行为。
+- 阅读 [Forum Guidelines](./forum-guidelines.md)，如果修改论坛主题、分类、回复、列表、详情或可见性行为。
 - 阅读 [Logging Guidelines](./logging-guidelines.md)，如果新增请求日志、后台任务日志或外部集成日志。
 - 阅读 [Quality Guidelines](./quality-guidelines.md)，确认测试、架构守护和响应 envelope 要求。
 
@@ -54,6 +55,7 @@
 | [Directory Structure](./directory-structure.md) | 后台目录职责、分层边界、DTO 和 provider 归属 | Filled |
 | [Database Guidelines](./database-guidelines.md) | DB manager、迁移、事务、模型访问和测试规则 | Filled |
 | [Error Handling](./error-handling.md) | usecase 错误码、内部 API/open-api 响应 envelope 和 HTTP 映射 | Filled |
+| [Forum Guidelines](./forum-guidelines.md) | 论坛主题、分类、回复、列表、详情和可见性契约 | Filled |
 | [Logging Guidelines](./logging-guidelines.md) | zerolog 初始化、请求日志字段、组件日志和脱敏要求 | Filled |
 | [Quality Guidelines](./quality-guidelines.md) | gofmt/test/build、架构守护、测试范围和 forbidden patterns | Filled |
 

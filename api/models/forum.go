@@ -15,6 +15,9 @@ import (
 const (
 	ForumContentStatusPublished = "published"
 	ForumContentStatusDeleted   = "deleted"
+
+	ForumThreadVisibilityPublic  = "public"
+	ForumThreadVisibilityPrivate = "private"
 )
 
 type ForumCategory struct {
@@ -35,6 +38,7 @@ type ForumThread struct {
 	Title          string `db:"title"`
 	Body           string `db:"body"`
 	Status         string `db:"status"`
+	Visibility     string `db:"visibility"`
 	IsPinned       int    `db:"is_pinned"`
 	IsLocked       int    `db:"is_locked"`
 	ViewCount      int    `db:"view_count"`
@@ -57,6 +61,7 @@ type ForumThreadListItem struct {
 	Title              string `db:"title"`
 	Body               string `db:"body"`
 	Status             string `db:"status"`
+	Visibility         string `db:"visibility"`
 	IsPinned           int    `db:"is_pinned"`
 	IsLocked           int    `db:"is_locked"`
 	ViewCount          int    `db:"view_count"`
@@ -79,6 +84,7 @@ type ForumThreadDetail struct {
 	Title              string `db:"title"`
 	Body               string `db:"body"`
 	Status             string `db:"status"`
+	Visibility         string `db:"visibility"`
 	IsPinned           int    `db:"is_pinned"`
 	IsLocked           int    `db:"is_locked"`
 	ViewCount          int    `db:"view_count"`
@@ -177,6 +183,7 @@ func CountForumThreads(ctx context.Context, query ForumThreadQuery) (int, error)
 		FROM forum_threads t
 		JOIN forum_categories c ON c.id = t.category_id
 		WHERE t.status = 'published'
+			AND t.visibility = 'public'
 			#[ AND c.slug = :category_slug ]
 			#[ AND (LOWER(t.title) LIKE LOWER(:search) ESCAPE '\' OR LOWER(t.body) LIKE LOWER(:search) ESCAPE '\') ]
 	`, query); err != nil {
@@ -198,6 +205,7 @@ func ListForumThreads(ctx context.Context, query ForumThreadQuery, sort string) 
 
 	sqlText := forumThreadListSelectSQL() + `
 		WHERE t.status = 'published'
+			AND t.visibility = 'public'
 			#[ AND c.slug = :category_slug ]
 			#[ AND (LOWER(t.title) LIKE LOWER(:search) ESCAPE '\' OR LOWER(t.body) LIKE LOWER(:search) ESCAPE '\') ]
 		ORDER BY ` + orderSQL + `
@@ -217,6 +225,9 @@ func InsertForumThread(ctx context.Context, thread *ForumThread) error {
 	if thread.Status == "" {
 		thread.Status = ForumContentStatusPublished
 	}
+	if thread.Visibility == "" {
+		thread.Visibility = ForumThreadVisibilityPublic
+	}
 	now := timefmt.NowSQLiteDateTime()
 	thread.CreatedAt = now
 	thread.UpdatedAt = now
@@ -227,11 +238,11 @@ func InsertForumThread(ctx context.Context, thread *ForumThread) error {
 	}
 	if _, err := d.ExecNamed(`
 		INSERT INTO forum_threads (
-			id, category_id, author_id, title, body, status, is_pinned, is_locked,
+			id, category_id, author_id, title, body, status, visibility, is_pinned, is_locked,
 			view_count, reply_count, last_post_id, last_post_user_id, last_post_at,
 			created_at, updated_at
 		) VALUES (
-			:id, :category_id, :author_id, :title, :body, :status, :is_pinned, :is_locked,
+			:id, :category_id, :author_id, :title, :body, :status, :visibility, :is_pinned, :is_locked,
 			:view_count, :reply_count, :last_post_id, :last_post_user_id, NULLIF(:last_post_at, ''),
 			:created_at, :updated_at
 		)
@@ -487,7 +498,7 @@ func rebuildForumThreadActivity(ctx context.Context, postID string) error {
 
 func forumThreadRawSelectSQL() string {
 	return `
-		SELECT id, category_id, author_id, title, body, status, is_pinned, is_locked,
+		SELECT id, category_id, author_id, title, body, status, visibility, is_pinned, is_locked,
 			view_count, reply_count, last_post_id, last_post_user_id,
 			COALESCE(last_post_at, '') AS last_post_at,
 			COALESCE(deleted_at, '') AS deleted_at,
@@ -517,6 +528,7 @@ func forumThreadListSelectSQL() string {
 			t.title,
 			t.body,
 			t.status,
+			t.visibility,
 			t.is_pinned,
 			t.is_locked,
 			t.view_count,

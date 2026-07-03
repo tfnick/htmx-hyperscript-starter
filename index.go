@@ -81,11 +81,13 @@ func registerFrontendRoutes(router *echo.Echo, publicFS fs.FS, templatePath stri
 	postHandler := renderTemplate(publicFS, templatePath, "post.html", nil)
 	loginHandler := renderTemplate(publicFS, templatePath, "login.html", nil)
 	registerHandler := renderTemplate(publicFS, templatePath, "register.html", nil)
+	newPostHandler := renderTemplate(publicFS, templatePath, "new-post.html", nil)
 	router.GET("/", indexHandler)
 	router.GET("/categories/:slug", indexHandler)
 	router.GET("/post-*", postHandler)
 	router.GET("/login", loginHandler)
 	router.GET("/register", registerHandler)
+	router.GET("/new-post", newPostHandler)
 }
 
 func initDatabases() (*db.DBManager, error) {

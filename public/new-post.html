@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <title>NodeSeek-Style Forum</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="/styles.css" rel="stylesheet" />
+  <script src="https://unpkg.com/htmx.org"></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+  <script src="/extensions.js" defer></script>
+  <script>
+    (() => {
+      const local = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+      if (!local) return;
+
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const socket = new WebSocket(`${protocol}//${window.location.host}/reload_ws`);
+      socket.addEventListener("message", () => window.location.reload());
+    })();
+  </script>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="topbar" aria-label="主导航">
+      <a class="brand" href="/" aria-label="NodeSeek 首页">
+        <span class="brand-mark">◆</span>
+        <span class="brand-name">NodeSeek</span>
+        <span class="brand-beta">beta</span>
+      </a>
+
+      <div id="top-board-links" class="top-board-links" aria-label="热门板块"></div>
+
+      <form id="search-form" class="top-search">
+        <input id="search-input" name="q" type="search" placeholder="Search" autocomplete="off" />
+        <button type="submit" aria-label="搜索">⌕</button>
+      </form>
+
+      <a class="top-login-link" href="/login">登录</a>
+    </nav>
+  </header>
+
+  <main class="new-post-shell">
+    <section id="new-post-auth-required" class="new-post-panel" hidden>
+      <p class="eyebrow">Account</p>
+      <h1>需要登录</h1>
+      <p>登录后即可发布新主题。</p>
+      <div class="auth-actions">
+        <a class="primary-action" href="/login">登录</a>
+        <a class="secondary-action" href="/register">注册</a>
+      </div>
+    </section>
+
+    <section id="new-post-panel" class="new-post-panel" hidden>
+      <header class="new-post-heading">
+        <div>
+          <p class="eyebrow">New Thread</p>
+          <h1>发布新主题</h1>
+        </div>
+        <a class="secondary-action" href="/">返回列表</a>
+      </header>
+
+      <form id="new-thread-form" class="new-thread-form">
+        <label>
+          <span>标题</span>
+          <input name="title" maxlength="160" placeholder="写一个清楚的标题" required />
+        </label>
+
+        <label>
+          <span>板块</span>
+          <select id="new-thread-category" name="category_slug" required>
+            <option value="daily">日常</option>
+          </select>
+        </label>
+
+        <fieldset class="visibility-options">
+          <legend>可见性</legend>
+          <label>
+            <input type="radio" name="visibility" value="public" checked />
+            <span>公开</span>
+          </label>
+          <label>
+            <input type="radio" name="visibility" value="private" />
+            <span>私有</span>
+          </label>
+        </fieldset>
+
+        <label>
+          <span>正文</span>
+          <textarea name="body" rows="10" placeholder="写下具体、有用、值得讨论的内容。" required></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit">发布主题</button>
+          <a class="secondary-action" href="/">取消</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+
+</html>

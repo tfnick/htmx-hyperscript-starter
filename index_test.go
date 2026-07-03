@@ -60,6 +60,7 @@ func TestPostRouteRendersPostTemplate(t *testing.T) {
 	files := fstest.MapFS{
 		"index.html":    {Data: []byte("embedded")},
 		"login.html":    {Data: []byte("login")},
+		"new-post.html": {Data: []byte("new-post")},
 		"post.html":     {Data: []byte("post")},
 		"register.html": {Data: []byte("register")},
 	}
@@ -83,6 +84,7 @@ func TestLoginRouteRendersLoginTemplate(t *testing.T) {
 	files := fstest.MapFS{
 		"index.html":    {Data: []byte("embedded")},
 		"login.html":    {Data: []byte("login")},
+		"new-post.html": {Data: []byte("new-post")},
 		"post.html":     {Data: []byte("post")},
 		"register.html": {Data: []byte("register")},
 	}
@@ -106,6 +108,7 @@ func TestRegisterRouteRendersRegisterTemplate(t *testing.T) {
 	files := fstest.MapFS{
 		"index.html":    {Data: []byte("embedded")},
 		"login.html":    {Data: []byte("login")},
+		"new-post.html": {Data: []byte("new-post")},
 		"post.html":     {Data: []byte("post")},
 		"register.html": {Data: []byte("register")},
 	}
@@ -122,5 +125,29 @@ func TestRegisterRouteRendersRegisterTemplate(t *testing.T) {
 	}
 	if rec.Body.String() != "register" {
 		t.Fatalf("expected register template body, got %q", rec.Body.String())
+	}
+}
+
+func TestNewPostRouteRendersNewPostTemplate(t *testing.T) {
+	files := fstest.MapFS{
+		"index.html":    {Data: []byte("embedded")},
+		"login.html":    {Data: []byte("login")},
+		"new-post.html": {Data: []byte("new-post")},
+		"post.html":     {Data: []byte("post")},
+		"register.html": {Data: []byte("register")},
+	}
+	router := echo.New()
+	registerFrontendRoutes(router, files, "")
+
+	req := httptest.NewRequest(http.MethodGet, "/new-post", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected new post route to render new post template, got status %d", rec.Code)
+	}
+	if rec.Body.String() != "new-post" {
+		t.Fatalf("expected new post template body, got %q", rec.Body.String())
 	}
 }
