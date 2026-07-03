@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Check frontend quality and JS syntax expectations."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Verify pagination UI remains accessible and unchanged except alignment."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Check no duplicate pagination styling pattern was introduced."}
