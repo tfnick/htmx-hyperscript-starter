@@ -61,7 +61,7 @@ button {
 
 .topbar {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) 220px;
+  grid-template-columns: auto minmax(0, 1fr) 220px auto;
   align-items: center;
   gap: 1.5rem;
   width: min(1210px, calc(100vw - 32px));
@@ -150,6 +150,26 @@ button {
   background: transparent;
   color: #4b5563;
   font-size: 20px;
+}
+
+.top-login-link {
+  display: inline-grid;
+  place-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: #ffffff;
+  color: #3f4448;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.top-login-link:hover,
+.top-login-link.is-active {
+  border-color: #8b8f93;
+  color: #111827;
 }
 
 .page-shell {
@@ -347,7 +367,11 @@ button {
 .thread-form button,
 .compact-form button,
 .reply-form button,
+.login-form button,
+.primary-action,
 .secondary-action {
+  display: inline-grid;
+  place-items: center;
   width: fit-content;
   min-height: 32px;
   padding: 0 16px;
@@ -356,13 +380,73 @@ button {
   background: var(--green);
   color: #ffffff;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .thread-form button:hover,
 .compact-form button:hover,
 .reply-form button:hover,
+.login-form button:hover,
+.primary-action:hover,
 .secondary-action:hover {
   background: var(--green-dark);
+}
+
+.login-shell {
+  width: min(520px, calc(100vw - 36px));
+  margin: 48px auto;
+}
+
+.login-panel {
+  padding: 28px 32px 32px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow);
+}
+
+.login-panel h1 {
+  margin: 0 0 18px;
+  font-size: 24px;
+}
+
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.login-form input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--text);
+}
+
+.login-register {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.login-register summary {
+  width: fit-content;
+  color: var(--green-dark);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.login-register[open] summary {
+  margin-bottom: 12px;
 }
 
 .thread-list {
@@ -716,7 +800,7 @@ button {
 
 @media (max-width: 1180px) {
   .topbar {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   .top-search {

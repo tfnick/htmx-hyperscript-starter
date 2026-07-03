@@ -78,9 +78,12 @@ func main() {
 
 func registerFrontendRoutes(router *echo.Echo, publicFS fs.FS, templatePath string) {
 	indexHandler := renderTemplate(publicFS, templatePath, "index.html", nil)
+	postHandler := renderTemplate(publicFS, templatePath, "post.html", nil)
+	loginHandler := renderTemplate(publicFS, templatePath, "login.html", nil)
 	router.GET("/", indexHandler)
 	router.GET("/categories/:slug", indexHandler)
-	router.GET("/post-*", indexHandler)
+	router.GET("/post-*", postHandler)
+	router.GET("/login", loginHandler)
 }
 
 func initDatabases() (*db.DBManager, error) {

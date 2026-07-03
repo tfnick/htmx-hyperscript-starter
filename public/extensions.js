@@ -1,16 +1,16 @@
 const boardDefinitions = [
   { slug: "daily", label: "日常", icon: "U" },
-  { slug: "tech", label: "技术", icon: "Σ" },
+  { slug: "tech", label: "技术", icon: "T" },
   { slug: "info", label: "情报", icon: "Q" },
-  { slug: "review", label: "测评", icon: "☃" },
+  { slug: "review", label: "测评", icon: "*" },
   { slug: "trade", label: "交易", icon: "$" },
-  { slug: "carpool", label: "拼车", icon: "▣" },
-  { slug: "promotion", label: "推广", icon: "≋" },
-  { slug: "life", label: "生活", icon: "♡" },
+  { slug: "carpool", label: "拼车", icon: "#" },
+  { slug: "promotion", label: "推广", icon: "+" },
+  { slug: "life", label: "生活", icon: "L" },
   { slug: "dev", label: "Dev", icon: ">" },
-  { slug: "image", label: "贴图", icon: "◎" },
-  { slug: "exposure", label: "曝光", icon: "¤" },
-  { slug: "sandbox", label: "沙盒", icon: "△" },
+  { slug: "image", label: "贴图", icon: "I" },
+  { slug: "exposure", label: "曝光", icon: "!" },
+  { slug: "sandbox", label: "沙盒", icon: "S" },
 ];
 
 const initialPostRoute = postRouteFromPath();
@@ -33,96 +33,34 @@ const forumState = {
 const $ = (selector) => document.querySelector(selector);
 
 document.addEventListener("DOMContentLoaded", () => {
-  bindForumEvents();
   renderStaticBoardLinks();
-  setFeedMode(initialPostRoute ? "detail" : "list");
+  bindForumEvents();
   refreshAuthState();
   loadCategories();
 });
 
 function bindForumEvents() {
-  $("#search-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    forumState.search = $("#search-input").value.trim();
-    forumState.page = 1;
-    forumState.selectedThreadID = "";
-    forumState.selectedPostPage = 1;
-    setFeedMode("list");
-    resetThreadDetail();
-    window.history.pushState({}, "", forumState.category ? `/categories/${encodeURIComponent(forumState.category)}` : "/");
-    loadThreads();
-  });
+  bindListEvents();
+  bindAuthEvents();
 
-  $("#sort-select").addEventListener("change", (event) => {
-    forumState.sort = event.currentTarget.value;
-    forumState.page = 1;
-    syncSortTabs();
-    loadThreads();
-  });
-
-  document.querySelectorAll("[data-sort-tab]").forEach((button) => {
-    button.addEventListener("click", () => {
-      forumState.sort = button.dataset.sortTab;
-      $("#sort-select").value = forumState.sort;
+  const searchForm = $("#search-form");
+  if (searchForm) {
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const searchInput = $("#search-input");
+      forumState.search = searchInput ? searchInput.value.trim() : "";
       forumState.page = 1;
-      syncSortTabs();
+      forumState.selectedThreadID = "";
+      forumState.selectedPostPage = 1;
+      const listPath = forumState.category ? `/categories/${encodeURIComponent(forumState.category)}` : "/";
+      if (!$("#thread-list")) {
+        window.location.href = listPath;
+        return;
+      }
+      window.history.pushState({}, "", listPath);
       loadThreads();
     });
-  });
-
-  $("#prev-page").addEventListener("click", () => {
-    if (forumState.page <= 1) return;
-    forumState.page -= 1;
-    loadThreads();
-  });
-
-  $("#next-page").addEventListener("click", () => {
-    forumState.page += 1;
-    loadThreads();
-  });
-
-  $("#thread-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const payload = Object.fromEntries(new FormData(form).entries());
-    payload.category_slug = forumState.category || "daily";
-    const thread = await apiFetch("/api/forum/threads", { method: "POST", body: payload });
-    form.reset();
-    showToast("主题已发布");
-    forumState.page = 1;
-    window.history.pushState({}, "", postPath(thread.id, 1));
-    renderThreadDetail(thread);
-  });
-
-  $("#login-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
-    const auth = await apiFetch("/api/auth/login", { method: "POST", body: payload, auth: false });
-    storeAuth(auth);
-    event.currentTarget.reset();
-    showToast("已登录");
-    refreshAuthState();
-  });
-
-  $("#register-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
-    const auth = await apiFetch("/api/auth/register", { method: "POST", body: payload, auth: false });
-    storeAuth(auth);
-    event.currentTarget.reset();
-    showToast("账号已创建");
-    refreshAuthState();
-  });
-
-  $("#logout-button").addEventListener("click", () => {
-    forumState.token = "";
-    forumState.refreshToken = "";
-    forumState.currentUser = null;
-    localStorage.removeItem("forum_access_token");
-    localStorage.removeItem("forum_refresh_token");
-    renderAuthState();
-    showToast("已退出登录");
-  });
+  }
 
   window.addEventListener("popstate", () => {
     const postRoute = postRouteFromPath();
@@ -136,18 +74,110 @@ function bindForumEvents() {
       loadThread(postRoute.threadID, {
         postPage: postRoute.page,
         updatePath: false,
-        refreshList: false,
       });
       return;
     }
-    setFeedMode("list");
-    resetThreadDetail();
     loadThreads();
   });
 }
 
+function bindAuthEvents() {
+  const loginForm = $("#login-form");
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      const auth = await apiFetch("/api/auth/login", { method: "POST", body: payload, auth: false });
+      storeAuth(auth);
+      event.currentTarget.reset();
+      showToast("已登录");
+      refreshAuthState();
+    });
+  }
+
+  const registerForm = $("#register-form");
+  if (registerForm) {
+    registerForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      const auth = await apiFetch("/api/auth/register", { method: "POST", body: payload, auth: false });
+      storeAuth(auth);
+      event.currentTarget.reset();
+      showToast("账号已创建");
+      refreshAuthState();
+    });
+  }
+
+  const logoutButton = $("#logout-button");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      forumState.token = "";
+      forumState.refreshToken = "";
+      forumState.currentUser = null;
+      localStorage.removeItem("forum_access_token");
+      localStorage.removeItem("forum_refresh_token");
+      renderAuthState();
+      showToast("已退出登录");
+    });
+  }
+}
+
+function bindListEvents() {
+  const sortSelect = $("#sort-select");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", (event) => {
+      forumState.sort = event.currentTarget.value;
+      forumState.page = 1;
+      syncSortTabs();
+      loadThreads();
+    });
+  }
+
+  document.querySelectorAll("[data-sort-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      forumState.sort = button.dataset.sortTab;
+      if (sortSelect) sortSelect.value = forumState.sort;
+      forumState.page = 1;
+      syncSortTabs();
+      loadThreads();
+    });
+  });
+
+  const prevPage = $("#prev-page");
+  if (prevPage) {
+    prevPage.addEventListener("click", () => {
+      if (forumState.page <= 1) return;
+      forumState.page -= 1;
+      loadThreads();
+    });
+  }
+
+  const nextPage = $("#next-page");
+  if (nextPage) {
+    nextPage.addEventListener("click", () => {
+      forumState.page += 1;
+      loadThreads();
+    });
+  }
+
+  const threadForm = $("#thread-form");
+  if (threadForm) {
+    threadForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      payload.category_slug = forumState.category || "daily";
+      const thread = await apiFetch("/api/forum/threads", { method: "POST", body: payload });
+      event.currentTarget.reset();
+      showToast("主题已发布");
+      window.location.href = postPath(thread.id, 1);
+    });
+  }
+}
+
 function renderStaticBoardLinks() {
-  $("#top-board-links").innerHTML = boardDefinitions.slice(0, 8).map((board) => `
+  const topBoardLinks = $("#top-board-links");
+  if (!topBoardLinks) return;
+  topBoardLinks.innerHTML = boardDefinitions.slice(0, 8).map((board) => `
     <button type="button" data-top-board="${escapeAttr(board.slug)}">${escapeHTML(board.label)}</button>
   `).join("");
   document.querySelectorAll("[data-top-board]").forEach((button) => {
@@ -156,6 +186,7 @@ function renderStaticBoardLinks() {
 }
 
 async function loadCategories() {
+  if (!$("#category-list") && !$("#thread-list") && !$("#thread-detail")) return;
   try {
     const data = await apiFetch("/api/forum/categories", { auth: false });
     forumState.categories = mergeBoardDefinitions(data.items || []);
@@ -178,7 +209,7 @@ async function loadCategories() {
     forumState.categories = mergeBoardDefinitions([]);
     renderCategories();
     updateBoardHeading();
-    renderEmptyThreads("板块加载失败", error.message);
+    renderEmptyThreads("暂时没有内容", error.message);
     showToast(error.message, true);
   }
 }
@@ -197,12 +228,15 @@ function mergeBoardDefinitions(apiCategories) {
 }
 
 function renderCategories() {
-  $("#category-list").innerHTML = forumState.categories.map((category) => `
-    <button class="category-button" type="button" data-category="${escapeAttr(category.slug)}" aria-current="${category.slug === forumState.category}">
-      <span class="category-icon">${escapeHTML(category.icon)}</span>
-      <span>${escapeHTML(category.label)}</span>
-    </button>
-  `).join("");
+  const categoryList = $("#category-list");
+  if (categoryList) {
+    categoryList.innerHTML = forumState.categories.map((category) => `
+      <button class="category-button" type="button" data-category="${escapeAttr(category.slug)}" aria-current="${category.slug === forumState.category}">
+        <span class="category-icon">${escapeHTML(category.icon)}</span>
+        <span>${escapeHTML(category.label)}</span>
+      </button>
+    `).join("");
+  }
 
   document.querySelectorAll("[data-category]").forEach((button) => {
     button.addEventListener("click", () => selectCategory(button.dataset.category));
@@ -213,23 +247,27 @@ function renderCategories() {
   });
 }
 
-function selectCategory(slug, options = {}) {
+function selectCategory(slug) {
+  const categoryPath = `/categories/${encodeURIComponent(slug)}`;
+  if (!$("#thread-list")) {
+    window.location.href = categoryPath;
+    return;
+  }
   if (forumState.category === slug && !forumState.selectedThreadID) return;
   forumState.category = slug;
   forumState.page = 1;
   forumState.selectedThreadID = "";
   forumState.selectedPostPage = 1;
-  if (options.updatePath !== false) {
-    window.history.pushState({}, "", `/categories/${encodeURIComponent(slug)}`);
-  }
+  window.history.pushState({}, "", categoryPath);
   renderCategories();
   updateBoardHeading();
-  setFeedMode("list");
-  resetThreadDetail();
   loadThreads();
 }
 
 async function loadThreads() {
+  const threadList = $("#thread-list");
+  if (!threadList) return;
+  forumState.viewMode = "list";
   const params = new URLSearchParams({
     page: forumState.page,
     page_size: forumState.pageSize,
@@ -250,21 +288,25 @@ async function loadThreads() {
 }
 
 function renderThreads(data) {
-  if (forumState.viewMode !== "list") return;
+  const threadList = $("#thread-list");
+  if (!threadList) return;
   const items = data.items || [];
   if (!items.length) {
     renderEmptyThreads("还没有主题", "成为这个板块第一个发起讨论的人。");
   } else {
-    $("#thread-list").innerHTML = items.map(renderThreadRow).join("");
+    threadList.innerHTML = items.map(renderThreadRow).join("");
     document.querySelectorAll("[data-thread-id]").forEach((button) => {
       button.addEventListener("click", () => loadThread(button.dataset.threadId, { postPage: 1 }));
     });
   }
 
   const page = data.pagination || {};
-  $("#page-summary").textContent = buildPageSummary(page);
-  $("#prev-page").disabled = !page.has_previous;
-  $("#next-page").disabled = !page.has_next;
+  const pageSummary = $("#page-summary");
+  const prevPage = $("#prev-page");
+  const nextPage = $("#next-page");
+  if (pageSummary) pageSummary.textContent = buildPageSummary(page);
+  if (prevPage) prevPage.disabled = !page.has_previous;
+  if (nextPage) nextPage.disabled = !page.has_next;
 }
 
 function renderThreadRow(thread) {
@@ -281,10 +323,10 @@ function renderThreadRow(thread) {
           <strong>${escapeHTML(thread.title)}</strong>
         </span>
         <span class="thread-meta">
-          <span>♙ ${escapeHTML(thread.author?.name || "Unknown")}</span>
-          <span>◉ ${formatNumber(thread.view_count)}</span>
-          <span>▱ ${formatNumber(thread.reply_count)}</span>
-          <span>↯ ${escapeHTML(lastPoster)}</span>
+          <span>作者 ${escapeHTML(thread.author?.name || "Unknown")}</span>
+          <span>浏览 ${formatNumber(thread.view_count)}</span>
+          <span>回复 ${formatNumber(thread.reply_count)}</span>
+          <span>最后 ${escapeHTML(lastPoster)}</span>
           <span>${formatRelativeTime(thread.last_post_at || thread.created_at)}</span>
         </span>
       </span>
@@ -294,32 +336,39 @@ function renderThreadRow(thread) {
 }
 
 function renderEmptyThreads(title, message) {
-  if (forumState.viewMode !== "list") return;
-  setFeedMode("list");
-  $("#thread-list").innerHTML = `
+  const threadList = $("#thread-list");
+  if (!threadList) return;
+  threadList.innerHTML = `
     <article class="empty-state">
       <h2>${escapeHTML(title)}</h2>
       <p>${escapeHTML(message)}</p>
     </article>
   `;
-  $("#page-summary").textContent = String(forumState.page);
-  $("#prev-page").disabled = forumState.page <= 1;
-  $("#next-page").disabled = true;
+  const pageSummary = $("#page-summary");
+  const prevPage = $("#prev-page");
+  const nextPage = $("#next-page");
+  if (pageSummary) pageSummary.textContent = String(forumState.page);
+  if (prevPage) prevPage.disabled = forumState.page <= 1;
+  if (nextPage) nextPage.disabled = true;
 }
 
 async function loadThread(threadID, options = {}) {
   const postPage = normalizePostPage(options.postPage);
+  const path = postPath(threadID, postPage);
+  if (!$("#thread-detail")) {
+    window.location.href = path;
+    return;
+  }
   forumState.selectedThreadID = threadID;
   forumState.selectedPostPage = postPage;
-  setFeedMode("detail");
+  forumState.viewMode = "detail";
   renderThreadLoading();
   if (options.updatePath !== false) {
-    window.history.pushState({}, "", postPath(threadID, postPage));
+    window.history.pushState({}, "", path);
   }
 
   try {
     const thread = await apiFetch(`/api/forum/threads/${encodeURIComponent(threadID)}`, { auth: false });
-    forumState.selectedPostPage = postPage;
     renderThreadDetail(thread);
   } catch (error) {
     renderThreadError("Thread failed to load", error.message);
@@ -328,15 +377,17 @@ async function loadThread(threadID, options = {}) {
 }
 
 function renderThreadDetail(thread) {
+  const threadDetail = $("#thread-detail");
+  if (!threadDetail) return;
   forumState.selectedThreadID = thread.id;
-  setFeedMode("detail");
+  forumState.viewMode = "detail";
   const canReply = Boolean(forumState.currentUser);
-  $("#thread-detail").innerHTML = `
+  threadDetail.innerHTML = `
     <section class="thread-detail-card">
       <p class="eyebrow">${escapeHTML(thread.category?.name || thread.category?.slug || "Forum")}</p>
       <h2>${escapeHTML(thread.title)}</h2>
       <div class="detail-meta">
-        ${escapeHTML(thread.author?.name || "Unknown")} · ${formatRelativeTime(thread.created_at)} · ${thread.reply_count} 回复 · ${thread.view_count} 浏览
+        ${escapeHTML(thread.author?.name || "Unknown")} · ${formatRelativeTime(thread.created_at)} · ${formatNumber(thread.reply_count)} 回复 · ${formatNumber(thread.view_count)} 浏览
       </div>
       <p class="thread-body">${escapeHTML(thread.body)}</p>
       <section class="reply-list">
@@ -397,31 +448,25 @@ async function refreshAuthState() {
 
 function renderAuthState() {
   const loggedIn = Boolean(forumState.currentUser);
-  $("#logged-out-panel").hidden = loggedIn;
-  $("#logged-in-panel").hidden = !loggedIn;
-  updateComposerVisibility();
-  $("#current-user-name").textContent = loggedIn ? `${forumState.currentUser.name} 已登录` : "";
-}
-
-function setFeedMode(mode) {
-  const detailMode = mode === "detail";
-  forumState.viewMode = detailMode ? "detail" : "list";
-  $(".feed-toolbar").hidden = detailMode;
-  $(".board-heading").hidden = detailMode;
-  $("#thread-list").hidden = detailMode;
-  $("#thread-detail").hidden = !detailMode;
-  if (detailMode) {
-    $("#thread-list").replaceChildren();
-  }
+  const loggedOutPanel = $("#logged-out-panel");
+  const loggedInPanel = $("#logged-in-panel");
+  const currentUserName = $("#current-user-name");
+  if (loggedOutPanel) loggedOutPanel.hidden = loggedIn;
+  if (loggedInPanel) loggedInPanel.hidden = !loggedIn;
+  if (currentUserName) currentUserName.textContent = loggedIn ? `${forumState.currentUser.name} 已登录` : "";
   updateComposerVisibility();
 }
 
 function updateComposerVisibility() {
-  $("#composer-panel").hidden = !forumState.currentUser || forumState.viewMode === "detail";
+  const composer = $("#composer-panel");
+  if (!composer) return;
+  composer.hidden = !forumState.currentUser || forumState.viewMode === "detail";
 }
 
 function renderThreadLoading() {
-  $("#thread-detail").innerHTML = `
+  const threadDetail = $("#thread-detail");
+  if (!threadDetail) return;
+  threadDetail.innerHTML = `
     <section class="thread-detail-card">
       <div class="empty-state compact">
         <h2>Loading thread</h2>
@@ -432,7 +477,9 @@ function renderThreadLoading() {
 }
 
 function renderThreadError(title, message) {
-  $("#thread-detail").innerHTML = `
+  const threadDetail = $("#thread-detail");
+  if (!threadDetail) return;
+  threadDetail.innerHTML = `
     <section class="thread-detail-card">
       <div class="empty-state compact">
         <h2>${escapeHTML(title)}</h2>
@@ -477,8 +524,10 @@ function syncSortTabs() {
 }
 
 function updateBoardHeading() {
+  const boardTitle = $("#board-title");
+  if (!boardTitle) return;
   const category = currentCategory();
-  $("#board-title").textContent = forumState.category ? (category?.label || category?.name || "论坛") : "全部";
+  boardTitle.textContent = forumState.category ? (category?.label || category?.name || "论坛") : "全部";
 }
 
 function currentCategory() {
@@ -508,17 +557,9 @@ function normalizePostPage(page) {
   return Number.isFinite(number) && number > 0 ? number : 1;
 }
 
-function resetThreadDetail() {
-  $("#thread-detail").innerHTML = `
-    <div class="empty-state compact">
-      <h2>选择一个主题</h2>
-      <p>打开帖子后，可以在这里查看正文与回复。</p>
-    </div>
-  `;
-}
-
 function showToast(message, error = false) {
   const toast = $("#toast");
+  if (!toast) return;
   toast.textContent = message;
   toast.classList.toggle("is-error", error);
   toast.hidden = false;

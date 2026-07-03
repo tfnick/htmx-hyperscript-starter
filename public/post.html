@@ -46,41 +46,15 @@
       <div id="category-list" class="category-list" aria-live="polite"></div>
     </aside>
 
-    <section class="feed-panel" aria-labelledby="board-title">
-      <header class="feed-toolbar">
-        <div class="feed-tabs" aria-label="帖子筛选">
-          <button class="tab-button is-active" type="button" data-sort-tab="latest_reply">新评论</button>
-          <button class="tab-button" type="button" data-sort-tab="latest_post">新帖子</button>
-        </div>
-
-        <div class="feed-pager" aria-label="分页">
-          <button id="prev-page" type="button" class="pager-button">‹</button>
-          <span id="page-summary" class="page-summary">1</span>
-          <button id="next-page" type="button" class="pager-button">›</button>
-        </div>
-      </header>
-
-      <section class="board-heading">
-        <div>
-          <p class="eyebrow">Board</p>
-          <h1 id="board-title">日常</h1>
-        </div>
-        <select id="sort-select" class="sort-select" name="sort" aria-label="排序">
-          <option value="latest_reply">最新评论</option>
-          <option value="latest_post">最新发布</option>
-        </select>
-      </section>
-
-      <section id="composer-panel" class="composer-panel" hidden>
-        <form id="thread-form" class="thread-form">
-          <input name="title" maxlength="160" placeholder="发布一个新主题" required />
-          <textarea name="body" rows="4" placeholder="写下具体、有用、值得讨论的内容。" required></textarea>
-          <button type="submit">发布主题</button>
-        </form>
-      </section>
-
-      <div id="thread-list" class="thread-list" aria-live="polite"></div>
-
+    <section class="feed-panel" aria-label="帖子详情">
+      <article id="thread-detail" class="thread-detail-panel" aria-live="polite">
+        <section class="thread-detail-card">
+          <div class="empty-state compact">
+            <h2>加载帖子中</h2>
+            <p>正在打开帖子正文与回复。</p>
+          </div>
+        </section>
+      </article>
     </section>
 
     <aside class="right-sidebar" aria-label="社区功能">
@@ -111,11 +85,8 @@
 
       <section class="side-card quick-card">
         <h2>♟ 快捷功能区</h2>
-        <a href="#thread-list">推荐阅读</a>
-        <a href="#composer-panel">幸运抽奖</a>
-        <a href="#thread-list">邀请好友</a>
-        <a href="#thread-list">合作商家</a>
-        <a href="#thread-list">友站链接</a>
+        <a href="/">返回列表</a>
+        <a href="#thread-detail">帖子详情</a>
       </section>
 
       <section class="sponsor-stack" aria-label="赞助展示">

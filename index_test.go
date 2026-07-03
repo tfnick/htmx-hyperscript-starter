@@ -56,9 +56,11 @@ func TestLoadTemplateRejectsUnsafeTemplateNames(t *testing.T) {
 	}
 }
 
-func TestPostRouteRendersIndexTemplate(t *testing.T) {
+func TestPostRouteRendersPostTemplate(t *testing.T) {
 	files := fstest.MapFS{
 		"index.html": {Data: []byte("embedded")},
+		"login.html": {Data: []byte("login")},
+		"post.html":  {Data: []byte("post")},
 	}
 	router := echo.New()
 	registerFrontendRoutes(router, files, "")
@@ -69,9 +71,31 @@ func TestPostRouteRendersIndexTemplate(t *testing.T) {
 	router.ServeHTTP(rec, req)
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected post route to render index, got status %d", rec.Code)
+		t.Fatalf("expected post route to render post template, got status %d", rec.Code)
 	}
-	if rec.Body.String() != "embedded" {
-		t.Fatalf("expected embedded index body, got %q", rec.Body.String())
+	if rec.Body.String() != "post" {
+		t.Fatalf("expected post template body, got %q", rec.Body.String())
+	}
+}
+
+func TestLoginRouteRendersLoginTemplate(t *testing.T) {
+	files := fstest.MapFS{
+		"index.html": {Data: []byte("embedded")},
+		"login.html": {Data: []byte("login")},
+		"post.html":  {Data: []byte("post")},
+	}
+	router := echo.New()
+	registerFrontendRoutes(router, files, "")
+
+	req := httptest.NewRequest(http.MethodGet, "/login", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected login route to render login template, got status %d", rec.Code)
+	}
+	if rec.Body.String() != "login" {
+		t.Fatalf("expected login template body, got %q", rec.Body.String())
 	}
 }

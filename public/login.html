@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <title>NodeSeek-Style Forum</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="/styles.css" rel="stylesheet" />
+  <script src="https://unpkg.com/htmx.org"></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+  <script src="/extensions.js" defer></script>
+  <script>
+    (() => {
+      const local = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+      if (!local) return;
+
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const socket = new WebSocket(`${protocol}//${window.location.host}/reload_ws`);
+      socket.addEventListener("message", () => window.location.reload());
+    })();
+  </script>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="topbar" aria-label="主导航">
+      <a class="brand" href="/" aria-label="NodeSeek 首页">
+        <span class="brand-mark">◆</span>
+        <span class="brand-name">NodeSeek</span>
+        <span class="brand-beta">beta</span>
+      </a>
+
+      <div id="top-board-links" class="top-board-links" aria-label="热门板块"></div>
+
+      <form id="search-form" class="top-search">
+        <input id="search-input" name="q" type="search" placeholder="Search" autocomplete="off" />
+        <button type="submit" aria-label="搜索">⌕</button>
+      </form>
+
+      <a class="top-login-link is-active" href="/login">登录</a>
+    </nav>
+  </header>
+
+  <main class="login-shell">
+    <section class="login-panel" aria-labelledby="login-title">
+      <p class="eyebrow">Account</p>
+      <h1 id="login-title">登录</h1>
+
+      <form id="login-form" class="login-form">
+        <label>
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit">登录</button>
+      </form>
+
+      <details class="login-register">
+        <summary>注册新账号</summary>
+        <form id="register-form" class="login-form">
+          <label>
+            <span>Name</span>
+            <input name="name" autocomplete="name" required />
+          </label>
+          <label>
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" autocomplete="new-password" minlength="6" required />
+          </label>
+          <button type="submit">注册</button>
+        </form>
+      </details>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+
+</html>
