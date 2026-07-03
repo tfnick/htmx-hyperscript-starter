@@ -73,3 +73,36 @@ Split list, post detail, and login into separate HTML templates; added /login ro
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Forum pagination
+
+**Date**: 2026-07-04
+**Task**: Forum pagination
+**Branch**: `main`
+
+### Summary
+
+Added synchronized thread list pagination controls and reply page-number pagination across backend, API, frontend, tests, and specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3f2a002` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
