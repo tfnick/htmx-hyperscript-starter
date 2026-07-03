@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend entrypoint for public HTML/CSS/JS, Pico-compatible semantic pages, and quality expectations."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Required for page/template structure, states, accessibility, SEO landmarks, and progressive enhancement."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Required because the task adds a local frontend dependency and refines list/detail rendering."}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "Relevant because default embedded templates and external template override paths must remain stable."}
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "Forum list/detail semantics and visible states should stay aligned with backend forum contracts."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Required before changing reusable CSS classes, layout patterns, static paths, or shared template structures."}

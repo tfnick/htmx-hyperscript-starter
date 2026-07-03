@@ -1,0 +1,6 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Check frontend quality requirements for HTML, JS, template routes, and test commands."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Verify semantic structure, page states, accessibility, responsive behavior, and visible text quality."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Verify lightweight dependency handling, list/detail performance, and static asset constraints."}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "Verify embedded templates and external override compatibility are preserved."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Check Go test/build expectations and repository quality gate conventions."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Check that reusable CSS/template patterns were searched and consolidated rather than duplicated."}
