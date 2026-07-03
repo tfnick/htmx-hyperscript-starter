@@ -1,0 +1,13 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "审查论坛后端实现时需要遵守 backend 总体架构、质量检查和已知漂移说明。"}
+{"file": ".trellis/spec/backend/architecture-guidelines.md", "reason": "审查 routes/usecase/models/framework/provider 的导入方向、防腐层和复用入口。"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "审查论坛代码是否落在正确层级，并避免 route 直接访问 db/models。"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "审查论坛迁移、SQL、索引、事务边界和 after-commit 通知行为。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "审查论坛 usecase 错误码、HTTP 状态映射和内部 response envelope。"}
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "审查公开/私有主题可见性、request/response 字段和必要测试。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "审查测试覆盖、架构守护、DTO 边界和 forbidden patterns。"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "审查论坛页面、模板、JS 和 htmx/hyperscript 约定。"}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "审查公开论坛页面的 SEO、语义 HTML、状态和渐进增强。"}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "审查内置模板、外部模板覆盖、组件路径和路由渲染测试。"}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "审查列表/详情分页、N+1 防护、依赖控制和前端性能。"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "论坛功能跨 API、usecase、model、DB、template 和 JS，需要按跨层数据流核对。"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "审查是否重复实现 fetch、toast、分页、模板片段或 response helper。"}

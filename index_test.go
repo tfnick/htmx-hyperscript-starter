@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"testing/fstest"
 
@@ -149,5 +150,31 @@ func TestNewPostRouteRendersNewPostTemplate(t *testing.T) {
 	}
 	if rec.Body.String() != "new-post" {
 		t.Fatalf("expected new post template body, got %q", rec.Body.String())
+	}
+}
+
+func TestForumComponentRoutesRenderCurrentFragments(t *testing.T) {
+	publicFS := echo.MustSubFS(embeddedPublic, "public")
+	router := echo.New()
+	api := router.Group("/api")
+	registerComponentRoutes(api, publicFS, "", false)
+
+	for _, path := range []string{
+		"/api/components/forum/thread-list",
+		"/api/components/forum/thread-detail",
+	} {
+		t.Run(path, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, path, nil)
+			rec := httptest.NewRecorder()
+
+			router.ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusOK {
+				t.Fatalf("expected component route to render, got status %d body=%s", rec.Code, rec.Body.String())
+			}
+			if strings.Contains(rec.Body.String(), "/replies") {
+				t.Fatalf("component route should not expose old reply endpoint: %s", rec.Body.String())
+			}
+		})
 	}
 }

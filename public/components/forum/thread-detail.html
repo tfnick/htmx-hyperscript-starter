@@ -1,41 +1,6 @@
-<article class="thread-detail">
-  <header>
-    <span class="thread-category">{{.Thread.Category}}</span>
-    <h2>{{.Thread.Title}}</h2>
-    <p>Started by {{.Thread.Author}} on {{.Thread.CreatedAt.Format "Jan 2, 2006 15:04"}}</p>
-  </header>
-
-  <p class="thread-body">{{.Thread.Body}}</p>
-</article>
-
-<section class="reply-list">
-  <h3>Replies</h3>
-  {{range .Thread.Replies}}
-  <article class="reply">
-    <header>
-      <strong>{{.Author}}</strong>
-      <span>{{.CreatedAt.Format "Jan 2, 2006 15:04"}}</span>
-    </header>
-    <p>{{.Body}}</p>
-  </article>
-  {{else}}
+<section class="thread-detail" data-component="forum-thread-detail">
   <article class="empty-state">
-    <p>No replies yet. Add the first response.</p>
+    <h2>Select a thread</h2>
+    <p>Discussion details and replies will appear here.</p>
   </article>
-  {{end}}
 </section>
-
-<form class="reply-form" hx-post="/api/forum/threads/{{.Thread.ID}}/replies" hx-target="#thread-detail"
-  hx-swap="innerHTML">
-  <div class="form-row">
-    <label>
-      Author
-      <input type="text" name="author" placeholder="Guest" />
-    </label>
-  </div>
-  <label>
-    Reply
-    <textarea name="body" rows="3" placeholder="Add a helpful reply" required></textarea>
-  </label>
-  <button type="submit">Reply</button>
-</form>

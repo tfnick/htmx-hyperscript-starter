@@ -379,6 +379,25 @@ func ListForumPosts(ctx context.Context, query ForumPostQuery) ([]ForumPostListI
 	return posts, nil
 }
 
+func GetForumPostListItemByID(ctx context.Context, id string) (ForumPostListItem, error) {
+	d, err := db.EngineFor(ctx, "app")
+	if err != nil {
+		return ForumPostListItem{}, fmt.Errorf("database unavailable: %w", err)
+	}
+
+	var post ForumPostListItem
+	if err := d.GetP(&post, forumPostListSelectSQL()+`
+		WHERE p.id = ? AND p.status = 'published'
+		LIMIT 1
+	`, id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ForumPostListItem{}, fmt.Errorf("forum post not found: %w", modelerror.ErrNotFound)
+		}
+		return ForumPostListItem{}, fmt.Errorf("get forum post list item failed: %w", err)
+	}
+	return post, nil
+}
+
 func GetForumPostByID(ctx context.Context, id string) (ForumPost, error) {
 	d, err := db.EngineFor(ctx, "app")
 	if err != nil {

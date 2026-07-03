@@ -174,6 +174,53 @@ func TestForumThreadUpdateRequiresOwnerOrAdmin(t *testing.T) {
 	}
 }
 
+func TestUpdateForumPostReturnsReplyBeyondDefaultDetailPage(t *testing.T) {
+	setupUsecaseOrderTxDB(t)
+
+	ownerCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedUserID, "Owner", false)
+	thread, err := usecase.CreateForumThread(ownerCtx, usecase.CreateForumThreadCmd{
+		CategorySlug: "daily",
+		Title:        "Long reply thread",
+		Body:         "This thread has enough replies to cross the default detail page.",
+	})
+	if err != nil {
+		t.Fatalf("create forum thread: %v", err)
+	}
+
+	replyCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedOtherID, "Reply Author", false)
+	for i := 0; i < fwusecase.DefaultPageSize+1; i++ {
+		if _, err := usecase.ReplyForumThread(replyCtx, usecase.ReplyForumThreadCmd{
+			ThreadID: thread.ID,
+			Body:     "Reply body for pagination regression.",
+		}); err != nil {
+			t.Fatalf("create reply %d: %v", i+1, err)
+		}
+	}
+
+	allReplies, err := usecase.GetForumThreadDetail(ownerCtx, usecase.ForumThreadDetailQry{
+		ID:       thread.ID,
+		PostSize: fwusecase.MaxPageSize,
+	})
+	if err != nil {
+		t.Fatalf("load all replies: %v", err)
+	}
+	if len(allReplies.Posts) != fwusecase.DefaultPageSize+1 {
+		t.Fatalf("expected %d replies, got %d", fwusecase.DefaultPageSize+1, len(allReplies.Posts))
+	}
+	target := allReplies.Posts[fwusecase.DefaultPageSize]
+
+	updated, err := usecase.UpdateForumPost(replyCtx, usecase.UpdateForumPostCmd{
+		ID:   target.ID,
+		Body: "Updated reply beyond the first page.",
+	})
+	if err != nil {
+		t.Fatalf("update reply beyond default page: %v", err)
+	}
+	if updated.ID != target.ID || updated.Body != "Updated reply beyond the first page." {
+		t.Fatalf("unexpected updated reply: %#v", updated)
+	}
+}
+
 func authenticatedForumUsecaseContext(ctx context.Context, userID string, name string, admin bool) fwusecase.Context {
 	callCtx := fwusecase.NewContext(ctx, fwusecase.SurfaceInternalAPI)
 	callCtx.Actor = fwusecase.ActorContext{

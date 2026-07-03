@@ -423,22 +423,24 @@ func UpdateForumPost(ctx fwusecase.Context, cmd UpdateForumPostCmd) (ForumPostCo
 	if err != nil {
 		return ForumPostCo{}, forumPostNotFoundOrInternal(err)
 	}
+	thread, err := models.GetForumThreadByID(ctx.Std(), post.ThreadID)
+	if err != nil {
+		return ForumPostCo{}, forumNotFoundOrInternal(err, "thread not found", "failed to load thread")
+	}
+	if thread.Status != models.ForumContentStatusPublished || !canViewForumThread(ctx, thread.AuthorID, thread.Visibility) {
+		return ForumPostCo{}, fwusecase.E(fwusecase.CodeNotFound, "thread not found", nil)
+	}
 	if err := requireForumContentManager(ctx, post.AuthorID); err != nil {
 		return ForumPostCo{}, err
 	}
 	if err := models.UpdateForumPost(ctx.Std(), postID, body); err != nil {
 		return ForumPostCo{}, forumPostNotFoundOrInternal(err)
 	}
-	detail, err := GetForumThreadDetail(ctx, ForumThreadDetailQry{ID: post.ThreadID})
+	updated, err := models.GetForumPostListItemByID(ctx.Std(), post.ID)
 	if err != nil {
-		return ForumPostCo{}, err
+		return ForumPostCo{}, forumPostNotFoundOrInternal(err)
 	}
-	for _, item := range detail.Posts {
-		if item.ID == postID {
-			return item, nil
-		}
-	}
-	return ForumPostCo{}, fwusecase.E(fwusecase.CodeNotFound, "reply not found", nil)
+	return forumPostCoFromModel(updated), nil
 }
 
 func DeleteForumPost(ctx fwusecase.Context, cmd DeleteForumPostCmd) error {
@@ -639,17 +641,21 @@ func forumThreadDetailCoFromModel(thread models.ForumThreadDetail, posts []model
 func forumPostCosFromModels(posts []models.ForumPostListItem) []ForumPostCo {
 	items := make([]ForumPostCo, 0, len(posts))
 	for i := range posts {
-		items = append(items, ForumPostCo{
-			ID:        posts[i].ID,
-			ThreadID:  posts[i].ThreadID,
-			Author:    ForumAuthorCo{ID: posts[i].AuthorID, Name: posts[i].AuthorName},
-			Body:      posts[i].Body,
-			Status:    posts[i].Status,
-			CreatedAt: posts[i].CreatedAt,
-			UpdatedAt: posts[i].UpdatedAt,
-		})
+		items = append(items, forumPostCoFromModel(posts[i]))
 	}
 	return items
+}
+
+func forumPostCoFromModel(post models.ForumPostListItem) ForumPostCo {
+	return ForumPostCo{
+		ID:        post.ID,
+		ThreadID:  post.ThreadID,
+		Author:    ForumAuthorCo{ID: post.AuthorID, Name: post.AuthorName},
+		Body:      post.Body,
+		Status:    post.Status,
+		CreatedAt: post.CreatedAt,
+		UpdatedAt: post.UpdatedAt,
+	}
 }
 
 func forumExcerpt(value string) string {

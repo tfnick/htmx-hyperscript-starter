@@ -1,0 +1,9 @@
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "检查私有主题可见性、默认 public、无权 not_found、route/usecase 测试和 frontend/template 要求。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "检查 gofmt、go test、架构守护、response envelope、DTO 和 forbidden patterns。"}
+{"file": ".trellis/spec/backend/architecture-guidelines.md", "reason": "检查论坛相关导入方向是否遵守 routes -> usecase -> models。"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "检查论坛迁移、索引和 model SQL 是否可追踪，并确认事务不绕过 usecase。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "检查论坛 API 是否通过标准 usecase error 和 httpresponse helper 映射。"}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "检查公开论坛页面是否提供可抓取内容、稳定 URL、空/错状态和可访问结构。"}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "检查新页面和组件模板是否支持内置读取、外部覆盖和路径清洗。"}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "检查论坛列表/详情是否分页、避免前端 N+1，并控制前端依赖。"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "检查 visibility、分页、错误和字段是否在 DB/model/usecase/route/frontend/test 中对齐。"}
