@@ -27,6 +27,7 @@
 - 阅读 [Forum Guidelines](./forum-guidelines.md)，如果修改论坛主题、分类、回复、列表、详情或可见性行为。
 - 阅读 [Logging Guidelines](./logging-guidelines.md)，如果新增请求日志、后台任务日志或外部集成日志。
 - 阅读 [Quality Guidelines](./quality-guidelines.md)，确认测试、架构守护和响应 envelope 要求。
+- 如果改动 `index.go` 的页面路由、`public/` HTML/CSS/JS、`/api/components/*` 或 `--template-path` 模板覆盖行为，同时阅读 [Frontend Development Guidelines](../frontend/index.md)。
 
 ## Core Contracts
 
@@ -58,6 +59,10 @@
 | [Forum Guidelines](./forum-guidelines.md) | 论坛主题、分类、回复、列表、详情和可见性契约 | Filled |
 | [Logging Guidelines](./logging-guidelines.md) | zerolog 初始化、请求日志字段、组件日志和脱敏要求 | Filled |
 | [Quality Guidelines](./quality-guidelines.md) | gofmt/test/build、架构守护、测试范围和 forbidden patterns | Filled |
+
+## Related Spec Layers
+
+- [Frontend Development Guidelines](../frontend/index.md)：适用于 `public/` 页面模板、htmx/hyperscript 增强、SEO、性能、exe 内置模板和 `--template-path` 外部覆盖。
 
 ## Language Rule
 

@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "检查新增 frontend spec 是否能被现有 spec 入口或 package context 发现。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "检查文档/spec 任务是否完成文本检查，并说明不运行 Go 测试的合理性。"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "检查 frontend 模板运行时规范是否与现有 backend 入口职责边界一致。"}
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "检查前端页面、SEO 和性能规则是否没有破坏已有论坛契约。"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "检查跨层数据流、模板覆盖和页面输出契约是否完整。"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "检查新增规范是否复用已有结构，避免重复和过度拆分。"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "检查 frontend spec 入口是否完整、可发现，并能引导后续页面和模板任务。"}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "检查页面、SEO、语义化、状态和渐进增强规则是否具体可执行。"}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "检查 exe 内置模板、--template-path 外部覆盖、路径安全和测试契约是否覆盖用户要求。"}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "检查性能规范是否覆盖依赖控制、分页、缓存、N+1 和前端体积约束。"}

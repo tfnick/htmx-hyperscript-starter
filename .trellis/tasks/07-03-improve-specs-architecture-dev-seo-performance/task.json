@@ -1,0 +1,32 @@
+{
+  "id": "improve-specs-architecture-dev-seo-performance",
+  "name": "improve-specs-architecture-dev-seo-performance",
+  "title": "Spec Enrichment For Architecture SEO Performance",
+  "description": "从整体架构、高效开发、SEO 友好、高性能和 HTML 模板内置/外部覆盖部署契约等角度完善 Trellis spec。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "mac",
+  "assignee": "mac",
+  "createdAt": "2026-07-03",
+  "completedAt": "2026-07-03",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/spec/frontend",
+    ".trellis/spec/backend/index.md",
+    "index.go",
+    "index_test.go",
+    "README.md"
+  ],
+  "notes": "",
+  "meta": {}
+}

@@ -1,0 +1,10 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "现有 spec 入口和语言规则；新增 frontend index 时需要保持索引风格一致。"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "现有分层和入口职责约定；frontend 模板运行时规范需要与 backend 入口职责边界一致。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "文档/spec 变更的质量检查要求，以及架构守护、测试范围和已知全量测试约束。"}
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "论坛页面和可见性已有契约；frontend SEO/性能规范应与论坛业务页面行为保持一致。"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "本任务涉及 frontend 与 backend spec 边界，需要使用跨层思考清单避免职责混淆。"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "新增 spec 前需要复用现有规范结构、模板和检查项，避免重复或冲突。"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "本任务新增的 frontend spec 入口；实现时需要确保它能组织页面、模板运行时、SEO 和性能规范。"}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "本任务新增的页面与 SEO 规范；实现时需要确保内容可执行且标题为英文。"}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "本任务新增的模板运行时规范；实现时需要覆盖 exe 内置模板、--template-path 外部覆盖和路径安全契约。"}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "本任务新增的性能规范；实现时需要覆盖轻量依赖、分页、缓存、N+1 和静态资源约束。"}
