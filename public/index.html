@@ -53,11 +53,7 @@
           <button class="tab-button" type="button" data-sort-tab="latest_post">新帖子</button>
         </div>
 
-        <div class="feed-pager" aria-label="帖子列表分页">
-          <button type="button" class="pager-button" data-thread-page-action="previous" aria-label="上一页">‹</button>
-          <span class="page-summary" data-thread-page-summary>1</span>
-          <button type="button" class="pager-button" data-thread-page-action="next" aria-label="下一页">›</button>
-        </div>
+        <div class="feed-pager" data-thread-pagination aria-label="帖子列表分页"></div>
       </header>
 
       <section class="board-heading">
@@ -73,11 +69,7 @@
 
       <div id="thread-list" class="thread-list" aria-live="polite"></div>
 
-      <nav class="feed-pager feed-pager-bottom" aria-label="帖子列表底部分页">
-        <button type="button" class="pager-button" data-thread-page-action="previous" aria-label="上一页">‹</button>
-        <span class="page-summary" data-thread-page-summary>1</span>
-        <button type="button" class="pager-button" data-thread-page-action="next" aria-label="下一页">›</button>
-      </nav>
+      <nav class="feed-pager feed-pager-bottom" data-thread-pagination aria-label="帖子列表底部分页"></nav>
 
     </section>
 

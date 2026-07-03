@@ -285,7 +285,6 @@ button {
 }
 
 .pager-button,
-.page-summary,
 .reply-page-button {
   min-width: 32px;
   min-height: 30px;
@@ -297,15 +296,14 @@ button {
   font-weight: 700;
 }
 
-.pager-button,
-.page-summary {
+.pager-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .pager-button:not(:disabled):hover,
-.page-summary,
+.pager-button[aria-current="page"],
 .reply-page-button:hover:not(:disabled),
 .reply-page-button[aria-current="page"] {
   border-color: #8b8f93;
@@ -728,6 +726,7 @@ button {
   margin: 12px 0;
 }
 
+.page-gap,
 .reply-page-gap {
   color: var(--muted);
   font-weight: 700;

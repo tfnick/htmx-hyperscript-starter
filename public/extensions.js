@@ -165,17 +165,13 @@ function bindListEvents() {
     });
   });
 
-  document.querySelectorAll("[data-thread-page-action]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const action = button.dataset.threadPageAction;
-      if (action === "previous") {
-        if (forumState.page <= 1) return;
-        forumState.page -= 1;
-        loadThreads();
-        return;
-      }
-      if (action !== "next") return;
-      forumState.page += 1;
+  document.querySelectorAll("[data-thread-pagination]").forEach((pager) => {
+    pager.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-thread-page]");
+      if (!button || button.disabled) return;
+      const page = normalizePostPage(button.dataset.threadPage);
+      if (page === forumState.page) return;
+      forumState.page = page;
       loadThreads();
     });
   });
@@ -458,15 +454,26 @@ function renderThreadDetail(thread) {
 }
 
 function syncThreadPagers(page) {
-  document.querySelectorAll("[data-thread-page-summary]").forEach((summary) => {
-    summary.textContent = buildPageSummary(page);
+  document.querySelectorAll("[data-thread-pagination]").forEach((pager) => {
+    pager.innerHTML = renderThreadPagination(page);
   });
-  document.querySelectorAll("[data-thread-page-action='previous']").forEach((button) => {
-    button.disabled = !page.has_previous;
-  });
-  document.querySelectorAll("[data-thread-page-action='next']").forEach((button) => {
-    button.disabled = !page.has_next;
-  });
+}
+
+function renderThreadPagination(page) {
+  if (!page || !page.total_pages || page.total_pages <= 1) return "";
+  const current = normalizePostPage(page.page || forumState.page);
+  const total = page.total_pages;
+  const buttons = [];
+  buttons.push(`<button type="button" class="pager-button" data-thread-page="${Math.max(1, current - 1)}" ${page.has_previous ? "" : "disabled"} aria-label="上一页">‹</button>`);
+  for (const item of replyPageItems(current, total)) {
+    if (item === "gap") {
+      buttons.push(`<span class="page-gap" aria-hidden="true">…</span>`);
+      continue;
+    }
+    buttons.push(`<button type="button" class="pager-button" data-thread-page="${item}" ${item === current ? `aria-current="page"` : ""}>${item}</button>`);
+  }
+  buttons.push(`<button type="button" class="pager-button" data-thread-page="${Math.min(total, current + 1)}" ${page.has_next ? "" : "disabled"} aria-label="下一页">›</button>`);
+  return buttons.join("");
 }
 
 function renderReplyPagination(page) {
@@ -708,12 +715,6 @@ function showToast(message, error = false) {
   showToast.timer = window.setTimeout(() => {
     toast.hidden = true;
   }, 3200);
-}
-
-function buildPageSummary(page) {
-  const current = page.page || forumState.page;
-  if (!page.total_pages || page.total_pages <= 1) return String(current);
-  return `${current} / ${page.total_pages}`;
 }
 
 function avatarInitial(value) {

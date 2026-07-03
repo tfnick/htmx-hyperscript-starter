@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality expectations for public HTML/CSS/JS changes."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Forum pagination UI, URL/state behavior, and shared JS null-safety apply."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Pagination rendering should reuse existing data and avoid extra requests."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing reply pagination page-item logic and shared styles."}
