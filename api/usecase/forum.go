@@ -85,6 +85,7 @@ type ForumThreadDetailCo struct {
 	CreatedAt      string
 	UpdatedAt      string
 	Posts          []ForumPostCo
+	PostPagination fwusecase.PageResult
 }
 
 type ForumCategoriesCo struct {
@@ -223,16 +224,22 @@ func GetForumThreadDetail(ctx fwusecase.Context, qry ForumThreadDetailQry) (Foru
 		thread.ViewCount++
 	}
 
-	posts, err := models.ListForumPosts(ctx.Std(), models.ForumPostQuery{
+	postQuery := models.ForumPostQuery{
 		ThreadID: threadID,
 		Limit:    pageQuery.Limit(),
 		Offset:   pageQuery.Offset(),
-	})
+	}
+	totalPosts, err := models.CountForumPosts(ctx.Std(), postQuery)
+	if err != nil {
+		return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeInternal, "failed to count thread replies", err)
+	}
+
+	posts, err := models.ListForumPosts(ctx.Std(), postQuery)
 	if err != nil {
 		return ForumThreadDetailCo{}, fwusecase.E(fwusecase.CodeInternal, "failed to load thread replies", err)
 	}
 
-	return forumThreadDetailCoFromModel(thread, posts), nil
+	return forumThreadDetailCoFromModel(thread, posts, fwusecase.NewPageResult(pageQuery, totalPosts)), nil
 }
 
 func CreateForumThread(ctx fwusecase.Context, cmd CreateForumThreadCmd) (ForumThreadDetailCo, error) {
@@ -612,7 +619,7 @@ func forumThreadSummaryCosFromModels(threads []models.ForumThreadListItem) []For
 	return items
 }
 
-func forumThreadDetailCoFromModel(thread models.ForumThreadDetail, posts []models.ForumPostListItem) ForumThreadDetailCo {
+func forumThreadDetailCoFromModel(thread models.ForumThreadDetail, posts []models.ForumPostListItem, postPagination fwusecase.PageResult) ForumThreadDetailCo {
 	return ForumThreadDetailCo{
 		ID: thread.ID,
 		Category: ForumCategoryCo{
@@ -635,6 +642,7 @@ func forumThreadDetailCoFromModel(thread models.ForumThreadDetail, posts []model
 		CreatedAt:      thread.CreatedAt,
 		UpdatedAt:      thread.UpdatedAt,
 		Posts:          forumPostCosFromModels(posts),
+		PostPagination: postPagination,
 	}
 }
 

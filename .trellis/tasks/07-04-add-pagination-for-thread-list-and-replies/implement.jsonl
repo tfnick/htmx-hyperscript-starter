@@ -1,0 +1,9 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Backend entrypoint for route/usecase/model boundaries and pagination quality expectations."}
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "Forum thread, category, reply, visibility, list, and detail contracts are directly affected."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Invalid page/page_size should preserve existing validation and response envelope behavior."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Implementation needs focused Go tests for route/usecase pagination behavior."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend entrypoint for public templates, shared JS, and quality checks."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Post list/detail page state, URL behavior, accessibility, and null-safe JS apply."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Pagination must avoid unbounded lists, N+1 requests, and excessive DOM work."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Pagination metadata flows through model/usecase/route/JSON/JS/UI."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing PageQuery/PageResult, PaginationResponse, postPath, and frontend pagination helpers."}

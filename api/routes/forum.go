@@ -74,6 +74,7 @@ type ForumThreadDetailResponse struct {
 	CreatedAt      string                `json:"created_at"`
 	UpdatedAt      string                `json:"updated_at"`
 	Posts          []ForumPostResponse   `json:"posts"`
+	Pagination     PaginationResponse    `json:"pagination"`
 }
 
 type ForumCategoriesResponse struct {
@@ -148,10 +149,13 @@ func ListForumThreads(c echo.Context) error {
 }
 
 func GetForumThread(c echo.Context) error {
+	page := fwrequest.PageQuery(c)
 	ctx := fwcontext.InternalUsecaseContext(c)
 	thread, err := usecase.GetForumThreadDetail(ctx, usecase.ForumThreadDetailQry{
 		ID:        c.Param("id"),
 		CountView: true,
+		PostPage:  page.Page,
+		PostSize:  page.PageSize,
 	})
 	if err != nil {
 		return httpresponse.InternalUsecaseError(c, err)
@@ -388,5 +392,6 @@ func ToForumThreadDetailResponse(thread usecase.ForumThreadDetailCo) ForumThread
 		CreatedAt:      thread.CreatedAt,
 		UpdatedAt:      thread.UpdatedAt,
 		Posts:          ToForumPostResponses(thread.Posts),
+		Pagination:     ToPaginationResponse(thread.PostPagination),
 	}
 }

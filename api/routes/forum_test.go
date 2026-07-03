@@ -205,6 +205,44 @@ func TestPrivateForumThreadRouteVisibility(t *testing.T) {
 	}
 }
 
+func TestGetForumThreadReadsReplyPaginationQuery(t *testing.T) {
+	setupRouteTestDBs(t)
+	threadID := seedRouteForumThreadWithVisibility(t, "daily", "Route reply pagination", "Route thread with paged replies.", "")
+	for i := 1; i <= 5; i++ {
+		seedRouteForumReply(t, threadID, "Route reply body")
+	}
+
+	router := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/api/forum/threads/"+threadID+"?page=2&page_size=2", nil)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	c.SetParamNames("id")
+	c.SetParamValues(threadID)
+
+	if err := routes.GetForumThread(c); err != nil {
+		t.Fatalf("get forum thread: %v", err)
+	}
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d body=%s", http.StatusOK, rec.Code, rec.Body.String())
+	}
+
+	var envelope struct {
+		Success bool                             `json:"success"`
+		Data    routes.ForumThreadDetailResponse `json:"data"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &envelope); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !envelope.Success || len(envelope.Data.Posts) != 2 {
+		t.Fatalf("expected paginated replies in response, got %s", rec.Body.String())
+	}
+	if envelope.Data.Pagination.Page != 2 || envelope.Data.Pagination.PageSize != 2 ||
+		envelope.Data.Pagination.TotalItems != 5 || envelope.Data.Pagination.TotalPages != 3 ||
+		!envelope.Data.Pagination.HasPrevious || !envelope.Data.Pagination.HasNext {
+		t.Fatalf("unexpected pagination response: %#v", envelope.Data.Pagination)
+	}
+}
+
 func seedRouteForumThread(t *testing.T, categorySlug string, title string, bodyText string) {
 	t.Helper()
 	_ = seedRouteForumThreadWithVisibility(t, categorySlug, title, bodyText, "")
@@ -238,6 +276,26 @@ func seedRouteForumThreadWithVisibility(t *testing.T, categorySlug string, title
 		t.Fatalf("decode seeded forum thread: %v", err)
 	}
 	return envelope.Data.ID
+}
+
+func seedRouteForumReply(t *testing.T, threadID string, bodyText string) {
+	t.Helper()
+
+	router := echo.New()
+	body := bytes.NewBufferString(`{"body":"` + bodyText + `"}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/forum/threads/"+threadID+"/posts", body)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := router.NewContext(req, rec)
+	c.SetParamNames("id")
+	c.SetParamValues(threadID)
+	fwcontext.SetCurrentUser(c, &models.User{ID: forumRouteSeedUserID, Name: "Route User", IsActive: 1})
+	if err := routes.ReplyForumThread(c); err != nil {
+		t.Fatalf("seed forum reply: %v", err)
+	}
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("seed forum reply status %d body=%s", rec.Code, rec.Body.String())
+	}
 }
 
 const forumRouteSeedUserID = "019ea0c1-0001-7000-8000-000000000002"

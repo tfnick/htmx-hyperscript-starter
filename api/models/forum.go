@@ -379,6 +379,24 @@ func ListForumPosts(ctx context.Context, query ForumPostQuery) ([]ForumPostListI
 	return posts, nil
 }
 
+func CountForumPosts(ctx context.Context, query ForumPostQuery) (int, error) {
+	d, err := db.EngineFor(ctx, "app")
+	if err != nil {
+		return 0, fmt.Errorf("database unavailable: %w", err)
+	}
+
+	var total int
+	if err := d.Get(&total, `
+		SELECT COUNT(*)
+		FROM forum_posts p
+		WHERE p.thread_id = :thread_id
+		  AND p.status = 'published'
+	`, query); err != nil {
+		return 0, fmt.Errorf("count forum posts failed: %w", err)
+	}
+	return total, nil
+}
+
 func GetForumPostListItemByID(ctx context.Context, id string) (ForumPostListItem, error) {
 	d, err := db.EngineFor(ctx, "app")
 	if err != nil {

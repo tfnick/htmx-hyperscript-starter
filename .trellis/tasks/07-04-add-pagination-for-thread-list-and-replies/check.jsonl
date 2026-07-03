@@ -1,0 +1,7 @@
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "Verify forum list/detail/reply visibility and pagination contracts."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Verify invalid pagination input maps through existing error handling."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify Go formatting, tests, architecture guard, and quality gate expectations."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Verify semantic UI state, URL behavior, accessibility, and null-safe shared JS."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Verify no unbounded list/reply fetching or frontend N+1 behavior."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Check page/page_size and pagination metadata remain consistent across layers."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Check existing pagination helpers were reused instead of duplicated."}

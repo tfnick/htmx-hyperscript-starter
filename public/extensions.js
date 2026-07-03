@@ -22,6 +22,7 @@ const forumState = {
   search: "",
   page: 1,
   pageSize: 20,
+  postPageSize: 10,
   token: localStorage.getItem("forum_access_token") || "",
   refreshToken: localStorage.getItem("forum_refresh_token") || "",
   currentUser: null,
@@ -164,23 +165,20 @@ function bindListEvents() {
     });
   });
 
-  const prevPage = $("#prev-page");
-  if (prevPage) {
-    prevPage.addEventListener("click", () => {
-      if (forumState.page <= 1) return;
-      forumState.page -= 1;
-      loadThreads();
-    });
-  }
-
-  const nextPage = $("#next-page");
-  if (nextPage) {
-    nextPage.addEventListener("click", () => {
+  document.querySelectorAll("[data-thread-page-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.threadPageAction;
+      if (action === "previous") {
+        if (forumState.page <= 1) return;
+        forumState.page -= 1;
+        loadThreads();
+        return;
+      }
+      if (action !== "next") return;
       forumState.page += 1;
       loadThreads();
     });
-  }
-
+  });
 }
 
 function bindNewPostEvents() {
@@ -338,12 +336,7 @@ function renderThreads(data) {
   }
 
   const page = data.pagination || {};
-  const pageSummary = $("#page-summary");
-  const prevPage = $("#prev-page");
-  const nextPage = $("#next-page");
-  if (pageSummary) pageSummary.textContent = buildPageSummary(page);
-  if (prevPage) prevPage.disabled = !page.has_previous;
-  if (nextPage) nextPage.disabled = !page.has_next;
+  syncThreadPagers(page);
 }
 
 function renderThreadRow(thread) {
@@ -381,12 +374,11 @@ function renderEmptyThreads(title, message) {
       <p>${escapeHTML(message)}</p>
     </article>
   `;
-  const pageSummary = $("#page-summary");
-  const prevPage = $("#prev-page");
-  const nextPage = $("#next-page");
-  if (pageSummary) pageSummary.textContent = String(forumState.page);
-  if (prevPage) prevPage.disabled = forumState.page <= 1;
-  if (nextPage) nextPage.disabled = true;
+  syncThreadPagers({
+    page: forumState.page,
+    has_previous: forumState.page > 1,
+    has_next: false,
+  });
 }
 
 async function loadThread(threadID, options = {}) {
@@ -405,7 +397,11 @@ async function loadThread(threadID, options = {}) {
   }
 
   try {
-    const thread = await apiFetch(`/api/forum/threads/${encodeURIComponent(threadID)}`);
+    const params = new URLSearchParams({
+      page: postPage,
+      page_size: forumState.postPageSize,
+    });
+    const thread = await apiFetch(`/api/forum/threads/${encodeURIComponent(threadID)}?${params}`);
     renderThreadDetail(thread);
   } catch (error) {
     renderThreadError("Thread failed to load", error.message);
@@ -417,8 +413,18 @@ function renderThreadDetail(thread) {
   const threadDetail = $("#thread-detail");
   if (!threadDetail) return;
   forumState.selectedThreadID = thread.id;
+  forumState.selectedPostPage = normalizePostPage(thread.pagination?.page || forumState.selectedPostPage);
   forumState.viewMode = "detail";
   const canReply = Boolean(forumState.currentUser);
+  const replies = thread.posts || [];
+  const replyPage = thread.pagination || {
+    page: forumState.selectedPostPage,
+    page_size: forumState.postPageSize,
+    total_items: replies.length,
+    total_pages: replies.length ? 1 : 0,
+    has_previous: false,
+    has_next: false,
+  };
   threadDetail.innerHTML = `
     <section class="thread-detail-card">
       <p class="eyebrow">${escapeHTML(thread.category?.name || thread.category?.slug || "Forum")}</p>
@@ -429,7 +435,9 @@ function renderThreadDetail(thread) {
       <p class="thread-body">${escapeHTML(thread.body)}</p>
       <section class="reply-list">
         <h3>回复</h3>
-        ${thread.posts?.length ? thread.posts.map(renderReply).join("") : `<div class="notice-row">暂无回复。</div>`}
+        ${renderReplyPagination(replyPage)}
+        ${replies.length ? replies.map(renderReply).join("") : `<div class="notice-row">${replyPage.total_items ? "当前回复页没有内容。" : "暂无回复。"}</div>`}
+        ${renderReplyPagination(replyPage)}
       </section>
       ${canReply ? renderReplyForm(thread.id) : `<div class="notice-row">登录后参与回复。</div>`}
     </section>
@@ -442,9 +450,63 @@ function renderThreadDetail(thread) {
       const updated = await apiFetch(`/api/forum/threads/${encodeURIComponent(thread.id)}/posts`, { method: "POST", body: payload });
       form.reset();
       showToast("回复已发布");
-      renderThreadDetail(updated);
+      const lastPage = Math.max(1, Math.ceil((updated.reply_count || 0) / forumState.postPageSize));
+      loadThread(thread.id, { postPage: lastPage });
     });
   }
+  bindReplyPagination(thread.id);
+}
+
+function syncThreadPagers(page) {
+  document.querySelectorAll("[data-thread-page-summary]").forEach((summary) => {
+    summary.textContent = buildPageSummary(page);
+  });
+  document.querySelectorAll("[data-thread-page-action='previous']").forEach((button) => {
+    button.disabled = !page.has_previous;
+  });
+  document.querySelectorAll("[data-thread-page-action='next']").forEach((button) => {
+    button.disabled = !page.has_next;
+  });
+}
+
+function renderReplyPagination(page) {
+  if (!page || !page.total_pages || page.total_pages <= 1) return "";
+  const current = normalizePostPage(page.page);
+  const total = page.total_pages;
+  const buttons = [];
+  buttons.push(`<button type="button" class="reply-page-button" data-reply-page="${Math.max(1, current - 1)}" ${page.has_previous ? "" : "disabled"} aria-label="上一页回复">‹</button>`);
+  for (const item of replyPageItems(current, total)) {
+    if (item === "gap") {
+      buttons.push(`<span class="reply-page-gap" aria-hidden="true">…</span>`);
+      continue;
+    }
+    buttons.push(`<button type="button" class="reply-page-button" data-reply-page="${item}" ${item === current ? `aria-current="page"` : ""}>${item}</button>`);
+  }
+  buttons.push(`<button type="button" class="reply-page-button" data-reply-page="${Math.min(total, current + 1)}" ${page.has_next ? "" : "disabled"} aria-label="下一页回复">›</button>`);
+  return `<nav class="reply-pagination" aria-label="回复分页">${buttons.join("")}</nav>`;
+}
+
+function replyPageItems(current, total) {
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sorted = [...pages].filter((page) => page >= 1 && page <= total).sort((a, b) => a - b);
+  const items = [];
+  for (const page of sorted) {
+    if (items.length && page - items[items.length - 1] > 1) {
+      items.push("gap");
+    }
+    items.push(page);
+  }
+  return items;
+}
+
+function bindReplyPagination(threadID) {
+  document.querySelectorAll("[data-reply-page]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const page = normalizePostPage(button.dataset.replyPage);
+      if (page === forumState.selectedPostPage) return;
+      loadThread(threadID, { postPage: page });
+    });
+  });
 }
 
 function renderReply(reply) {

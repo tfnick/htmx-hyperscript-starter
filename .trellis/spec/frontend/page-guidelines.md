@@ -48,6 +48,15 @@
 - 前端 API 请求复用现有 `apiFetch`、`showToast`、`postPath` 等模式；新增 helper 前先搜索现有实现。
 - 跨页面共享 JS 状态必须有明确默认值和恢复逻辑，不能依赖某个页面先访问过。
 
+### Forum Pagination Contracts
+
+- 帖子列表页如果同时提供上方和下方分页操作区，两处必须读取同一个 `forumState.page` 和同一份 API `pagination` 元数据；不要为上下分页各维护一份状态。
+- 上下分页控件应使用共享 class 或 `data-*` action 绑定事件，点击任一处都调用同一套加载逻辑，并在响应后同步所有分页摘要、页码按钮和 disabled 状态。
+- 帖子详情页的 `/post-{id}-{page}` 中 page 表示回复页码；`loadThread` 必须把该页码作为 `page` query 参数传给详情 API。
+- 回复分页使用页码按钮时，按钮必须能表达当前页，页数很多时应收缩显示，避免移动端横向溢出。
+- 发布新回复后，如果产品希望用户立即看到新回复，应根据 `reply_count` 和当前 `page_size` 计算最后一页，再加载对应回复页；不要假设新回复一定在当前页。
+- 推广、广告或推荐内容插入列表会改变分页计数语义，必须另起任务设计；普通列表分页任务不要预留隐式占位。
+
 ## API Boundary Contracts
 
 - 前端只消费 `/api/*` 返回的 response DTO，不直接把数据库字段、Go model 字段或 provider 原始 payload 当成页面契约。
@@ -82,6 +91,7 @@
 - 新增 SEO 公开页：检查 `<title>`、主要 heading、canonical/分页链接、空状态、错误状态。
 - 修改跨层字段：同步 API response、前端渲染、空值处理、错误处理和测试。
 - 修改 API envelope、字段名或错误语义：检查 `apiFetch` 调用点和页面 toast/状态展示是否仍然一致。
+- 修改论坛分页：检查列表上下分页控件同步、详情回复页 URL 刷新恢复、`node --check public/extensions.js`，并配合后端 route/usecase 分页测试。
 
 ## Wrong vs Correct
 

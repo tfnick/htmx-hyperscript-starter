@@ -277,6 +277,11 @@ button {
   font-size: 16px;
 }
 
+.feed-pager-bottom {
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
 .pager-button {
   width: 28px;
   height: 28px;
@@ -705,6 +710,42 @@ button {
 .reply-list h3 {
   margin: 0;
   font-size: 15px;
+}
+
+.reply-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.reply-page-button {
+  min-width: 32px;
+  min-height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+.reply-page-button:hover:not(:disabled),
+.reply-page-button[aria-current="page"] {
+  border-color: #8b8f93;
+  background: #8d9297;
+  color: #ffffff;
+}
+
+.reply-page-button:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.reply-page-gap {
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .reply-row {

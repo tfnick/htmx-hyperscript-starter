@@ -221,6 +221,47 @@ func TestUpdateForumPostReturnsReplyBeyondDefaultDetailPage(t *testing.T) {
 	}
 }
 
+func TestGetForumThreadDetailReturnsPaginatedReplies(t *testing.T) {
+	setupUsecaseOrderTxDB(t)
+
+	ownerCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedUserID, "Owner", false)
+	thread, err := usecase.CreateForumThread(ownerCtx, usecase.CreateForumThreadCmd{
+		CategorySlug: "daily",
+		Title:        "Paginated replies",
+		Body:         "Replies should be loaded one page at a time.",
+	})
+	if err != nil {
+		t.Fatalf("create forum thread: %v", err)
+	}
+
+	replyCtx := authenticatedForumUsecaseContext(t.Context(), forumSeedOtherID, "Reply Author", false)
+	for i := 1; i <= 5; i++ {
+		if _, err := usecase.ReplyForumThread(replyCtx, usecase.ReplyForumThreadCmd{
+			ThreadID: thread.ID,
+			Body:     "Reply page body",
+		}); err != nil {
+			t.Fatalf("create reply %d: %v", i, err)
+		}
+	}
+
+	detail, err := usecase.GetForumThreadDetail(ownerCtx, usecase.ForumThreadDetailQry{
+		ID:       thread.ID,
+		PostPage: 2,
+		PostSize: 2,
+	})
+	if err != nil {
+		t.Fatalf("get forum thread detail: %v", err)
+	}
+	if len(detail.Posts) != 2 {
+		t.Fatalf("expected second reply page to contain 2 replies, got %d", len(detail.Posts))
+	}
+	if detail.PostPagination.Page != 2 || detail.PostPagination.PageSize != 2 ||
+		detail.PostPagination.TotalItems != 5 || detail.PostPagination.TotalPages != 3 ||
+		!detail.PostPagination.HasPrevious || !detail.PostPagination.HasNext {
+		t.Fatalf("unexpected reply pagination: %#v", detail.PostPagination)
+	}
+}
+
 func authenticatedForumUsecaseContext(ctx context.Context, userID string, name string, admin bool) fwusecase.Context {
 	callCtx := fwusecase.NewContext(ctx, fwusecase.SurfaceInternalAPI)
 	callCtx.Actor = fwusecase.ActorContext{
