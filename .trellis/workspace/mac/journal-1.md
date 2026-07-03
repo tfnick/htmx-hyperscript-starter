@@ -38,3 +38,36 @@ Transformed the starter into a Go/Echo htmx forum MVP, added embedded-template p
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: Add dedicated forum post page
+
+**Date**: 2026-07-03
+**Task**: Add dedicated forum post page
+**Branch**: `main`
+
+### Summary
+
+Implemented a dedicated forum post page with category defaults, public/private visibility, backend visibility enforcement, tests, smoke verification, and forum visibility specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c42d3d0` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
