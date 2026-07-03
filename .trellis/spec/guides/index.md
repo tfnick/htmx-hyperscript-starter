@@ -1,79 +1,75 @@
 # Thinking Guides
 
-> **Purpose**: Expand your thinking to catch things you might not have considered.
+> **Purpose**: 在写代码或更新 spec 前，帮助开发者先想清楚边界、复用、文档落点和风险点。
 
 ---
 
-## Why Thinking Guides?
+## Guide Boundaries
 
-**Most bugs and tech debt come from "didn't think of that"**, not from lack of skill:
+`guides/` 不是具体实现规范的替代品。它只回答“开始前应该想什么”，不重复每个 layer spec 里的详细契约。
 
-- Didn't think about what happens at layer boundaries → cross-layer bugs
-- Didn't think about code patterns repeating → duplicated code everywhere
-- Didn't think about edge cases → runtime errors
-- Didn't think about future maintainers → unreadable code
+| Type | Location | Content Rule |
+| --- | --- | --- |
+| Code spec | `.trellis/spec/backend/`、`.trellis/spec/frontend/` | 写清楚签名、字段、错误、测试点和反例 |
+| Thinking guide | `.trellis/spec/guides/` | 用短清单提醒先搜索、先画流、先判断落点 |
 
-These guides help you **ask the right questions before coding**.
-
----
+如果一条内容是在规定“代码必须怎么写”，放到对应 layer spec；如果是在提醒“写之前别忘了想什么”，放到本目录。
 
 ## Available Guides
 
-| Guide | Purpose | When to Use |
-|-------|---------|-------------|
-| [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | Identify patterns and reduce duplication | When you notice repeated patterns |
-| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | Think through data flow across layers | Features spanning multiple layers |
+| Guide | Purpose | When To Use |
+| --- | --- | --- |
+| [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | 避免重复实现，先找现有 helper、样式、API 和模板入口 | 新增函数、组件、常量、CSS 模式、脚本工具或批量改类似文件前 |
+| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | 梳理 API、usecase、model、DB、template、JS 之间的数据流 | 功能跨越 3 个以上层，或字段会在前后端之间流动时 |
+| [Spec Writing Thinking Guide](./spec-writing-thinking-guide.md) | 判断 spec 更新应该写在哪、写到什么深度、如何保持可执行 | 新增/更新 `.trellis/spec/**` 或任务沉淀项目规则时 |
 
----
+## Quick Reference
 
-## Quick Reference: Thinking Triggers
+### When To Think About Cross-Layer Issues
 
-### When to Think About Cross-Layer Issues
+- [ ] 功能涉及 API、usecase、model、DB、template、JS、CSS 中的 3 层以上。
+- [ ] 同一个字段在数据库、DTO、JSON、HTML data attribute 或 JS state 中转换。
+- [ ] 后端返回格式和前端展示格式不完全一致。
+- [ ] 可见性、登录态、分页、错误语义会穿过多层。
+- [ ] 不确定逻辑应该放在 route、usecase、template 还是 JS。
 
-- [ ] Feature touches 3+ layers (API, Service, Component, Database)
-- [ ] Data format changes between layers
-- [ ] Multiple consumers need the same data
-- [ ] You're not sure where to put some logic
+阅读 [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)。
 
-→ Read [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)
+### When To Think About Code Reuse
 
-### When to Think About Code Reuse
+- [ ] 正在写一个和现有函数、模板、样式或测试很像的东西。
+- [ ] 同一种变更需要改 3 个以上文件。
+- [ ] 正在新增常量、配置、路径、CSS class、API helper 或 toast/loading 逻辑。
+- [ ] 正在复制一段代码再改几个字段。
+- [ ] 正在改模板路径、组件路径或静态资源路径。
 
-- [ ] You're writing similar code to something that exists
-- [ ] You see the same pattern repeated 3+ times
-- [ ] You're adding a new field to multiple places
-- [ ] **You're modifying any constant or config**
-- [ ] **You're creating a new utility/helper function** ← Search first!
+阅读 [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)。
 
-→ Read [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)
+### When To Think About Spec Updates
 
----
+- [ ] 任务暴露了新的跨层契约、运行时 flag、模板路径、API 字段或错误语义。
+- [ ] 实现中做了一个未来会被复用的设计选择。
+- [ ] 修 bug 后发现以后应该提前检查某个条件。
+- [ ] 新增或调整 `.trellis/spec/**`，需要保证标题语言、正文语言和落点一致。
 
-## Pre-Modification Rule (CRITICAL)
+阅读 [Spec Writing Thinking Guide](./spec-writing-thinking-guide.md)。
 
-> **Before changing ANY value, ALWAYS search first!**
+## Pre-Modification Rule
+
+> **Before changing any reusable value, search first.**
+
+改路径、字段、常量、模板名、CSS class、API endpoint、flag、错误码、缓存头之前，先搜索现有用法：
 
 ```bash
-# Search for the value you're about to change
-grep -r "value_to_change" .
+rg "value_to_change"
 ```
 
-This single habit prevents most "forgot to update X" bugs.
+如果搜索结果跨越多个层，先补一张最小数据流清单，再动代码。
 
----
+## Language Rule
 
-## How to Use This Directory
+`.trellis/spec/**` 的 Markdown heading 使用英文，正文尽量使用中文。表格列名、代码、命令、路径、API 字段名可以保留英文；解释性段落优先中文。
 
-1. **Before coding**: Skim the relevant thinking guide
-2. **During coding**: If something feels repetitive or complex, check the guides
-3. **After bugs**: Add new insights to the relevant guide (learn from mistakes)
+## Update Rule
 
----
-
-## Contributing
-
-Found a new "didn't think of that" moment? Add it to the relevant guide.
-
----
-
-**Core Principle**: 30 minutes of thinking saves 3 hours of debugging.
+新增 guide 时同步更新本索引。guide 应该保持短、可扫读、能指向具体 spec；不要把完整 API 设计、数据库字段矩阵或模板运行时契约写进 `guides/`。
