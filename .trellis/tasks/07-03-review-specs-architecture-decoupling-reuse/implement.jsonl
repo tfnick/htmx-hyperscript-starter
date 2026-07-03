@@ -1,0 +1,18 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec\\guides\\spec-writing-thinking-guide.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\guides\\index.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\guides\\cross-layer-thinking-guide.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\guides\\code-reuse-thinking-guide.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\frontend\\template-runtime-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\frontend\\performance-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\frontend\\page-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\frontend\\index.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\quality-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\logging-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\index.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\forum-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\error-handling.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\directory-structure.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec\\backend\\database-guidelines.md", "reason": "Spec review source for architecture, decoupling, anti-corruption, reuse, and full-stack efficiency."}
+{"file": ".trellis/spec/backend/architecture-guidelines.md", "reason": "New spec created during architecture/decoupling review."}
+{"file": ".trellis/spec/guides/architecture-review-thinking-guide.md", "reason": "New spec created during architecture/decoupling review."}

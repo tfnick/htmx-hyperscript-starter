@@ -48,6 +48,15 @@
 - 前端 API 请求复用现有 `apiFetch`、`showToast`、`postPath` 等模式；新增 helper 前先搜索现有实现。
 - 跨页面共享 JS 状态必须有明确默认值和恢复逻辑，不能依赖某个页面先访问过。
 
+## API Boundary Contracts
+
+- 前端只消费 `/api/*` 返回的 response DTO，不直接把数据库字段、Go model 字段或 provider 原始 payload 当成页面契约。
+- `extensions.js` 中的状态字段应来自明确的 API response、URL path/query 或页面 DOM，不从 localStorage 随意拼装业务事实。
+- API envelope 失败时优先使用 `apiFetch` 解析出的安全 message，再通过 `showToast` 或页面状态展示；不要在每个页面重写 fetch/envelope/error 逻辑。
+- 新增列表字段时，优先让列表 API 返回摘要字段；不要在前端对每个列表项追加详情请求来补字段。
+- 新增表单字段时，确认 route request DTO、usecase command、model/migration、模板字段名和 JS payload 使用同一个业务语义。
+- provider-specific 字段不得直接暴露到模板或 JS；需要展示时，后端先归一化成业务字段。
+
 ## Accessibility Contracts
 
 - 可点击命令使用 `button`，导航使用 `a href`；不要用无 href 的链接承担按钮行为。
@@ -72,6 +81,7 @@
 - 新增 JS：运行 `node --check public/extensions.js`，并人工或浏览器 smoke 测试关键页面。
 - 新增 SEO 公开页：检查 `<title>`、主要 heading、canonical/分页链接、空状态、错误状态。
 - 修改跨层字段：同步 API response、前端渲染、空值处理、错误处理和测试。
+- 修改 API envelope、字段名或错误语义：检查 `apiFetch` 调用点和页面 toast/状态展示是否仍然一致。
 
 ## Wrong vs Correct
 
@@ -108,4 +118,5 @@
 - 新增公开页面但没有独立 title，导致所有页面在搜索结果中标题相同。
 - 把私有主题、发帖页或账号页面当作公开可索引内容处理。
 - 为一次性小交互新增大型依赖或第二套状态管理。
-
+- 页面为了补字段循环请求详情 API，绕开后端列表 DTO 的职责。
+- 把第三方 provider 状态码、payload 字段或签名错误原样显示给用户。

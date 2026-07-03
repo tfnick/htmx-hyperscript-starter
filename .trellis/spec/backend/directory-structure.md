@@ -8,6 +8,8 @@
 
 当前后台以 `api/` 为主体，按照 HTTP、业务用例、数据模型、基础设施和外部 provider 分层。新增代码时先放入现有层级；只有当现有层级无法表达清楚职责时，才新增目录。
 
+更完整的导入方向、防腐层、复用入口和全栈字段同步规则见 [Architecture Guidelines](./architecture-guidelines.md)。本文件只负责目录职责的快速定位。
+
 ## Directory Layout
 
 ```text
@@ -130,6 +132,8 @@ model 文件负责 SQL 读写、数据行结构和必要的转换。模型层可
 ## Provider Pattern
 
 新增外部集成时先在 `api/usecase/integrations/<domain>/ports.go` 定义端口，再在 `api/providers/<domain>/` 提供具体实现。usecase 依赖端口注册表或接口，避免把第三方 SDK 类型扩散到业务层。
+
+provider 内部可以使用第三方 SDK、HTTP client、签名校验和 provider-specific payload；这些类型不应出现在 route、model、HTML template、JS 或持久化业务表中。需要保存 provider 信息时，先归一化成业务字段或脱敏 snapshot。
 
 ## Common Mistakes
 

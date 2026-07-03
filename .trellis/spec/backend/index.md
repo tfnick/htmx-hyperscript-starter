@@ -21,6 +21,7 @@
 
 开始写 backend 代码前：
 
+- 阅读 [Architecture Guidelines](./architecture-guidelines.md)，如果改动跨越 route/usecase/model/framework/provider，或涉及防腐层、复用入口、全栈字段同步。
 - 阅读 [Directory Structure](./directory-structure.md)，确认目标代码应该落在哪一层。
 - 阅读 [Database Guidelines](./database-guidelines.md)，如果涉及 SQL、迁移、事务或 after-commit hook。
 - 阅读 [Error Handling](./error-handling.md)，如果新增 route、usecase error、鉴权或 open-api 行为。
@@ -37,6 +38,8 @@
 - `models` 负责表结构对应的数据类型和 SQL 访问，不返回 HTTP DTO。
 - `framework` 负责可复用基础设施；不要把通用 helper、response 或架构守护文件散落到核心业务目录。
 - `providers` 负责外部服务适配；业务层依赖端口，不直接依赖具体 provider。
+- 外部系统通过 `api/usecase/integrations/*` 端口进入业务层；第三方 payload、SDK、签名和 provider 错误必须被 provider 层归一化。
+- 新增跨层字段时按 migration/model/usecase/route/frontend/test 的顺序核对，避免只修当前层导致后续漂移。
 
 ## Quality Check
 
@@ -53,6 +56,7 @@
 
 | Guide | Purpose | Status |
 | --- | --- | --- |
+| [Architecture Guidelines](./architecture-guidelines.md) | 架构边界、解耦、防腐层、framework 复用和全栈字段同步 | Filled |
 | [Directory Structure](./directory-structure.md) | 后台目录职责、分层边界、DTO 和 provider 归属 | Filled |
 | [Database Guidelines](./database-guidelines.md) | DB manager、迁移、事务、模型访问和测试规则 | Filled |
 | [Error Handling](./error-handling.md) | usecase 错误码、内部 API/open-api 响应 envelope 和 HTTP 映射 | Filled |

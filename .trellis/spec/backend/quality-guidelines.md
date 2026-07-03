@@ -81,12 +81,15 @@
 - 在业务代码中直接导入 raw EventBus 或 raw goqite。
 - 在核心业务目录中新增通用 `helpers.go`、`responses.go` 或 guard test。
 - 因局部需求引入第二套 logging、response envelope、pagination 或 transaction helper。
+- 为了快速接入第三方服务，让 usecase 直接依赖具体 provider、SDK、第三方 webhook payload 或 provider error type。
 
 ## Review Checklist
 
 提交 backend 改动前逐项确认：
 
 - 分层导入是否符合 archguard。
+- 外部服务是否通过 `api/usecase/integrations/*` 端口进入业务层，而不是直接绑定 provider。
+- 是否复用了已有 framework helper，避免新增第二套 response、pagination、transaction、logging、auth 或 provider registry。
 - route 是否有清晰请求 DTO、响应 DTO 和错误映射。
 - usecase 是否返回标准错误码。
 - model 是否承担 SQL，而不是 HTTP 或业务展示。

@@ -23,6 +23,8 @@ rg "renderTemplate|loadTemplate|cleanTemplateName"
 rg "apiFetch|showToast|postPath"
 rg "thread|category|visibility"
 rg "Cache-Control|no-store|template-path"
+rg "NormalizePageQuery|PageQuery|InternalUsecaseError"
+rg "Register.*Adapter|integrations/.*/ports.go"
 ```
 
 搜索目标可以是函数名、字段名、路径片段、CSS class、错误文案、API endpoint 或测试名。
@@ -36,6 +38,8 @@ rg "Cache-Control|no-store|template-path"
 | 是否在改常量、路径、flag、endpoint、CSS class？ | 搜全仓库，确认所有引用一起更新 |
 | 是否会让外部模板覆盖路径变化？ | 同步检查 frontend template runtime spec 和兼容策略 |
 | 是否让 API 字段跨过前后端？ | 同步阅读 cross-layer guide，避免字段漏改 |
+| 是否准备新增 provider、registry 或第三方集成 helper？ | 先检查 `api/usecase/integrations/*` 和现有 registry 模式 |
+| 是否准备新增分页、response、transaction、logging 或 auth helper？ | 优先复用 `api/framework/**` 中的已有能力 |
 
 ## Common Duplication Patterns
 
@@ -62,6 +66,12 @@ Good: 找到最接近的所有引用；如果规则稳定且跨文件复用，�
 Bad: 一个机制递归复制目录，另一个机制手写文件列表；新增目录后只有一边更新。
 
 Good: 如果无法共用同一个发现机制，就增加测试或脚本检查两边输出是否一致。
+
+### Pattern 5: Parallel Framework Helpers
+
+Bad: 为新业务单独写 `paginate()`、`jsonOK()`、`withTx()`、`logError()` 或 provider registry。
+
+Good: 复用 `fwrequest.PageQuery`、`fwusecase.NormalizePageQuery`、`httpresponse`、`fwusecase.WithAppTx`、`logging.For` 和已有 adapter registry 模式。
 
 ## When To Abstract
 

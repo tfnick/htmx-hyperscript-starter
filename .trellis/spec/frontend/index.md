@@ -28,6 +28,7 @@
 - 涉及 API 字段、分页、错误响应或鉴权时，同时阅读 [Backend Development Guidelines](../backend/index.md)。
 - 对跨层字段和状态变更，阅读 [Cross-Layer Thinking Guide](../guides/cross-layer-thinking-guide.md)。
 - 新增可复用 helper、样式模式或前端工具前，阅读 [Code Reuse Thinking Guide](../guides/code-reuse-thinking-guide.md)，并先搜索现有实现。
+- 涉及架构、解耦、防腐、provider、framework 复用或端到端字段同步时，阅读 [Architecture Review Thinking Guide](../guides/architecture-review-thinking-guide.md)。
 
 ## Core Contracts
 
@@ -38,6 +39,8 @@
 - 登录、注册、发帖、私有主题等不适合公开索引的页面，应避免伪装成公开内容页；需要时使用 `noindex` 或清晰的未登录状态。
 - 外部模板覆盖是稳定产品能力：新增模板、重命名模板或移动组件时，必须考虑外部用户覆盖路径的兼容性和迁移说明。
 - 所有前端改动必须保持 JS null-safe：同一个 `extensions.js` 会运行在不同页面，不能假设某个 DOM 节点一定存在。
+- 前端只依赖 route 暴露的 JSON response DTO 和 HTML 模板契约，不直接假设数据库字段、model 结构或 provider payload。
+- 新增端到端字段时，前端变更必须和 backend 的 `Co -> response DTO -> JSON -> template/JS` 路径对齐；不要为缺失字段临时追加详情请求或读取未公开字段。
 
 ## Quality Check
 
@@ -61,4 +64,3 @@
 ## Language Rule
 
 `.trellis/spec/` 中的 Markdown heading 必须使用英文；正文优先使用中文。新增 frontend spec 也遵守这一规则。
-

@@ -23,6 +23,12 @@
 Request -> Route -> Usecase -> Model/DB -> DTO -> Template/JS -> User
 ```
 
+如果涉及外部系统，先把 provider 防腐边界画出来：
+
+```text
+Provider Payload -> Provider Adapter -> Integration Port -> Usecase -> Model/DTO
+```
+
 每个箭头都问三件事：
 
 - 数据格式是什么？字段名、类型、空值、时间格式是否明确？
@@ -39,6 +45,7 @@ Request -> Route -> Usecase -> Model/DB -> DTO -> Template/JS -> User
 | Backend -> Frontend | JSON shape、HTTP status、错误消息、缓存语义 |
 | Template -> JS | DOM id/class、data attribute、空状态、重复绑定 |
 | Built-in Template -> External Template | 相同相对路径、缺失回退、路径清洗、兼容迁移 |
+| Provider -> Usecase | 第三方 payload 归一化、provider error 分类、safe snapshot、端口字段 |
 
 ## Forum-Specific Triggers
 
@@ -60,6 +67,7 @@ Request -> Route -> Usecase -> Model/DB -> DTO -> Template/JS -> User
 - 私有内容是否在后端就被过滤，而不是交给前端隐藏？
 - 模板路径是否仍然能从 exe 内置模板回退，并允许外部目录覆盖？
 - 新字段是否同步到 migration、model、usecase、route、template/JS 和测试？
+- 如果字段来自第三方 provider，它是否已经在 provider 层归一化，且不会把 provider-specific payload 泄漏到前端？
 
 ## Common Mistakes
 

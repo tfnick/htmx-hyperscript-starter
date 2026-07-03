@@ -19,11 +19,21 @@
 
 | Guide | Purpose | When To Use |
 | --- | --- | --- |
+| [Architecture Review Thinking Guide](./architecture-review-thinking-guide.md) | 从架构、解耦、防腐、复用和全栈效率角度做预检 | 功能跨多层、接入 provider、调整 framework 或新增端到端字段前 |
 | [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | 避免重复实现，先找现有 helper、样式、API 和模板入口 | 新增函数、组件、常量、CSS 模式、脚本工具或批量改类似文件前 |
 | [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | 梳理 API、usecase、model、DB、template、JS 之间的数据流 | 功能跨越 3 个以上层，或字段会在前后端之间流动时 |
 | [Spec Writing Thinking Guide](./spec-writing-thinking-guide.md) | 判断 spec 更新应该写在哪、写到什么深度、如何保持可执行 | 新增/更新 `.trellis/spec/**` 或任务沉淀项目规则时 |
 
 ## Quick Reference
+
+### When To Think About Architecture
+
+- [ ] 代码跨越 route、usecase、model、framework、provider 或 frontend 多层。
+- [ ] 需要新增第三方 provider、webhook、OAuth、支付、OSS、LLM、embedding 或通知能力。
+- [ ] 准备新增通用 helper、registry、middleware、response、pagination、transaction、cache 或 realtime 能力。
+- [ ] 不确定某段逻辑属于业务规则、基础设施、provider 适配还是页面展示。
+
+阅读 [Architecture Review Thinking Guide](./architecture-review-thinking-guide.md)。
 
 ### When To Think About Cross-Layer Issues
 
