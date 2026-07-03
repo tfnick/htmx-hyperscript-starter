@@ -1,0 +1,31 @@
+{
+  "id": "login-success-home-failure-toast",
+  "name": "login-success-home-failure-toast",
+  "title": "Login success redirects home and failure toast",
+  "description": "登录页提交登录后，成功应自然进入首页；失败应使用 toast 展示后端返回原因，不使用 modal/dialog。",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "mac",
+  "assignee": "mac",
+  "createdAt": "2026-07-03",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "public/login.html",
+    "public/extensions.js",
+    "public/styles.css",
+    "index.go"
+  ],
+  "notes": "",
+  "meta": {}
+}

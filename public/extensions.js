@@ -86,12 +86,22 @@ function bindAuthEvents() {
   if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
-      const auth = await apiFetch("/api/auth/login", { method: "POST", body: payload, auth: false });
-      storeAuth(auth);
-      event.currentTarget.reset();
-      showToast("已登录");
-      refreshAuthState();
+      const form = event.currentTarget;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const payload = Object.fromEntries(new FormData(form).entries());
+      if (submitButton) submitButton.disabled = true;
+
+      try {
+        const auth = await apiFetch("/api/auth/login", { method: "POST", body: payload, auth: false });
+        storeAuth(auth);
+        form.reset();
+        window.location.assign("/");
+      } catch (error) {
+        const message = error instanceof Error && error.message ? error.message : "登录失败，请稍后再试";
+        showToast(message, true);
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
   }
 
@@ -99,12 +109,22 @@ function bindAuthEvents() {
   if (registerForm) {
     registerForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
-      const auth = await apiFetch("/api/auth/register", { method: "POST", body: payload, auth: false });
-      storeAuth(auth);
-      event.currentTarget.reset();
-      showToast("账号已创建");
-      refreshAuthState();
+      const form = event.currentTarget;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const payload = Object.fromEntries(new FormData(form).entries());
+      if (submitButton) submitButton.disabled = true;
+
+      try {
+        const auth = await apiFetch("/api/auth/register", { method: "POST", body: payload, auth: false });
+        storeAuth(auth);
+        form.reset();
+        window.location.assign("/");
+      } catch (error) {
+        const message = error instanceof Error && error.message ? error.message : "注册失败，请稍后再试";
+        showToast(message, true);
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
   }
 

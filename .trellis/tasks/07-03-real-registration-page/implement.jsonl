@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "入口路由和嵌入模板会变更，需要遵守项目质量检查和入口装配约定。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "注册失败需要展示内部 API response envelope 的错误信息。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "确认 JS 语法检查、主包测试和既有全量阻塞记录要求。"}
+{"file": ".trellis/tasks/07-03-login-success-home-failure-toast/prd.md", "reason": "注册成功/失败体验应与刚完成的登录成功跳首页、失败 toast 保持一致。"}

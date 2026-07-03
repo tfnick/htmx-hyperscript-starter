@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "检查入口路由和模板嵌入是否符合当前项目约定。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "检查注册失败 toast 是否使用后端 envelope message，不吞掉错误。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "检查定向测试、JS 语法检查、主包测试和既有阻塞记录是否完整。"}
+{"file": ".trellis/tasks/07-03-login-success-home-failure-toast/prd.md", "reason": "核对登录与注册体验的一致性和不回退。"}

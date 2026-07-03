@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "检查改动是否符合项目质量检查和入口约定。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "检查失败 toast 是否使用后端 envelope 的错误原因，不吞掉错误。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "检查定向测试、构建和既有全量阻塞记录是否完整。"}
+{"file": ".trellis/tasks/archive/2026-07/07-03-fix-thread-detail-residual-elements/prd.md", "reason": "核对登录页仍保持独立模板结构，不退回 inline 登录形态。"}

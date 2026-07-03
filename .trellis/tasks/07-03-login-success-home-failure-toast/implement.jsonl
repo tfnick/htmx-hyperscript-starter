@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "即使主要是前端交互修复，也需要遵守当前项目质量检查和入口装配约定。"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "登录失败 toast 需要展示内部 API response envelope 的错误信息。"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "确认需要运行的 go/js 检查和记录既有全量测试阻塞点。"}
+{"file": ".trellis/tasks/archive/2026-07/07-03-fix-thread-detail-residual-elements/prd.md", "reason": "记录独立 login.html 模板与现有页面结构的上下文。"}

@@ -37,28 +37,32 @@
         <button type="submit" aria-label="搜索">⌕</button>
       </form>
 
-      <a class="top-login-link is-active" href="/login">登录</a>
+      <a class="top-login-link is-active" href="/register">注册</a>
     </nav>
   </header>
 
   <main class="login-shell">
-    <section class="login-panel" aria-labelledby="login-title">
+    <section class="login-panel" aria-labelledby="register-title">
       <p class="eyebrow">Account</p>
-      <h1 id="login-title">登录</h1>
+      <h1 id="register-title">注册</h1>
 
-      <form id="login-form" class="login-form">
+      <form id="register-form" class="login-form">
+        <label>
+          <span>Name</span>
+          <input name="name" autocomplete="name" required />
+        </label>
         <label>
           <span>Email</span>
           <input name="email" type="email" autocomplete="email" required />
         </label>
         <label>
           <span>Password</span>
-          <input name="password" type="password" autocomplete="current-password" required />
+          <input name="password" type="password" autocomplete="new-password" minlength="6" required />
         </label>
-        <button type="submit">登录</button>
+        <button type="submit">注册</button>
       </form>
 
-      <p class="login-switch">还没有账号？<a href="/register">注册新账号</a></p>
+      <p class="login-switch">已经有账号？<a href="/login">去登录</a></p>
     </section>
   </main>
 
