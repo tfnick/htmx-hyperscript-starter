@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend test task touches public UI and browser verification."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Reply pagination UI, URL behavior, accessibility, and browser smoke checks apply."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Large reply counts should remain paginated and not render all replies at once."}
+{"file": ".trellis/spec/backend/forum-guidelines.md", "reason": "If DB/API mock is used, forum reply pagination contracts apply."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing scripts/test helpers or API patterns for mock data."}
