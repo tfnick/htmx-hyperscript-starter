@@ -246,7 +246,7 @@ button {
 
 .feed-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr) clamp(220px, calc(24vw - 80px), 250px);
   gap: 20px;
   align-items: start;
   min-width: 0;
@@ -462,11 +462,6 @@ button {
   border-radius: var(--radius);
 }
 
-.profile-stat-card {
-  box-sizing: border-box;
-  width: calc(100% - 80px);
-  max-width: 100%;
-}
 
 .side-card h2 {
   margin: 0 0 8px;
