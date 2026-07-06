@@ -200,10 +200,10 @@ button {
 
 .page-shell {
   display: grid;
-  grid-template-columns: minmax(0, 792px) 260px;
-  gap: 28px;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 20px;
   align-items: start;
-  width: min(1080px, calc(100vw - 40px));
+  width: min(1250px, calc(100vw - 40px));
   margin: 20px auto 36px;
 }
 
@@ -220,9 +220,17 @@ button {
 }
 
 .feed-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 20px;
+  align-items: start;
   min-width: 0;
   padding: 14px 18px 16px;
   border-radius: var(--radius);
+}
+
+.feed-main {
+  min-width: 0;
 }
 
 .feed-toolbar,
@@ -434,6 +442,16 @@ button {
   display: grid;
   gap: 14px;
   min-width: 0;
+}
+
+.category-rail {
+  position: sticky;
+  top: 72px;
+  align-self: start;
+  min-width: 0;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .side-card {
@@ -762,11 +780,20 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .feed-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .category-rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
   .right-sidebar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .category-card,
   .members-card {
     grid-column: 1 / -1;
   }

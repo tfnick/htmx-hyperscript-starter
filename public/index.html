@@ -42,33 +42,41 @@
   </header>
 
   <main class="page-shell">
-    <section class="feed-panel" aria-labelledby="board-title">
-      <header class="feed-toolbar">
-        <div class="feed-tabs" aria-label="帖子筛选">
-          <button class="tab-button is-active" type="button" data-sort-tab="latest_reply">新评论</button>
-          <button class="tab-button" type="button" data-sort-tab="latest_post">新帖子</button>
-        </div>
-
-        <div class="feed-pager" data-thread-pagination aria-label="帖子列表分页"></div>
-      </header>
-
-      <section class="board-heading">
-        <div>
-          <p class="eyebrow">AI and life community</p>
-          <h1 id="board-title">全部</h1>
-        </div>
-        <select id="sort-select" class="sort-select" name="sort" aria-label="排序">
-          <option value="latest_reply">最新评论</option>
-          <option value="latest_post">最新发布</option>
-        </select>
+    <aside class="category-rail" aria-label="所有版块">
+      <section class="side-card category-card">
+        <h2>▦ 所有版块</h2>
+        <div id="category-list" class="category-list" aria-live="polite"></div>
       </section>
+    </aside>
 
-      <div id="thread-list" class="thread-list" aria-live="polite"></div>
+    <section class="feed-panel" aria-labelledby="board-title">
+      <div class="feed-main">
+        <header class="feed-toolbar">
+          <div class="feed-tabs" aria-label="帖子筛选">
+            <button class="tab-button is-active" type="button" data-sort-tab="latest_reply">新评论</button>
+            <button class="tab-button" type="button" data-sort-tab="latest_post">新帖子</button>
+          </div>
 
-      <nav class="feed-pager feed-pager-bottom" data-thread-pagination aria-label="帖子列表底部分页"></nav>
-    </section>
+          <div class="feed-pager" data-thread-pagination aria-label="帖子列表分页"></div>
+        </header>
 
-    <aside class="right-sidebar" aria-label="社区功能">
+        <section class="board-heading">
+          <div>
+            <p class="eyebrow">AI and life community</p>
+            <h1 id="board-title">全部</h1>
+          </div>
+          <select id="sort-select" class="sort-select" name="sort" aria-label="排序">
+            <option value="latest_reply">最新评论</option>
+            <option value="latest_post">最新发布</option>
+          </select>
+        </section>
+
+        <div id="thread-list" class="thread-list" aria-live="polite"></div>
+
+        <nav class="feed-pager feed-pager-bottom" data-thread-pagination aria-label="帖子列表底部分页"></nav>
+      </div>
+
+      <aside class="right-sidebar" aria-label="社区功能">
       <section class="side-card user-card">
         <div id="logged-out-panel">
           <div class="user-head">
@@ -117,11 +125,6 @@
         <a href="#thread-list">友站链接</a>
       </section>
 
-      <section class="side-card category-card">
-        <h2>▦ 所有版块</h2>
-        <div id="category-list" class="category-list" aria-live="polite"></div>
-      </section>
-
       <section class="side-card members-card">
         <h2>📈 用户数目 📈</h2>
         <p class="community-count">12,800+</p>
@@ -136,7 +139,8 @@
           <span class="avatar" style="--avatar-hue: 36">F</span>
         </div>
       </section>
-    </aside>
+      </aside>
+    </section>
   </main>
 
   <footer class="site-footer">
