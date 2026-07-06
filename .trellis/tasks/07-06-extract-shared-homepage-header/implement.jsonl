@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend layer entrypoint for HTML/template changes."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Page structure and progressive enhancement contracts for shared header markup."}
+{"file": ".trellis/spec/frontend/template-runtime-guidelines.md", "reason": "Template loader, external override, and path safety contracts."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse-first guidance for extracting duplicated template markup."}

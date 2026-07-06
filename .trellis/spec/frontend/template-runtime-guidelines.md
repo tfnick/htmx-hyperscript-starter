@@ -30,6 +30,9 @@
 
 ## Runtime Contracts
 
+- 完整页面路由必须使用 `renderPageTemplate` 渲染；该入口会在页面模板前解析共享 layout 片段，例如 `components/layout/header.html`，页面内通过 `{{template "layout/header" .}}` 复用公共结构。
+- 共享 layout 片段必须放在 `public/components/layout/**`，并使用稳定的 `{{define "layout/<name>"}}...{{end}}` 名称；新增片段时要补充页面路由渲染测试和外部覆盖测试。
+
 - 默认情况下，所有必须运行的 HTML 模板应位于 `public/` 下，并随 `go build` 打包进 exe。
 - 用户不配置 `--template-path` 时，程序必须只依赖 exe 内置模板即可启动并渲染页面。
 - 用户配置 `--template-path <dir>` 时，`<dir>` 是外部模板根目录，模板名仍然相对 `public/` 根目录。

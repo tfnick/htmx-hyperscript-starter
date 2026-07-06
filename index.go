@@ -77,11 +77,11 @@ func main() {
 }
 
 func registerFrontendRoutes(router *echo.Echo, publicFS fs.FS, templatePath string) {
-	indexHandler := renderTemplate(publicFS, templatePath, "index.html", nil)
-	postHandler := renderTemplate(publicFS, templatePath, "post.html", nil)
-	loginHandler := renderTemplate(publicFS, templatePath, "login.html", nil)
-	registerHandler := renderTemplate(publicFS, templatePath, "register.html", nil)
-	newPostHandler := renderTemplate(publicFS, templatePath, "new-post.html", nil)
+	indexHandler := renderPageTemplate(publicFS, templatePath, "index.html", nil)
+	postHandler := renderPageTemplate(publicFS, templatePath, "post.html", nil)
+	loginHandler := renderPageTemplate(publicFS, templatePath, "login.html", nil)
+	registerHandler := renderPageTemplate(publicFS, templatePath, "register.html", nil)
+	newPostHandler := renderPageTemplate(publicFS, templatePath, "new-post.html", nil)
 	router.GET("/", indexHandler)
 	router.GET("/categories/:slug", indexHandler)
 	router.GET("/post-*", postHandler)
@@ -147,6 +147,43 @@ func registerComponentRoutes(api *echo.Group, publicFS fs.FS, externalRoot strin
 		c.Response().Header().Set("Cache-Control", "no-store")
 		return renderTemplate(publicFS, externalRoot, "components/"+component+".html", nil)(c)
 	})
+}
+
+func renderPageTemplate(files fs.FS, externalRoot string, name string, data any) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tpl, err := parsePageTemplate(files, externalRoot, name)
+		if err != nil {
+			return err
+		}
+
+		var out bytes.Buffer
+		if err := tpl.Execute(&out, data); err != nil {
+			return err
+		}
+		return c.HTML(http.StatusOK, out.String())
+	}
+}
+
+func parsePageTemplate(files fs.FS, externalRoot string, name string) (*template.Template, error) {
+	tpl := template.New(path.Base(name))
+	for _, sharedName := range []string{"components/layout/header.html"} {
+		body, err := loadTemplate(files, externalRoot, sharedName)
+		if err != nil {
+			return nil, err
+		}
+		if _, err := tpl.Parse(string(body)); err != nil {
+			return nil, err
+		}
+	}
+
+	body, err := loadTemplate(files, externalRoot, name)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tpl.Parse(string(body)); err != nil {
+		return nil, err
+	}
+	return tpl, nil
 }
 
 func renderTemplate(files fs.FS, externalRoot string, name string, data any) echo.HandlerFunc {

@@ -1,4 +1,21 @@
-<hgroup>
-  <h1>HTMX Forum</h1>
-  <p>A Go, Echo, htmx, hyperscript, and Pico.css forum starter.</p>
-</hgroup>
+{{define "layout/header"}}
+  <header class="site-header">
+    <nav class="topbar" aria-label="主导航">
+      <a class="brand" href="/" aria-label="DeepFlood 首页">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span class="brand-name">DeepFlood</span>
+      </a>
+
+      <div id="top-board-links" class="top-board-links" aria-label="热门版块"></div>
+
+      <form id="search-form" class="top-search">
+        <input id="search-input" name="q" type="search" placeholder="Search" autocomplete="off" />
+        <button type="submit" aria-label="搜索">Go</button>
+      </form>
+
+      <button class="theme-toggle-prototype" type="button" aria-label="切换浅色和深色模式">
+        <span aria-hidden="true">T</span>
+      </button>
+    </nav>
+  </header>
+{{end}}

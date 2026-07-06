@@ -22,24 +22,7 @@
 </head>
 
 <body>
-  <header class="site-header">
-    <nav class="topbar" aria-label="主导航">
-      <a class="brand" href="/" aria-label="NodeSeek 首页">
-        <span class="brand-mark">◆</span>
-        <span class="brand-name">NodeSeek</span>
-        <span class="brand-beta">beta</span>
-      </a>
-
-      <div id="top-board-links" class="top-board-links" aria-label="热门板块"></div>
-
-      <form id="search-form" class="top-search">
-        <input id="search-input" name="q" type="search" placeholder="Search" autocomplete="off" />
-        <button type="submit" aria-label="搜索">⌕</button>
-      </form>
-
-      <a class="top-login-link is-active" href="/register">注册</a>
-    </nav>
-  </header>
+  {{template "layout/header" .}}
 
   <main class="login-shell">
     <section class="login-panel" aria-labelledby="register-title">

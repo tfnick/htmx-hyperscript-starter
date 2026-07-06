@@ -58,13 +58,7 @@ func TestLoadTemplateRejectsUnsafeTemplateNames(t *testing.T) {
 }
 
 func TestPostRouteRendersPostTemplate(t *testing.T) {
-	files := fstest.MapFS{
-		"index.html":    {Data: []byte("embedded")},
-		"login.html":    {Data: []byte("login")},
-		"new-post.html": {Data: []byte("new-post")},
-		"post.html":     {Data: []byte("post")},
-		"register.html": {Data: []byte("register")},
-	}
+	files := frontendRouteTestFS()
 	router := echo.New()
 	registerFrontendRoutes(router, files, "")
 
@@ -82,13 +76,7 @@ func TestPostRouteRendersPostTemplate(t *testing.T) {
 }
 
 func TestLoginRouteRendersLoginTemplate(t *testing.T) {
-	files := fstest.MapFS{
-		"index.html":    {Data: []byte("embedded")},
-		"login.html":    {Data: []byte("login")},
-		"new-post.html": {Data: []byte("new-post")},
-		"post.html":     {Data: []byte("post")},
-		"register.html": {Data: []byte("register")},
-	}
+	files := frontendRouteTestFS()
 	router := echo.New()
 	registerFrontendRoutes(router, files, "")
 
@@ -106,13 +94,7 @@ func TestLoginRouteRendersLoginTemplate(t *testing.T) {
 }
 
 func TestRegisterRouteRendersRegisterTemplate(t *testing.T) {
-	files := fstest.MapFS{
-		"index.html":    {Data: []byte("embedded")},
-		"login.html":    {Data: []byte("login")},
-		"new-post.html": {Data: []byte("new-post")},
-		"post.html":     {Data: []byte("post")},
-		"register.html": {Data: []byte("register")},
-	}
+	files := frontendRouteTestFS()
 	router := echo.New()
 	registerFrontendRoutes(router, files, "")
 
@@ -130,13 +112,7 @@ func TestRegisterRouteRendersRegisterTemplate(t *testing.T) {
 }
 
 func TestNewPostRouteRendersNewPostTemplate(t *testing.T) {
-	files := fstest.MapFS{
-		"index.html":    {Data: []byte("embedded")},
-		"login.html":    {Data: []byte("login")},
-		"new-post.html": {Data: []byte("new-post")},
-		"post.html":     {Data: []byte("post")},
-		"register.html": {Data: []byte("register")},
-	}
+	files := frontendRouteTestFS()
 	router := echo.New()
 	registerFrontendRoutes(router, files, "")
 
@@ -150,6 +126,56 @@ func TestNewPostRouteRendersNewPostTemplate(t *testing.T) {
 	}
 	if rec.Body.String() != "new-post" {
 		t.Fatalf("expected new post template body, got %q", rec.Body.String())
+	}
+}
+
+func TestFrontendRouteRendersSharedHeaderTemplate(t *testing.T) {
+	files := frontendRouteTestFS()
+	files["index.html"] = &fstest.MapFile{Data: []byte(`{{template "layout/header" .}}<main>home</main>`)}
+	router := echo.New()
+	registerFrontendRoutes(router, files, "")
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected index route to render, got status %d body=%s", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "embedded header") {
+		t.Fatalf("expected shared header to render, got %q", rec.Body.String())
+	}
+}
+
+func TestFrontendRoutePrefersExternalSharedHeaderTemplate(t *testing.T) {
+	files := frontendRouteTestFS()
+	files["index.html"] = &fstest.MapFile{Data: []byte(`{{template "layout/header" .}}<main>home</main>`)}
+	externalRoot := t.TempDir()
+	componentsDir := filepath.Join(externalRoot, "components", "layout")
+	if err := os.MkdirAll(componentsDir, 0o700); err != nil {
+		t.Fatalf("create external layout dir: %v", err)
+	}
+	headerPath := filepath.Join(componentsDir, "header.html")
+	if err := os.WriteFile(headerPath, []byte(`{{define "layout/header"}}external header{{end}}`), 0o600); err != nil {
+		t.Fatalf("write external header: %v", err)
+	}
+	router := echo.New()
+	registerFrontendRoutes(router, files, externalRoot)
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected index route to render, got status %d body=%s", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "external header") {
+		t.Fatalf("expected external shared header to render, got %q", rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), "embedded header") {
+		t.Fatalf("expected external header to replace embedded header, got %q", rec.Body.String())
 	}
 }
 
@@ -176,5 +202,16 @@ func TestForumComponentRoutesRenderCurrentFragments(t *testing.T) {
 				t.Fatalf("component route should not expose old reply endpoint: %s", rec.Body.String())
 			}
 		})
+	}
+}
+
+func frontendRouteTestFS() fstest.MapFS {
+	return fstest.MapFS{
+		"components/layout/header.html": {Data: []byte(`{{define "layout/header"}}embedded header{{end}}`)},
+		"index.html":                    {Data: []byte("embedded")},
+		"login.html":                    {Data: []byte("login")},
+		"new-post.html":                 {Data: []byte("new-post")},
+		"post.html":                     {Data: []byte("post")},
+		"register.html":                 {Data: []byte("register")},
 	}
 }
