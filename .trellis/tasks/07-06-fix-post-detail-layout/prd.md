@@ -59,3 +59,5 @@
 * Verification: `go test .` passed.
 * Verification: `go test . -run "TestPostRoute|TestFrontend|Template|External"` passed.
 * Full-suite note: `go test ./...` currently fails in pre-existing unrelated backend tests: `api/framework/archguard` import boundary checks and `api/usecase` KB embedding tests.
+* Follow-up bugfix: removed the internal background, shadow, radius, padding, and border from the post detail card and reply rows while keeping the outer `feed-panel` layout.
+* Follow-up verification: `node --check public/extensions.js`, `go test .`, and `go test . -run "TestPostRoute|TestFrontend|Template|External"` passed.

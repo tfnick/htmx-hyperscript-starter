@@ -700,6 +700,17 @@ button {
   margin-top: 4px;
 }
 
+.thread-detail-panel .thread-detail-card,
+.thread-detail-panel .reply-row {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.thread-detail-panel .thread-detail-card {
+  padding: 0;
+}
+
 .thread-detail-card h2 {
   margin: 0 0 6px;
   font-size: 20px;
@@ -740,6 +751,11 @@ button {
 .reply-row {
   padding: 10px;
   border: 1px solid var(--border-color);
+}
+
+.thread-detail-panel .reply-row {
+  padding: 10px 0;
+  border: 0;
 }
 
 .reply-row header {
