@@ -259,7 +259,6 @@ button {
 }
 
 .feed-toolbar,
-.board-heading,
 .thread-row,
 .thread-meta,
 .feed-pager,
@@ -333,33 +332,12 @@ button {
   font-weight: 700;
 }
 
-.board-heading {
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-  padding: 8px 0 10px;
-  border-bottom: 1px solid var(--border-color);
-}
-
 .eyebrow {
   margin: 0 0 3px;
   color: var(--gray-color);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-}
-
-.board-heading h1 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.sort-select {
-  height: 30px;
-  padding: 0 7px;
-  border: 1px solid #d8d8d8;
-  border-radius: 4px;
-  background: #ffffff;
 }
 
 .thread-list {
@@ -862,8 +840,7 @@ button {
     padding: 12px 10px 14px;
   }
 
-  .feed-toolbar,
-  .board-heading {
+  .feed-toolbar {
     align-items: flex-start;
   }
 
@@ -882,8 +859,7 @@ button {
 }
 
 @media (max-width: 480px) {
-  .feed-toolbar,
-  .board-heading {
+  .feed-toolbar {
     display: grid;
   }
 
