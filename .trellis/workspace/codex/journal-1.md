@@ -238,3 +238,36 @@ Implemented a full DeepFlood-style homepage replication across the public homepa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: Homepage feed layout archive
+
+**Date**: 2026-07-06
+**Task**: Homepage feed layout archive
+**Branch**: `main`
+
+### Summary
+
+Moved the homepage user and quick-action sidebar into the feed panel, preserved the category rail, verified root Go tests, and archived the completed task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `38eb887` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
