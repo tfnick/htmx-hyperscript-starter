@@ -60,6 +60,8 @@
 * Follow-up verification: `node --check public/extensions.js` and `go test . -run "TestPostRoute|TestFrontend|Template|External"` passed.
 * Follow-up detail actions: main post detail now renders like/dislike/quote/reply actions, and the reply section no longer shows a visible `回复` heading or empty no-replies copy.
 * Follow-up verification: `node --check public/extensions.js`, `go test . -run "TestPostRoute|TestFrontend|Template|External"`, and diff checks passed.
+* Follow-up profile width: `.profile-stat-card` is reduced by 80px with a scoped width override.
+* Follow-up verification: CSS diff inspection, `node --check public/extensions.js`, and targeted template tests passed.
 * Implemented by replacing `public/post.html` detail sidebar content with the homepage-style `user-card`, `quick-card`, and `members-card` structure.
 * Preserved auth/profile DOM contracts: `logged-out-panel`, `logged-in-panel`, `current-user-avatar`, `current-user-name`, `logout-button`, `create-post-link`, and `data-create-post-link`.
 * Removed the old detail-page `auth-card` and `sponsor-stack` sidebar content.

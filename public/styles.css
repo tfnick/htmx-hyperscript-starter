@@ -462,6 +462,12 @@ button {
   border-radius: var(--radius);
 }
 
+.profile-stat-card {
+  box-sizing: border-box;
+  width: calc(100% - 80px);
+  max-width: 100%;
+}
+
 .side-card h2 {
   margin: 0 0 8px;
   color: #333333;
