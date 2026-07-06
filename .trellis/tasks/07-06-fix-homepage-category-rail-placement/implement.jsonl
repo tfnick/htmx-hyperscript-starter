@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend entrypoint for public HTML/CSS changes and quality requirements."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Homepage semantic structure, aside placement, accessibility, and responsive behavior."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Layout/rendering constraints and lightweight CSS-only fix expectations."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing category list anchor and styles rather than creating duplicate rendering paths."}

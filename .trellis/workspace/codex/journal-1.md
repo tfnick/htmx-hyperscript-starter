@@ -271,3 +271,36 @@ Moved the homepage user and quick-action sidebar into the feed panel, preserved 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: Homepage theme toggle prototype
+
+**Date**: 2026-07-06
+**Task**: Homepage theme toggle prototype
+**Branch**: `main`
+
+### Summary
+
+Replaced the homepage top login link with a single circular light/dark mode prototype button and archived the completed Trellis task.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d795edb` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
