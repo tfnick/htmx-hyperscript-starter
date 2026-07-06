@@ -30,6 +30,7 @@ func main() {
 	isDevelopment := flag.Bool("dev", true, "Development mode")
 	port := flag.String("port", "3000", "Port to serve the app")
 	templatePath := flag.String("template-path", "", "External HTML template path. Files here override embedded templates.")
+	staticPath := flag.String("static-path", "", "External static asset path. Files here override embedded styles, scripts, and assets.")
 	flag.Parse()
 
 	if err := logging.Init(*isDevelopment); err != nil {
@@ -53,9 +54,7 @@ func main() {
 	}))
 
 	registerFrontendRoutes(router, publicFS, *templatePath)
-	router.GET("/styles.css", streamEmbeddedFile(publicFS, "styles.css", "text/css; charset=utf-8"))
-	router.GET("/extensions.js", streamEmbeddedFile(publicFS, "extensions.js", "application/javascript; charset=utf-8"))
-	router.StaticFS("/assets", echo.MustSubFS(publicFS, "assets"))
+	registerStaticRoutes(router, publicFS, *staticPath)
 
 	api := router.Group("/api")
 	api.Use(appmiddleware.RequestLogger(string("api")))
@@ -66,6 +65,9 @@ func main() {
 		watchPaths := []string{"public/"}
 		if strings.TrimSpace(*templatePath) != "" {
 			watchPaths = append(watchPaths, *templatePath)
+		}
+		if strings.TrimSpace(*staticPath) != "" && strings.TrimSpace(*staticPath) != strings.TrimSpace(*templatePath) {
+			watchPaths = append(watchPaths, *staticPath)
 		}
 		reloader := reload.New(watchPaths...)
 		router.GET("/reload_ws", echo.WrapHandler(reloader.Handle(http.DefaultServeMux)))
@@ -88,6 +90,17 @@ func registerFrontendRoutes(router *echo.Echo, publicFS fs.FS, templatePath stri
 	router.GET("/login", loginHandler)
 	router.GET("/register", registerHandler)
 	router.GET("/new-post", newPostHandler)
+}
+
+func registerStaticRoutes(router *echo.Echo, publicFS fs.FS, staticPath string) {
+	router.GET("/styles.css", streamStaticFile(publicFS, staticPath, "styles.css", "text/css; charset=utf-8"))
+	router.GET("/extensions.js", streamStaticFile(publicFS, staticPath, "extensions.js", "application/javascript; charset=utf-8"))
+
+	assetsFS := fs.FS(echo.MustSubFS(publicFS, "assets"))
+	if externalAssetsPath, ok := externalStaticDir(staticPath, "assets"); ok {
+		assetsFS = os.DirFS(externalAssetsPath)
+	}
+	router.StaticFS("/assets", assetsFS)
 }
 
 func initDatabases() (*db.DBManager, error) {
@@ -240,8 +253,20 @@ func cleanTemplateName(name string) (string, error) {
 	return clean, nil
 }
 
-func streamEmbeddedFile(files fs.FS, name, contentType string) echo.HandlerFunc {
+func streamStaticFile(files fs.FS, externalRoot, name, contentType string) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		if strings.TrimSpace(externalRoot) != "" {
+			externalPath := filepath.Join(externalRoot, filepath.FromSlash(name))
+			file, err := os.Open(externalPath)
+			if err == nil {
+				defer file.Close()
+				return c.Stream(http.StatusOK, contentType, file)
+			}
+			if !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
+		}
+
 		file, err := files.Open(name)
 		if err != nil {
 			if errors.Is(err, fs.ErrNotExist) {
@@ -253,4 +278,16 @@ func streamEmbeddedFile(files fs.FS, name, contentType string) echo.HandlerFunc 
 
 		return c.Stream(http.StatusOK, contentType, file)
 	}
+}
+
+func externalStaticDir(externalRoot, name string) (string, bool) {
+	if strings.TrimSpace(externalRoot) == "" {
+		return "", false
+	}
+	dir := filepath.Join(externalRoot, filepath.FromSlash(name))
+	info, err := os.Stat(dir)
+	if err != nil || !info.IsDir() {
+		return "", false
+	}
+	return dir, true
 }

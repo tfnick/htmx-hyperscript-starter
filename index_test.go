@@ -57,6 +57,84 @@ func TestLoadTemplateRejectsUnsafeTemplateNames(t *testing.T) {
 	}
 }
 
+func TestStaticRoutePrefersExternalStylesheet(t *testing.T) {
+	files := fstest.MapFS{
+		"styles.css":    {Data: []byte("embedded css")},
+		"extensions.js": {Data: []byte("embedded js")},
+		"assets/.keep":  {Data: []byte{}},
+	}
+	externalRoot := t.TempDir()
+	if err := os.WriteFile(filepath.Join(externalRoot, "styles.css"), []byte("external css"), 0o600); err != nil {
+		t.Fatalf("write external stylesheet: %v", err)
+	}
+	router := echo.New()
+	registerStaticRoutes(router, files, externalRoot)
+
+	req := httptest.NewRequest(http.MethodGet, "/styles.css", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected stylesheet route to render, got status %d", rec.Code)
+	}
+	if rec.Body.String() != "external css" {
+		t.Fatalf("expected external stylesheet, got %q", rec.Body.String())
+	}
+}
+
+func TestStaticRouteFallsBackToEmbeddedFile(t *testing.T) {
+	files := fstest.MapFS{
+		"styles.css":    {Data: []byte("embedded css")},
+		"extensions.js": {Data: []byte("embedded js")},
+		"assets/.keep":  {Data: []byte{}},
+	}
+	router := echo.New()
+	registerStaticRoutes(router, files, t.TempDir())
+
+	req := httptest.NewRequest(http.MethodGet, "/extensions.js", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected script route to render, got status %d", rec.Code)
+	}
+	if rec.Body.String() != "embedded js" {
+		t.Fatalf("expected embedded script fallback, got %q", rec.Body.String())
+	}
+}
+
+func TestStaticRoutePrefersExternalAssetsDirectory(t *testing.T) {
+	files := fstest.MapFS{
+		"styles.css":      {Data: []byte("embedded css")},
+		"extensions.js":   {Data: []byte("embedded js")},
+		"assets/logo.txt": {Data: []byte("embedded asset")},
+	}
+	externalRoot := t.TempDir()
+	assetsDir := filepath.Join(externalRoot, "assets")
+	if err := os.Mkdir(assetsDir, 0o700); err != nil {
+		t.Fatalf("create external assets dir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(assetsDir, "logo.txt"), []byte("external asset"), 0o600); err != nil {
+		t.Fatalf("write external asset: %v", err)
+	}
+	router := echo.New()
+	registerStaticRoutes(router, files, externalRoot)
+
+	req := httptest.NewRequest(http.MethodGet, "/assets/logo.txt", nil)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected asset route to render, got status %d body=%s", rec.Code, rec.Body.String())
+	}
+	if rec.Body.String() != "external asset" {
+		t.Fatalf("expected external asset, got %q", rec.Body.String())
+	}
+}
+
 func TestPostRouteRendersPostTemplate(t *testing.T) {
 	files := frontendRouteTestFS()
 	router := echo.New()

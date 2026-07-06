@@ -1,0 +1,54 @@
+{"level":"info","component":"db","database":"app","driver":"sqlite","time":"2026-07-06T16:06:45+08:00","message":"database connected"}
+{"level":"info","component":"db","database":"app","migration":"001_schema.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"002_seed.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"007_add_goqite.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"008_add_email_integration_seed.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"009_rename_integration_callbacks_to_webhooks.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"010_product_membership_checkout.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"011_add_oss_integration_seed.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"012_add_app_settings.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"013_add_oss_primary_provider.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"014_add_oauth_login.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"015_add_async_tasks.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"016_rename_realtime_notification_type.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"017_add_async_task_clear_visibility.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"017_add_support_chat_kb.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"018_add_notification_clear_visibility.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"019_default_local_embedding_provider.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"020_add_llm_embedding_primary_provider.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"020_add_siliconflow_embedding_provider.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"021_add_llm_model_dictionary.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"022_split_llm_model_dictionary_by_provider.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"023_add_embedding_model_dictionary.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"024_add_cache_entries.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"025_add_user_role_scope.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"026_add_external_notification_bot.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"027_external_notification_primary_bot_fallback.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"028_add_scheduled_task_claim.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"029_add_monitoring.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"030_add_user_registration_profiles.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"031_add_order_subscription_canceled_at.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"032_add_utm_registration_profile.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"033_drop_cache_entries.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"034_add_page_views.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"035_add_forum.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"036_seed_forum_categories.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"037_add_forum_thread_visibility.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","time":"2026-07-06T16:06:45+08:00","message":"database already up to date"}
+{"level":"info","component":"db","database":"shared","driver":"sqlite","time":"2026-07-06T16:06:45+08:00","message":"database connected"}
+{"level":"info","component":"db","database":"shared","migration":"001_schema.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"shared","migration":"002_seed.sql","time":"2026-07-06T16:06:45+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"shared","time":"2026-07-06T16:06:45+08:00","message":"database already up to date"}
+Hot Reload Enabled...
+Listening on port 3017
+
+   ____    __
+  / __/___/ /  ___
+ / _// __/ _ \/ _ \
+/___/\__/_//_/\___/ v4.11.4
+High performance, minimalist Go web framework
+https://echo.labstack.com
+____________________________________O/_______
+                                    O\
+16:06:45 Reload: watching public/,public for changes
+⇨ http server started on [::]:3017

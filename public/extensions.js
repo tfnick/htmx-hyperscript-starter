@@ -533,7 +533,7 @@ function renderReply(reply, index = 0, page = {}) {
   const replyTarget = replyAnchor ? `#${replyAnchor}` : "#reply-form";
   return `
     <article class="reply-row"${replyID}>
-      <span class="avatar reply-avatar" style="--avatar-hue: ${avatarHue(authorName)}">${escapeHTML(avatarInitial(authorName))}</span>
+      <span class="avatar reply-avatar" style="--avatar-hue: ${avatarHue(authorName)}">${avatarInitial(authorName)}</span>
       <div class="reply-content">
         <header class="reply-header">
           <div class="reply-author-line">
@@ -541,7 +541,7 @@ function renderReply(reply, index = 0, page = {}) {
             <span class="reply-meta">${formatRelativeTime(item.created_at)}</span>
           </div>
           <span class="reply-floor">#${formatNumber(floor)}</span>
-        </header>
+      </header>
         <p class="reply-body">${escapeHTML(item.body)}</p>
         ${renderThreadActions(item, { showReplyCount: true, quoteTarget: replyTarget, replyTarget: "#reply-form" })}
       </div>
@@ -578,12 +578,35 @@ function renderAuthState() {
   const loggedOutPanel = $("#logged-out-panel");
   const loggedInPanel = $("#logged-in-panel");
   const currentUserName = $("#current-user-name");
+  const currentUserAvatar = $("#current-user-avatar");
+  const profilePointsValue = $("#profile-points-value");
   if (loggedOutPanel) loggedOutPanel.hidden = loggedIn;
   if (loggedInPanel) loggedInPanel.hidden = !loggedIn;
   if (currentUserName && loggedIn) currentUserName.textContent = forumState.currentUser.name || "DeepFlood 用户";
+  if (currentUserAvatar && loggedIn) {
+    const displayName = forumState.currentUser.name || "DeepFlood 用户";
+    currentUserAvatar.textContent = avatarInitial(displayName);
+    currentUserAvatar.style.setProperty("--avatar-hue", avatarHue(displayName));
+  }
+  if (profilePointsValue) profilePointsValue.textContent = "0";
+  if (loggedIn) loadUserPoints();
   updateCreatePostLink();
   updateComposerVisibility();
   updateNewPostVisibility();
+}
+
+async function loadUserPoints() {
+  const profilePointsValue = $("#profile-points-value");
+  if (!profilePointsValue || !forumState.currentUser) return;
+  const currentUser = forumState.currentUser;
+  try {
+    const points = await apiFetch("/api/user/points");
+    if (forumState.currentUser !== currentUser) return;
+    profilePointsValue.textContent = formatNumber(points.balance);
+  } catch {
+    if (forumState.currentUser !== currentUser) return;
+    profilePointsValue.textContent = "0";
+  }
 }
 
 function updateComposerVisibility() {
@@ -593,7 +616,11 @@ function updateComposerVisibility() {
 }
 
 function updateCreatePostLink() {
-  const links = [$("#create-post-link"), $("#create-post-link-sidebar")].filter(Boolean);
+  const links = new Set([
+    ...document.querySelectorAll("[data-create-post-link]"),
+    $("#create-post-link"),
+    $("#create-post-link-sidebar"),
+  ].filter(Boolean));
   const href = forumState.category ? `/new-post?category=${encodeURIComponent(forumState.category)}` : "/new-post";
   links.forEach((link) => {
     link.href = href;

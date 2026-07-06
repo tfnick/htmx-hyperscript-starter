@@ -1,0 +1,86 @@
+{"level":"info","component":"db","database":"app","driver":"sqlite","time":"2026-07-06T17:06:46+08:00","message":"database connected"}
+{"level":"info","component":"db","database":"app","migration":"001_schema.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"002_seed.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"007_add_goqite.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"008_add_email_integration_seed.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"009_rename_integration_callbacks_to_webhooks.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"010_product_membership_checkout.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"011_add_oss_integration_seed.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"012_add_app_settings.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"013_add_oss_primary_provider.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"014_add_oauth_login.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"015_add_async_tasks.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"016_rename_realtime_notification_type.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"017_add_async_task_clear_visibility.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"017_add_support_chat_kb.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"018_add_notification_clear_visibility.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"019_default_local_embedding_provider.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"020_add_llm_embedding_primary_provider.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"020_add_siliconflow_embedding_provider.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"021_add_llm_model_dictionary.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"022_split_llm_model_dictionary_by_provider.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"023_add_embedding_model_dictionary.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"024_add_cache_entries.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"025_add_user_role_scope.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"026_add_external_notification_bot.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"027_external_notification_primary_bot_fallback.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"028_add_scheduled_task_claim.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"029_add_monitoring.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"030_add_user_registration_profiles.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"031_add_order_subscription_canceled_at.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"032_add_utm_registration_profile.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"033_drop_cache_entries.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"034_add_page_views.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"035_add_forum.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"036_seed_forum_categories.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","migration":"037_add_forum_thread_visibility.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"app","time":"2026-07-06T17:06:46+08:00","message":"database already up to date"}
+{"level":"info","component":"db","database":"shared","driver":"sqlite","time":"2026-07-06T17:06:46+08:00","message":"database connected"}
+{"level":"info","component":"db","database":"shared","migration":"001_schema.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"shared","migration":"002_seed.sql","time":"2026-07-06T17:06:46+08:00","message":"skip applied migration"}
+{"level":"info","component":"db","database":"shared","time":"2026-07-06T17:06:46+08:00","message":"database already up to date"}
+Hot Reload Enabled...
+Listening on port 3000
+
+   ____    __
+  / __/___/ /  ___
+ / _// __/ _ \/ _ \
+/___/\__/_//_/\___/ v4.11.4
+High performance, minimalist Go web framework
+https://echo.labstack.com
+____________________________________O/_______
+                                    O\
+⇨ http server started on [::]:3000
+17:06:46 Reload: watching public/,public for changes
+17:07:46 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-010d-707e-a5a7-d300415f6be9","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":0.5073,"time":"2026-07-06T17:07:46+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-0119-7510-8ee7-5a0b45fd2b7d","method":"GET","route":"/api/forum/threads","path":"/api/forum/threads","status":200,"duration":2.1753,"time":"2026-07-06T17:07:46+08:00","message":"request completed"}
+17:07:47 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-02de-7d7c-98c0-34c5609de28f","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":0,"time":"2026-07-06T17:07:47+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-02e3-7ebf-a68d-7d2fcf8aee58","method":"GET","route":"/api/forum/threads","path":"/api/forum/threads","status":200,"duration":1.1689,"time":"2026-07-06T17:07:47+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-0538-7882-b789-0feae3fb67b4","method":"GET","route":"/api/forum/categories/:slug/threads","path":"/api/forum/categories/tech/threads","status":200,"duration":0.5262,"time":"2026-07-06T17:07:47+08:00","message":"request completed"}
+17:08:10 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-5f25-771e-bbe2-2428e432159f","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":0,"time":"2026-07-06T17:08:10+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-5f2d-750e-b820-6d2138f705d4","method":"GET","route":"/api/forum/threads","path":"/api/forum/threads","status":200,"duration":2.1303,"time":"2026-07-06T17:08:10+08:00","message":"request completed"}
+17:08:11 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-6119-7129-a5d5-4a91159a9cd9","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":0,"time":"2026-07-06T17:08:11+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36af-611d-74cf-b9be-413920888d39","method":"GET","route":"/api/forum/threads","path":"/api/forum/threads","status":200,"duration":0.5046,"time":"2026-07-06T17:08:11+08:00","message":"request completed"}
+17:10:41 Reload: Edit public\extensions.js
+17:12:07 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36b2-fdc2-77be-aede-dc073210f74f","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":0,"time":"2026-07-06T17:12:07+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b2-fec3-77a0-b4f5-01002c35d86d","method":"GET","route":"/api/forum/categories/:slug/threads","path":"/api/forum/categories/daily/threads","status":200,"duration":1.7644,"time":"2026-07-06T17:12:08+08:00","message":"request completed"}
+17:12:10 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-31b3-7269-8bcb-5a359d9889ff","method":"POST","route":"/api/auth/login","path":"/api/auth/login","status":200,"duration":204.8115,"time":"2026-07-06T17:12:21+08:00","message":"request completed"}
+17:12:21 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-32d0-7589-b0ce-933aa43433fd","method":"GET","route":"/api/auth/status","path":"/api/auth/status","status":200,"duration":0.5076,"time":"2026-07-06T17:12:21+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-32d0-7d48-a1cd-75c260943e5a","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":0,"time":"2026-07-06T17:12:21+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-331b-7cfd-aeeb-ec90a27b9f34","method":"GET","route":"/api/user/points","path":"/api/user/points","status":200,"duration":0,"time":"2026-07-06T17:12:21+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-3329-70d4-b950-ab7db7cd4a37","method":"GET","route":"/api/forum/threads","path":"/api/forum/threads","status":200,"duration":1.9472,"time":"2026-07-06T17:12:21+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-5f29-7324-a573-6406c77957bf","method":"POST","route":"/api/auth/login","path":"/api/auth/login","status":401,"duration":213.0783,"time":"2026-07-06T17:12:33+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-601d-7a39-b931-ea583e7a7bd1","method":"POST","route":"/api/auth/login","path":"/api/auth/login","status":401,"duration":214.5673,"time":"2026-07-06T17:12:33+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-60fe-7bea-a7a4-4b87e84a5f65","method":"POST","route":"/api/auth/login","path":"/api/auth/login","status":401,"duration":219.5092,"time":"2026-07-06T17:12:33+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-61db-7c1d-9364-bc86a9af4cef","method":"POST","route":"/api/auth/login","path":"/api/auth/login","status":401,"duration":215.3064,"time":"2026-07-06T17:12:33+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-62b6-7165-ab65-a56f44963062","method":"POST","route":"/api/auth/login","path":"/api/auth/login","status":200,"duration":227.3337,"time":"2026-07-06T17:12:33+08:00","message":"request completed"}
+17:12:37 Reload: Injected script version is out of date (v < v1)
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-71b9-753f-a0b1-4ff79f82be3c","method":"GET","route":"/api/forum/categories","path":"/api/forum/categories","status":200,"duration":1.0091,"time":"2026-07-06T17:12:37+08:00","message":"request completed"}
+{"level":"info","component":"http","surface":"api","request_id":"019f36b3-71de-7797-ba27-63f12c516139","method":"GET","route":"/api/forum/threads","path":"/api/forum/threads","status":200,"duration":2.1802,"time":"2026-07-06T17:12:37+08:00","message":"request completed"}

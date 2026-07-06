@@ -225,8 +225,8 @@ button {
 
 .page-shell {
   display: grid;
-  grid-template-columns: 170px minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: clamp(104px, 8.5vw, 112px) minmax(0, 1fr);
+  gap: 14px;
   align-items: start;
   width: min(1250px, calc(100vw - 40px));
   margin: 20px auto 36px;
@@ -247,7 +247,7 @@ button {
 .feed-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(220px, calc(24vw - 80px), 250px);
-  gap: 20px;
+  gap: 18px;
   align-items: start;
   min-width: 0;
   padding: 14px 18px 16px;
@@ -458,10 +458,9 @@ button {
 }
 
 .side-card {
-  padding: 12px 14px;
+  padding: 12px 10px;
   border-radius: var(--radius);
 }
-
 
 .side-card h2 {
   margin: 0 0 8px;
@@ -477,6 +476,143 @@ button {
 .user-head {
   align-items: flex-start;
   gap: 10px;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.profile-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-panel[hidden] {
+  display: none;
+}
+
+.profile-head {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+
+.profile-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  font-size: 17px;
+}
+
+.profile-main {
+  min-width: 0;
+}
+
+h2.profile-name {
+  margin: 0 0 6px;
+  overflow: hidden;
+  color: #1f2933;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.profile-tool {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #4a4a4a;
+  cursor: pointer;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.profile-tool:hover {
+  color: var(--main-color);
+}
+
+.profile-tool:focus-visible {
+  outline: 2px solid rgba(46, 164, 79, 0.34);
+  outline-offset: 2px;
+}
+
+.profile-tool .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-stat-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 10px;
+  padding: 10px;
+  border: 1px solid #f0edb9;
+  border-radius: var(--radius);
+  background: #fffed2;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.12);
+}
+
+.profile-stat-item {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  color: #111111;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.profile-stat-item:hover {
+  color: var(--main-color);
+}
+
+.profile-stat-item .icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+.profile-stat-item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-stat-item strong {
+  font-weight: 500;
+}
+
+.profile-post-action {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
+  justify-content: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .auth-actions {
@@ -515,15 +651,16 @@ button {
 .quick-card a,
 .category-button {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
+  grid-template-columns: 16px minmax(0, 1fr);
   align-items: center;
   width: 100%;
   min-height: 30px;
-  padding: 5px 4px;
+  padding: 5px 1px;
   border: 0;
   border-bottom: 1px solid #eeeeee;
   background: transparent;
   color: #555555;
+  font-size: 12px;
   text-align: left;
 }
 
@@ -926,6 +1063,24 @@ button {
     grid-template-columns: 1fr;
   }
 
+  .profile-head {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .profile-avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .profile-stat-card {
+    gap: 8px 14px;
+    padding: 12px;
+  }
+
+  .profile-stat-item {
+    font-size: 12px;
+  }
+
   .category-list {
     grid-template-columns: 1fr;
   }
@@ -934,6 +1089,21 @@ button {
 @media (max-width: 480px) {
   .feed-toolbar {
     display: grid;
+  }
+
+  .profile-stat-card {
+    gap: 8px 10px;
+  }
+
+  .profile-stat-item {
+    grid-template-columns: 15px minmax(0, 1fr);
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .profile-stat-item .icon {
+    width: 15px;
+    height: 15px;
   }
 
   .thread-meta {

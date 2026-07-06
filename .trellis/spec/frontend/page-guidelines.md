@@ -42,6 +42,8 @@
 
 ## Progressive Enhancement Contracts
 
+- When a page has multiple create-post entry links that must follow the current forum category, mark each link with `data-create-post-link` and update them through the shared `updateCreatePostLink()` flow instead of hand-writing separate href sync logic.
+
 - htmx/hyperscript 和 `extensions.js` 用于增强交互，不应破坏基础链接、表单或页面阅读。
 - 点击可分享内容时优先导航到稳定 URL，再在目标页加载增强数据。
 - 需要局部刷新时优先复用 `/api/components/*` 组件片段；组件片段不应夹带整页 `<html>`、`<head>` 或重复全局脚本。

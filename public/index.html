@@ -64,28 +64,72 @@
           </div>
         </div>
 
-        <div id="logged-in-panel" hidden>
-          <div class="user-head">
-            <span class="avatar avatar-large" style="--avatar-hue: 146">D</span>
-            <div>
-              <h2 id="current-user-name" class="current-user">DeepFlood 用户</h2>
-              <p>今天也欢迎回来。</p>
+        <div id="logged-in-panel" class="profile-panel" hidden>
+          <div class="profile-head">
+            <span id="current-user-avatar" class="avatar avatar-large profile-avatar" style="--avatar-hue: 146">D</span>
+            <div class="profile-main">
+              <h2 id="current-user-name" class="current-user profile-name">DeepFlood 用户</h2>
+              <div class="profile-tools" aria-label="用户快捷操作">
+                <a class="profile-tool" href="#thread-list" aria-label="签到">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="m9 15 2 2 4-5"/></svg>
+                </a>
+                <a class="profile-tool" href="#thread-list" aria-label="动态">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m8 8 8 8M16 8v8H8"/></svg>
+                </a>
+                <a class="profile-tool" href="#thread-list" aria-label="设置">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M3 12h2M19 12h2M12 3v2M12 19v2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/></svg>
+                </a>
+                <a class="profile-tool" href="#thread-list" aria-label="收藏夹">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4z"/><circle cx="9" cy="12" r="1.8"/><circle cx="15" cy="12" r="1.8"/></svg>
+                </a>
+                <button id="logout-button" class="profile-tool" type="button" aria-label="退出登录">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h9v16H4z"/><path d="M13 12h8M18 8l4 4-4 4"/></svg>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="user-stat">
-            <a href="/new-post">主题帖</a>
-            <a href="#thread-list">评论数</a>
-            <a href="#thread-list">收藏</a>
-            <a href="#thread-list">通知</a>
+
+          <div class="profile-stat-card" aria-label="用户属性">
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4v5c0 5-3.4 8.3-8 9-4.6-.7-8-4-8-9V7l8-4Z"/><path d="m9 12 2 2 4-5"/></svg>
+              <span>等级 <strong>Lv 0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4M8 10h6M11 7v6"/></svg>
+              <span>鸡腿 <strong id="profile-points-value">0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v12H4z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/><path d="m9 15 2 2 4-5"/></svg>
+              <span>星辰 <strong>0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0v4l2 3H4l2-3V9Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+              <span>通知 <strong>0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="/new-post" data-create-post-link>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13 7 4 4"/></svg>
+              <span>主题帖 <strong>0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v10H8l-4 4V5Z"/><path d="M8 9h8M8 12h5"/></svg>
+              <span>评论数 <strong>0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16a5 5 0 0 1 0-8M16 8a5 5 0 0 1 0 8M5 19a9 9 0 0 1 0-14M19 5a9 9 0 0 1 0 14"/><circle cx="12" cy="12" r="2"/></svg>
+              <span>粉丝 <strong>0</strong></span>
+            </a>
+            <a class="profile-stat-item" href="#thread-list">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v16l-7-4-7 4V5Z"/><path d="m9 11 2 2 4-5"/></svg>
+              <span>收藏 <strong>0</strong></span>
+            </a>
           </div>
-          <div class="auth-actions">
-            <a id="create-post-link" class="primary-action" href="/new-post">发帖</a>
-            <button id="logout-button" type="button" class="secondary-action">登出</button>
-          </div>
+
+          <a id="create-post-link" class="primary-action profile-post-action" href="/new-post" data-create-post-link>
+            <span aria-hidden="true">+</span>
+            <span>发帖</span>
+          </a>
         </div>
       </section>
-
-      <a id="create-post-link-sidebar" class="primary-action new-discussion" href="/new-post">＋ 发帖</a>
 
       <section class="side-card quick-card">
         <h2>🚀 快捷功能区</h2>
