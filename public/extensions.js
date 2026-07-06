@@ -420,10 +420,10 @@ function renderThreadDetail(thread) {
         ${escapeHTML(thread.author?.name || "Unknown")} · ${formatRelativeTime(thread.created_at)} · ${formatNumber(thread.reply_count)} 回复 · ${formatNumber(thread.view_count)} 浏览
       </div>
       <p class="thread-body">${escapeHTML(thread.body)}</p>
+      ${renderThreadActions(thread, { ariaLabel: "帖子操作", quoteTarget: "#reply-form", replyTarget: "#reply-form" })}
       <section class="reply-list">
-        <h3>回复</h3>
         ${renderReplyPagination(replyPage)}
-        ${replies.length ? replies.map((reply, index) => renderReply(reply, index, replyPage)).join("") : `<div class="notice-row">${replyPage.total_items ? "当前回复页没有内容。" : "暂无回复。"}</div>`}
+        ${replies.length ? replies.map((reply, index) => renderReply(reply, index, replyPage)).join("") : ""}
         ${renderReplyPagination(replyPage)}
       </section>
       ${canReply ? renderReplyForm(thread.id) : `<div class="notice-row">登录后参与回复。</div>`}
@@ -507,13 +507,27 @@ function bindReplyPagination(threadID) {
   });
 }
 
+function renderThreadActions(item = {}, options = {}) {
+  const likeCount = item.like_count ?? item.likes ?? item.upvote_count ?? item.upvotes ?? 0;
+  const dislikeCount = item.dislike_count ?? item.dislikes ?? item.downvote_count ?? item.downvotes ?? 0;
+  const replyCount = item.reply_count ?? item.child_count ?? item.children_count ?? 0;
+  const quoteTarget = options.quoteTarget || "#reply-form";
+  const replyTarget = options.replyTarget || "#reply-form";
+  return `
+    <footer class="reply-actions" aria-label="${escapeAttr(options.ariaLabel || "回复操作")}">
+      <span aria-label="点赞数">👍 ${formatNumber(likeCount)}</span>
+      <span aria-label="踩数">👎 ${formatNumber(dislikeCount)}</span>
+      ${options.showReplyCount ? `<span aria-label="回复数">💬 ${formatNumber(replyCount)}</span>` : ""}
+      <a href="${escapeAttr(quoteTarget)}">引用</a>
+      <a href="${escapeAttr(replyTarget)}">回复</a>
+    </footer>
+  `;
+}
+
 function renderReply(reply, index = 0, page = {}) {
   const item = reply || {};
   const authorName = item.author?.name || "Unknown";
   const floor = item.floor || ((normalizePostPage(page.page) - 1) * normalizePostPage(page.page_size || forumState.postPageSize) + index + 1);
-  const likeCount = item.like_count ?? item.likes ?? item.upvote_count ?? item.upvotes ?? 0;
-  const dislikeCount = item.dislike_count ?? item.dislikes ?? item.downvote_count ?? item.downvotes ?? 0;
-  const replyCount = item.reply_count ?? item.child_count ?? item.children_count ?? 0;
   const replyAnchor = item.id ? `reply-${escapeAttr(item.id)}` : "";
   const replyID = replyAnchor ? ` id="${replyAnchor}"` : "";
   const replyTarget = replyAnchor ? `#${replyAnchor}` : "#reply-form";
@@ -529,13 +543,7 @@ function renderReply(reply, index = 0, page = {}) {
           <span class="reply-floor">#${formatNumber(floor)}</span>
         </header>
         <p class="reply-body">${escapeHTML(item.body)}</p>
-        <footer class="reply-actions" aria-label="回复操作">
-          <span aria-label="点赞数">👍 ${formatNumber(likeCount)}</span>
-          <span aria-label="踩数">👎 ${formatNumber(dislikeCount)}</span>
-          <span aria-label="回复数">💬 ${formatNumber(replyCount)}</span>
-          <a href="${replyTarget}">引用</a>
-          <a href="#reply-form">回复</a>
-        </footer>
+        ${renderThreadActions(item, { showReplyCount: true, quoteTarget: replyTarget, replyTarget: "#reply-form" })}
       </div>
     </article>
   `;
