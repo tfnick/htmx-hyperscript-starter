@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Verify homepage remains renderable and accessible after removing the heading node."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Confirm no new dependencies or unnecessary DOM work were added."}

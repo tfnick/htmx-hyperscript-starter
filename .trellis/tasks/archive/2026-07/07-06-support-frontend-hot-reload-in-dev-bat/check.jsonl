@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/template-runtime-guidelines.md","reason":"Verify external template/static boundary remains explicit and tested."}
+{"file":".trellis/spec/frontend/performance-guidelines.md","reason":"Check static asset behavior does not add frontend dependencies or cache regressions."}

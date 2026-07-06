@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality checks for CSS-only page changes."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Regression checklist for public page layout and accessibility."}

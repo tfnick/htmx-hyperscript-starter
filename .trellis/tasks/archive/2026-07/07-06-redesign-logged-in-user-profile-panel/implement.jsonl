@@ -1,0 +1,3 @@
+{"file":".trellis/spec/frontend/page-guidelines.md","reason":"Homepage logged-in panel is HTML/CSS/JS UI with accessibility and null-safe JS requirements."}
+{"file":".trellis/spec/frontend/performance-guidelines.md","reason":"Avoid new frontend dependencies and unnecessary data fetching while redesigning the panel."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Reuse existing auth state, post link, toast and API helper patterns."}

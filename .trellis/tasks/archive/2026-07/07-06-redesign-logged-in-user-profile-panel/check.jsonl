@@ -1,0 +1,2 @@
+{"file":".trellis/spec/frontend/page-guidelines.md","reason":"Check accessibility, logged-in state behavior, and JS null safety."}
+{"file":".trellis/spec/frontend/performance-guidelines.md","reason":"Check no new dependency or avoidable request regression is introduced."}
