@@ -56,6 +56,8 @@
 
 * Relevant files inspected: `public/index.html`, `public/post.html`, `public/extensions.js`, `public/styles.css`.
 * Relevant spec: `.trellis/spec/frontend/page-guidelines.md`.
+* Follow-up reply layout: detail-page replies now render avatar, author/time, floor number, body, and footer action links/counters.
+* Follow-up verification: `node --check public/extensions.js` and `go test . -run "TestPostRoute|TestFrontend|Template|External"` passed.
 * Implemented by replacing `public/post.html` detail sidebar content with the homepage-style `user-card`, `quick-card`, and `members-card` structure.
 * Preserved auth/profile DOM contracts: `logged-out-panel`, `logged-in-panel`, `current-user-avatar`, `current-user-name`, `logout-button`, `create-post-link`, and `data-create-post-link`.
 * Removed the old detail-page `auth-card` and `sponsor-stack` sidebar content.

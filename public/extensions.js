@@ -423,7 +423,7 @@ function renderThreadDetail(thread) {
       <section class="reply-list">
         <h3>回复</h3>
         ${renderReplyPagination(replyPage)}
-        ${replies.length ? replies.map(renderReply).join("") : `<div class="notice-row">${replyPage.total_items ? "当前回复页没有内容。" : "暂无回复。"}</div>`}
+        ${replies.length ? replies.map((reply, index) => renderReply(reply, index, replyPage)).join("") : `<div class="notice-row">${replyPage.total_items ? "当前回复页没有内容。" : "暂无回复。"}</div>`}
         ${renderReplyPagination(replyPage)}
       </section>
       ${canReply ? renderReplyForm(thread.id) : `<div class="notice-row">登录后参与回复。</div>`}
@@ -507,14 +507,36 @@ function bindReplyPagination(threadID) {
   });
 }
 
-function renderReply(reply) {
+function renderReply(reply, index = 0, page = {}) {
+  const item = reply || {};
+  const authorName = item.author?.name || "Unknown";
+  const floor = item.floor || ((normalizePostPage(page.page) - 1) * normalizePostPage(page.page_size || forumState.postPageSize) + index + 1);
+  const likeCount = item.like_count ?? item.likes ?? item.upvote_count ?? item.upvotes ?? 0;
+  const dislikeCount = item.dislike_count ?? item.dislikes ?? item.downvote_count ?? item.downvotes ?? 0;
+  const replyCount = item.reply_count ?? item.child_count ?? item.children_count ?? 0;
+  const replyAnchor = item.id ? `reply-${escapeAttr(item.id)}` : "";
+  const replyID = replyAnchor ? ` id="${replyAnchor}"` : "";
+  const replyTarget = replyAnchor ? `#${replyAnchor}` : "#reply-form";
   return `
-    <article class="reply-row">
-      <header>
-        <strong>${escapeHTML(reply.author?.name || "Unknown")}</strong>
-        <span class="reply-meta">${formatRelativeTime(reply.created_at)}</span>
-      </header>
-      <p class="reply-body">${escapeHTML(reply.body)}</p>
+    <article class="reply-row"${replyID}>
+      <span class="avatar reply-avatar" style="--avatar-hue: ${avatarHue(authorName)}">${escapeHTML(avatarInitial(authorName))}</span>
+      <div class="reply-content">
+        <header class="reply-header">
+          <div class="reply-author-line">
+            <strong>${escapeHTML(authorName)}</strong>
+            <span class="reply-meta">${formatRelativeTime(item.created_at)}</span>
+          </div>
+          <span class="reply-floor">#${formatNumber(floor)}</span>
+        </header>
+        <p class="reply-body">${escapeHTML(item.body)}</p>
+        <footer class="reply-actions" aria-label="回复操作">
+          <span aria-label="点赞数">👍 ${formatNumber(likeCount)}</span>
+          <span aria-label="踩数">👎 ${formatNumber(dislikeCount)}</span>
+          <span aria-label="回复数">💬 ${formatNumber(replyCount)}</span>
+          <a href="${replyTarget}">引用</a>
+          <a href="#reply-form">回复</a>
+        </footer>
+      </div>
     </article>
   `;
 }
@@ -734,6 +756,7 @@ function avatarHue(value) {
 
 function formatNumber(value) {
   const number = Number(value || 0);
+  if (!Number.isFinite(number)) return "0";
   if (number >= 10000) return `${Math.floor(number / 1000) / 10}w`;
   if (number >= 1000) return `${Math.floor(number / 100) / 10}k`;
   return String(number);
