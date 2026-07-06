@@ -69,7 +69,7 @@ button {
 
 .topbar {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) 210px auto;
+  grid-template-columns: auto minmax(0, 1fr) 210px 34px;
   align-items: center;
   gap: 18px;
   width: min(1080px, calc(100vw - 40px));
@@ -149,6 +149,31 @@ button {
   background: transparent;
   color: #555555;
   font-size: 18px;
+}
+
+.theme-toggle-prototype {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #d8d8d8;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: rgba(27, 31, 35, 0.08) 0 1px;
+  color: #555555;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.theme-toggle-prototype:hover {
+  border-color: #c9c9c9;
+}
+
+.theme-toggle-prototype:focus-visible {
+  outline: 2px solid rgba(46, 164, 79, 0.35);
+  outline-offset: 2px;
 }
 
 .top-login-link,
