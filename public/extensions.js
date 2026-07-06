@@ -1,16 +1,16 @@
 const boardDefinitions = [
-  { slug: "daily", label: "日常", icon: "U" },
-  { slug: "tech", label: "技术", icon: "T" },
-  { slug: "info", label: "情报", icon: "Q" },
-  { slug: "review", label: "测评", icon: "*" },
-  { slug: "trade", label: "交易", icon: "$" },
-  { slug: "carpool", label: "拼车", icon: "#" },
-  { slug: "promotion", label: "推广", icon: "+" },
-  { slug: "life", label: "生活", icon: "L" },
-  { slug: "dev", label: "Dev", icon: ">" },
-  { slug: "image", label: "贴图", icon: "I" },
-  { slug: "exposure", label: "曝光", icon: "!" },
-  { slug: "sandbox", label: "沙盒", icon: "S" },
+  { slug: "tech", label: "人工智能", icon: "ƒ" },
+  { slug: "daily", label: "摸鱼闲聊", icon: "☕" },
+  { slug: "info", label: "情感八卦", icon: "♥" },
+  { slug: "review", label: "影音图文", icon: "▣" },
+  { slug: "carpool", label: "游戏同好", icon: "✦" },
+  { slug: "trade", label: "羊毛福利", icon: "券" },
+  { slug: "promotion", label: "服务推广", icon: "↗" },
+  { slug: "life", label: "投资理财", icon: "$" },
+  { slug: "dev", label: "电子设备", icon: "▤" },
+  { slug: "image", label: "运营反馈", icon: ">" },
+  { slug: "exposure", label: "内部版块", icon: "↻" },
+  { slug: "sandbox", label: "沙盒测试", icon: "S" },
 ];
 
 const initialPostRoute = postRouteFromPath();
@@ -73,10 +73,7 @@ function bindForumEvents() {
     renderCategories();
     updateBoardHeading();
     if (postRoute) {
-      loadThread(postRoute.threadID, {
-        postPage: postRoute.page,
-        updatePath: false,
-      });
+      loadThread(postRoute.threadID, { postPage: postRoute.page, updatePath: false });
       return;
     }
     loadThreads();
@@ -99,8 +96,7 @@ function bindAuthEvents() {
         form.reset();
         window.location.assign("/");
       } catch (error) {
-        const message = error instanceof Error && error.message ? error.message : "登录失败，请稍后再试";
-        showToast(message, true);
+        showToast(errorMessage(error, "登录失败，请稍后再试"), true);
       } finally {
         if (submitButton) submitButton.disabled = false;
       }
@@ -122,8 +118,7 @@ function bindAuthEvents() {
         form.reset();
         window.location.assign("/");
       } catch (error) {
-        const message = error instanceof Error && error.message ? error.message : "注册失败，请稍后再试";
-        showToast(message, true);
+        showToast(errorMessage(error, "注册失败，请稍后再试"), true);
       } finally {
         if (submitButton) submitButton.disabled = false;
       }
@@ -193,8 +188,7 @@ function bindNewPostEvents() {
       form.reset();
       window.location.href = postPath(thread.id, 1);
     } catch (error) {
-      const message = error instanceof Error && error.message ? error.message : "发帖失败，请稍后再试";
-      showToast(message, true);
+      showToast(errorMessage(error, "发帖失败，请稍后再试"), true);
     } finally {
       if (submitButton) submitButton.disabled = false;
     }
@@ -227,10 +221,7 @@ async function loadCategories() {
     if ($("#new-thread-category") && !$("#thread-list") && !$("#thread-detail")) return;
     const postRoute = postRouteFromPath();
     if (postRoute) {
-      loadThread(postRoute.threadID, {
-        postPage: postRoute.page,
-        updatePath: false,
-      });
+      loadThread(postRoute.threadID, { postPage: postRoute.page, updatePath: false });
       return;
     }
     loadThreads();
@@ -239,8 +230,8 @@ async function loadCategories() {
     renderCategories();
     renderNewThreadCategoryOptions();
     updateBoardHeading();
-    renderEmptyThreads("暂时没有内容", error.message);
-    showToast(error.message, true);
+    renderEmptyThreads("暂时没有内容", errorMessage(error, "分类数据加载失败"));
+    showToast(errorMessage(error, "分类数据加载失败"), true);
   }
 }
 
@@ -251,7 +242,7 @@ function mergeBoardDefinitions(apiCategories) {
     return {
       ...board,
       ...apiCategory,
-      label: apiCategory?.name || board.label,
+      label: board.label,
       enabled: apiCategory ? apiCategory.enabled !== false : false,
     };
   });
@@ -313,8 +304,8 @@ async function loadThreads() {
     const data = await apiFetch(endpoint, { auth: false });
     renderThreads(data);
   } catch (error) {
-    renderEmptyThreads("暂时没有内容", "这个板块还没有可展示的主题，或者数据正在迁移中。");
-    showToast(error.message, true);
+    renderEmptyThreads("暂时没有内容", "这个版块还没有可展示的主题，或者数据正在迁移中。");
+    showToast(errorMessage(error, "帖子列表加载失败"), true);
   }
 }
 
@@ -323,7 +314,7 @@ function renderThreads(data) {
   if (!threadList) return;
   const items = data.items || [];
   if (!items.length) {
-    renderEmptyThreads("还没有主题", "成为这个板块第一个发起讨论的人。");
+    renderEmptyThreads("还没有主题", "成为这个版块第一个发起讨论的人。");
   } else {
     threadList.innerHTML = items.map(renderThreadRow).join("");
     document.querySelectorAll("[data-thread-id]").forEach((button) => {
@@ -331,17 +322,17 @@ function renderThreads(data) {
     });
   }
 
-  const page = data.pagination || {};
-  syncThreadPagers(page);
+  syncThreadPagers(data.pagination || {});
 }
 
 function renderThreadRow(thread) {
-  const category = thread.category || currentCategory();
-  const lastPoster = thread.last_post_author?.name || thread.author?.name || "Unknown";
+  const category = displayCategory(thread.category || currentCategory());
+  const authorName = thread.author?.name || "Unknown";
+  const lastPoster = thread.last_post_author?.name || authorName;
   const active = thread.id === forumState.selectedThreadID;
   return `
     <button class="thread-row" type="button" data-thread-id="${escapeAttr(thread.id)}" aria-current="${active}">
-      <span class="avatar" style="--avatar-hue: ${avatarHue(thread.author?.name || thread.title)}">${avatarInitial(thread.author?.name || thread.title)}</span>
+      <span class="avatar" style="--avatar-hue: ${avatarHue(authorName || thread.title)}">${avatarInitial(authorName || thread.title)}</span>
       <span class="thread-content">
         <span class="thread-title-line">
           ${thread.is_pinned ? `<span class="status-badge">置顶</span>` : ""}
@@ -349,14 +340,14 @@ function renderThreadRow(thread) {
           <strong>${escapeHTML(thread.title)}</strong>
         </span>
         <span class="thread-meta">
-          <span>作者 ${escapeHTML(thread.author?.name || "Unknown")}</span>
-          <span>浏览 ${formatNumber(thread.view_count)}</span>
-          <span>回复 ${formatNumber(thread.reply_count)}</span>
-          <span>最后 ${escapeHTML(lastPoster)}</span>
+          <span><span class="meta-icon">👤</span> ${escapeHTML(authorName)}</span>
+          <span><span class="meta-icon">👁</span> ${formatNumber(thread.view_count)}</span>
+          <span><span class="meta-icon">💬</span> ${formatNumber(thread.reply_count)}</span>
+          <span><span class="meta-icon">⚡</span> ${escapeHTML(lastPoster)}</span>
           <span>${formatRelativeTime(thread.last_post_at || thread.created_at)}</span>
         </span>
+        <span class="thread-category">${escapeHTML(category.label || category.name || category.slug)}</span>
       </span>
-      <span class="thread-category">${escapeHTML(category.name || category.label || category.slug)}</span>
     </button>
   `;
 }
@@ -400,8 +391,8 @@ async function loadThread(threadID, options = {}) {
     const thread = await apiFetch(`/api/forum/threads/${encodeURIComponent(threadID)}?${params}`);
     renderThreadDetail(thread);
   } catch (error) {
-    renderThreadError("Thread failed to load", error.message);
-    showToast(error.message, true);
+    renderThreadError("帖子加载失败", errorMessage(error, "请稍后再试"));
+    showToast(errorMessage(error, "帖子加载失败"), true);
   }
 }
 
@@ -423,7 +414,7 @@ function renderThreadDetail(thread) {
   };
   threadDetail.innerHTML = `
     <section class="thread-detail-card">
-      <p class="eyebrow">${escapeHTML(thread.category?.name || thread.category?.slug || "Forum")}</p>
+      <p class="eyebrow">${escapeHTML(displayCategory(thread.category || {}).label || thread.category?.slug || "Forum")}</p>
       <h2>${escapeHTML(thread.title)}</h2>
       <div class="detail-meta">
         ${escapeHTML(thread.author?.name || "Unknown")} · ${formatRelativeTime(thread.created_at)} · ${formatNumber(thread.reply_count)} 回复 · ${formatNumber(thread.view_count)} 浏览
@@ -467,7 +458,7 @@ function renderThreadPagination(page) {
   buttons.push(`<button type="button" class="pager-button" data-thread-page="${Math.max(1, current - 1)}" ${page.has_previous ? "" : "disabled"} aria-label="上一页">‹</button>`);
   for (const item of replyPageItems(current, total)) {
     if (item === "gap") {
-      buttons.push(`<span class="page-gap" aria-hidden="true">…</span>`);
+      buttons.push(`<span class="page-gap" aria-hidden="true">&hellip;</span>`);
       continue;
     }
     buttons.push(`<button type="button" class="pager-button" data-thread-page="${item}" ${item === current ? `aria-current="page"` : ""}>${item}</button>`);
@@ -484,7 +475,7 @@ function renderReplyPagination(page) {
   buttons.push(`<button type="button" class="reply-page-button" data-reply-page="${Math.max(1, current - 1)}" ${page.has_previous ? "" : "disabled"} aria-label="上一页回复">‹</button>`);
   for (const item of replyPageItems(current, total)) {
     if (item === "gap") {
-      buttons.push(`<span class="reply-page-gap" aria-hidden="true">…</span>`);
+      buttons.push(`<span class="reply-page-gap" aria-hidden="true">&hellip;</span>`);
       continue;
     }
     buttons.push(`<button type="button" class="reply-page-button" data-reply-page="${item}" ${item === current ? `aria-current="page"` : ""}>${item}</button>`);
@@ -559,7 +550,7 @@ function renderAuthState() {
   const currentUserName = $("#current-user-name");
   if (loggedOutPanel) loggedOutPanel.hidden = loggedIn;
   if (loggedInPanel) loggedInPanel.hidden = !loggedIn;
-  if (currentUserName) currentUserName.textContent = loggedIn ? `${forumState.currentUser.name} 已登录` : "";
+  if (currentUserName && loggedIn) currentUserName.textContent = forumState.currentUser.name || "DeepFlood 用户";
   updateCreatePostLink();
   updateComposerVisibility();
   updateNewPostVisibility();
@@ -572,9 +563,11 @@ function updateComposerVisibility() {
 }
 
 function updateCreatePostLink() {
-  const link = $("#create-post-link");
-  if (!link) return;
-  link.href = forumState.category ? `/new-post?category=${encodeURIComponent(forumState.category)}` : "/new-post";
+  const links = [$("#create-post-link"), $("#create-post-link-sidebar")].filter(Boolean);
+  const href = forumState.category ? `/new-post?category=${encodeURIComponent(forumState.category)}` : "/new-post";
+  links.forEach((link) => {
+    link.href = href;
+  });
 }
 
 function updateNewPostVisibility() {
@@ -593,7 +586,7 @@ function renderNewThreadCategoryOptions() {
 
   const categories = forumState.categories.filter((category) => category.enabled !== false);
   if (!categories.length) {
-    select.innerHTML = `<option value="daily">日常</option>`;
+    select.innerHTML = `<option value="daily">摸鱼闲聊</option>`;
     select.value = "daily";
     return;
   }
@@ -613,8 +606,8 @@ function renderThreadLoading() {
   threadDetail.innerHTML = `
     <section class="thread-detail-card">
       <div class="empty-state compact">
-        <h2>Loading thread</h2>
-        <p>Please wait while the discussion loads.</p>
+        <h2>正在加载帖子</h2>
+        <p>正在打开正文与回复。</p>
       </div>
     </section>
   `;
@@ -675,7 +668,16 @@ function updateBoardHeading() {
 }
 
 function currentCategory() {
-  return forumState.categories.find((category) => category.slug === forumState.category) || boardDefinitions[0];
+  return forumState.categories.find((category) => category.slug === forumState.category) || boardDefinitions[1];
+}
+
+function displayCategory(category) {
+  const slug = category?.slug || "";
+  const definition = boardDefinitions.find((board) => board.slug === slug);
+  return {
+    ...category,
+    label: definition?.label || category?.name || category?.label || slug,
+  };
 }
 
 function categoryFromPath() {
@@ -715,6 +717,10 @@ function showToast(message, error = false) {
   showToast.timer = window.setTimeout(() => {
     toast.hidden = true;
   }, 3200);
+}
+
+function errorMessage(error, fallback) {
+  return error instanceof Error && error.message ? error.message : fallback;
 }
 
 function avatarInitial(value) {

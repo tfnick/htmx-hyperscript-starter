@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Primary quality checklist for public HTML/CSS/JS changes, including JS syntax checks and Go test expectations."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Validate page structure, text readability, accessibility landmarks, empty/error states, and SEO-facing markup."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Validate that copied or recreated assets, list rendering, and dependencies remain lightweight and maintainable."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Check required Go quality gate and record any test/build limitations accurately."}

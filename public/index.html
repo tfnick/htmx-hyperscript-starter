@@ -2,9 +2,10 @@
 <html lang="zh-CN">
 
 <head>
-  <title>NodeSeek-Style Forum</title>
+  <title>DeepFlood - AI和生活社区</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="DeepFlood is a community focusing on AI and life-related topics, where you can relax and unwind." />
   <link href="/styles.css" rel="stylesheet" />
   <script src="https://unpkg.com/htmx.org"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
@@ -24,13 +25,12 @@
 <body>
   <header class="site-header">
     <nav class="topbar" aria-label="主导航">
-      <a class="brand" href="/" aria-label="NodeSeek 首页">
-        <span class="brand-mark">◉</span>
-        <span class="brand-name">NodeSeek</span>
-        <span class="brand-beta">beta</span>
+      <a class="brand" href="/" aria-label="DeepFlood 首页">
+        <span class="brand-mark" aria-hidden="true">🌊</span>
+        <span class="brand-name">DeepFlood</span>
       </a>
 
-      <div id="top-board-links" class="top-board-links" aria-label="热门板块"></div>
+      <div id="top-board-links" class="top-board-links" aria-label="热门版块"></div>
 
       <form id="search-form" class="top-search">
         <input id="search-input" name="q" type="search" placeholder="Search" autocomplete="off" />
@@ -42,10 +42,6 @@
   </header>
 
   <main class="page-shell">
-    <aside class="category-rail" aria-label="论坛板块">
-      <div id="category-list" class="category-list" aria-live="polite"></div>
-    </aside>
-
     <section class="feed-panel" aria-labelledby="board-title">
       <header class="feed-toolbar">
         <div class="feed-tabs" aria-label="帖子筛选">
@@ -58,8 +54,8 @@
 
       <section class="board-heading">
         <div>
-          <p class="eyebrow">Board</p>
-          <h1 id="board-title">日常</h1>
+          <p class="eyebrow">AI and life community</p>
+          <h1 id="board-title">全部</h1>
         </div>
         <select id="sort-select" class="sort-select" name="sort" aria-label="排序">
           <option value="latest_reply">最新评论</option>
@@ -70,50 +66,108 @@
       <div id="thread-list" class="thread-list" aria-live="polite"></div>
 
       <nav class="feed-pager feed-pager-bottom" data-thread-pagination aria-label="帖子列表底部分页"></nav>
-
     </section>
 
     <aside class="right-sidebar" aria-label="社区功能">
-      <section class="side-card auth-card">
+      <section class="side-card user-card">
         <div id="logged-out-panel">
-          <h2>你好啊，陌生人！</h2>
-          <p>我的朋友，看起来你是新来的，如果想参与到讨论中，点击下面的按钮！</p>
+          <div class="user-head">
+            <span class="avatar avatar-large" style="--avatar-hue: 146">D</span>
+            <div>
+              <h2>欢迎来到 DeepFlood</h2>
+              <p>AI 和生活相关话题社区，累了就来这里放松一下。</p>
+            </div>
+          </div>
           <div class="auth-actions">
             <a class="primary-action" href="/login">登录</a>
-            <a class="primary-action" href="/register">注册</a>
+            <a class="secondary-action" href="/register">注册</a>
           </div>
         </div>
 
         <div id="logged-in-panel" hidden>
-          <h2>欢迎回来</h2>
-          <p id="current-user-name" class="current-user"></p>
+          <div class="user-head">
+            <span class="avatar avatar-large" style="--avatar-hue: 146">D</span>
+            <div>
+              <h2 id="current-user-name" class="current-user">DeepFlood 用户</h2>
+              <p>今天也欢迎回来。</p>
+            </div>
+          </div>
+          <div class="user-stat">
+            <a href="/new-post">主题帖</a>
+            <a href="#thread-list">评论数</a>
+            <a href="#thread-list">收藏</a>
+            <a href="#thread-list">通知</a>
+          </div>
           <div class="auth-actions">
             <a id="create-post-link" class="primary-action" href="/new-post">发帖</a>
-            <button id="logout-button" type="button" class="secondary-action">退出登录</button>
+            <button id="logout-button" type="button" class="secondary-action">登出</button>
           </div>
         </div>
       </section>
 
+      <a id="create-post-link-sidebar" class="primary-action new-discussion" href="/new-post">＋ 发帖</a>
+
       <section class="side-card quick-card">
-        <h2>♟ 快捷功能区</h2>
+        <h2>🚀 快捷功能区</h2>
         <a href="#thread-list">推荐阅读</a>
-        <a href="/new-post">发帖</a>
+        <a href="#thread-list">管理记录</a>
+        <a href="#thread-list">幸运抽奖</a>
         <a href="#thread-list">邀请好友</a>
         <a href="#thread-list">合作商家</a>
         <a href="#thread-list">友站链接</a>
       </section>
 
-      <section class="sponsor-stack" aria-label="赞助展示">
-        <div class="sponsor-card cloud"><strong>DreamCloud</strong><span>亚太高防云</span></div>
-        <div class="sponsor-card vps"><strong>双ISP原生住宅VPS</strong><span>服务全解锁</span></div>
-        <div class="sponsor-card cdn"><strong>日本香港高防无敌节点</strong><span>无视 DDOS 打死退款</span></div>
-        <div class="sponsor-card dark"><strong>EVOXT</strong><span>同样价格，我们快 2.5 倍！</span></div>
-        <div class="sponsor-card line"><strong>Seek.li</strong><span>社区服务导航</span></div>
-        <div class="sponsor-card quality"><strong>NodeQuality</strong><span>网络质量工具</span></div>
-        <div class="sponsor-card script"><strong>NodeScriptKit</strong><span>脚本与工具箱</span></div>
+      <section class="side-card category-card">
+        <h2>▦ 所有版块</h2>
+        <div id="category-list" class="category-list" aria-live="polite"></div>
+      </section>
+
+      <section class="side-card members-card">
+        <h2>📈 用户数目 📈</h2>
+        <p class="community-count">12,800+</p>
+        <h2>🎉 欢迎新用户 🎉</h2>
+        <div class="new-member-board" aria-label="新用户">
+          <span class="avatar" style="--avatar-hue: 20">深</span>
+          <span class="avatar" style="--avatar-hue: 92">A</span>
+          <span class="avatar" style="--avatar-hue: 212">X</span>
+          <span class="avatar" style="--avatar-hue: 278">M</span>
+          <span class="avatar" style="--avatar-hue: 325">Y</span>
+          <span class="avatar" style="--avatar-hue: 158">L</span>
+          <span class="avatar" style="--avatar-hue: 36">F</span>
+        </div>
       </section>
     </aside>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <section>
+        <h2>站内导航</h2>
+        <a href="/">关于本站</a>
+        <a href="/">隐私协议</a>
+        <a href="/">sitemap</a>
+      </section>
+      <section>
+        <h2>商业推广</h2>
+        <a href="#thread-list">合作商家展示</a>
+      </section>
+      <section>
+        <h2>友情站点</h2>
+        <a href="#thread-list">ITDOG</a>
+        <a href="#thread-list">全部...</a>
+      </section>
+      <section>
+        <h2>其他平台</h2>
+        <a href="#thread-list">电报频道</a>
+        <a href="#thread-list">电报群组</a>
+      </section>
+      <section>
+        <h2>联系我们</h2>
+        <a href="mailto:Lloyd@nodeseek.com">Email</a>
+      </section>
+    </div>
+    <p>Copyright © 2025 - now, All rights Reserved</p>
+  </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </body>

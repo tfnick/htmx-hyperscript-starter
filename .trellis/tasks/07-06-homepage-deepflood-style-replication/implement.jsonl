@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend entrypoint for public HTML/CSS/JS changes, htmx/hyperscript conventions, template routing expectations, and quality requirements."}
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Homepage structure, landmarks, visible states, accessibility, SEO, and user-facing page requirements."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Homepage list rendering, static asset, image, dependency, and lightweight frontend performance constraints."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Required before introducing reusable CSS patterns, helpers, assets, or markup conventions for the homepage replication."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Relevant if the homepage markup needs to remap API fields into visible thread metadata without changing backend contracts."}
