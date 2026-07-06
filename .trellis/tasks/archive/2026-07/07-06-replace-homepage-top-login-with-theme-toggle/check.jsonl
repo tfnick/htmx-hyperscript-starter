@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/page-guidelines.md", "reason": "Validate homepage renderability and accessible control expectations."}
+{"file": ".trellis/spec/frontend/performance-guidelines.md", "reason": "Confirm no new dependencies or unnecessary JS were added."}
